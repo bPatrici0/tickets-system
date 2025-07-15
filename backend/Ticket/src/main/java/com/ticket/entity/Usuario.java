@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Table(name = "usuarios")
@@ -23,7 +21,7 @@ public class Usuario implements UserDetails {
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private Rol rol; //Enum: ADMIN, USER
+    private Rol rol;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

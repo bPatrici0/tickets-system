@@ -13,10 +13,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -59,7 +56,7 @@ public class AuthController {
         Usuario usuario = new Usuario();
         usuario.setEmail(registroDTO.getEmail());
         usuario.setPassword(passwordEncoder.encode(registroDTO.getPassword()));
-        usuario.setRol(Rol.USER); // por defecto todos son USER (admin se asigna manualmente)
+        usuario.setRol(Rol.USER);
 
         usuarioRepository.save(usuario);
         return ResponseEntity.ok("Usuario registrado exitosamente");

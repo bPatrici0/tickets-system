@@ -18,7 +18,7 @@ public class Usuario implements UserDetails {
     private String email;
 
     @Column(nullable = false)
-    private String password;
+    private  password;
 
     @Enumerated(EnumType.STRING)
     private Rol rol;

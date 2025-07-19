@@ -8,7 +8,7 @@ import router from './router'
 
 import { createVuetify } from 'vuetify'
 import 'vuetify/styles'
-import '@mdi/font/css/materialdesignicons.css'
+/*import '@mdi/font/css/materialdesignicons.css'*/
 
 const vuetify = createVuetify();
 const app = createApp(App)

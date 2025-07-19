@@ -1,6 +1,6 @@
 package com.ticket.config;
 
-import java.
+import java.util.Date;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.SignatureAlgorithm;

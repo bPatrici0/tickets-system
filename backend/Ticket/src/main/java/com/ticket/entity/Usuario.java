@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 @Entity
 @Table(name = "usuarios")
@@ -18,7 +20,7 @@ public class Usuario implements UserDetails {
     private String email;
 
     @Column(nullable = false)
-    private  password;
+    private String password;
 
     @Enumerated(EnumType.STRING)
     private Rol rol;

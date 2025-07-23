@@ -1,20 +1,14 @@
-import './assets/main.css'
-
 import { createApp } from 'vue'
-import { createPinia } from 'pinia'
-
 import App from './App.vue'
-import router from './router'
 
-import { createVuetify } from 'vuetify'
-import 'vuetify/styles'
-/*import '@mdi/font/css/materialdesignicons.css'*/
-
-const vuetify = createVuetify();
+// Inyección directa de estilos
 const app = createApp(App)
-
-app.use(createPinia())
-app.use(router)
-app.use(vuetify)
-
+document.body.innerHTML = `
+  <div id="app" style="background: black; min-height: 100vh;">
+    <!-- Espacio para Vue -->
+  </div>
+`
 app.mount('#app')
+
+// Verificación en consola del navegador
+console.log('Vue está montado:', !!app._container)

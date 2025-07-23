@@ -1,0 +1,19 @@
+/* Reset total de estilos conflictivos */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body, #app {
+  background: #000 !important;
+  color: #00ff88 !important;
+  font-family: 'Courier New', monospace !important;
+  overflow: hidden;
+}
+
+/* Elimina todos los fondos blancos */
+.v-application__wrap, .v-main, .v-main__wrap {
+  background: #000 !important;
+  min-height: 100vh !important;
+}

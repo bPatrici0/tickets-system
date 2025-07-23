@@ -97,3 +97,10 @@ body {
   padding: 0;
   font-family: 'Share Tech Mono', monospace;
 }
+
+.v-application {
+  font-family: "Courrier New", monospace;
+}
+.vcontainer {
+  padding: 12px;
+}

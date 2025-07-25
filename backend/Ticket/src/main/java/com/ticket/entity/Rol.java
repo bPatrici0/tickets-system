@@ -1,6 +1,6 @@
 package com.ticket.entity;
 
 public enum Rol {
-    USER,
-    ADMIN
+    ROLE_USER,
+    ROLE_ADMIN
 }

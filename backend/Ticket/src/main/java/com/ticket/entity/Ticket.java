@@ -19,6 +19,7 @@ public class Ticket {
     @JoinColumn(name = "usuario_id")
     private Usuario creadoPor; //relacion con usuario
 
+
     private LocalDateTime fechaCreacion = LocalDateTime.now();
 
     public enum EstadoTicket {

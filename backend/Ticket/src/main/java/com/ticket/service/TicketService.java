@@ -3,6 +3,7 @@ package com.ticket.service;
 import com.ticket.dto.TicketDTO;
 import com.ticket.entity.Ticket;
 import com.ticket.entity.Usuario;
+import com.ticket.exception.NotFoundException;
 import com.ticket.repository.TicketRepository;
 import com.ticket.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +12,12 @@ import java.util.List;
 
 @Service
 public class TicketService {
+
     @Autowired
     private TicketRepository ticketRepository;
 
     @Autowired
-    public UsuarioRepository usuarioRepository;
+    private UsuarioRepository usuarioRepository;
 
     public Ticket crearTicket(TicketDTO ticketDTO) {
         Usuario usuario = usuarioRepository.findByEmail(ticketDTO.getEmailUsuario())
@@ -24,19 +26,42 @@ public class TicketService {
         Ticket ticket = new Ticket();
         ticket.setTitulo(ticketDTO.getTitulo());
         ticket.setDescripcion(ticketDTO.getDescripcion());
-        ticket.setEstado(ticketDTO.getEstado());
+        ticket.setEstado(Ticket.EstadoTicket.valueOf(ticketDTO.getEstado()));
         ticket.setCreadoPor(usuario);
 
         return ticketRepository.save(ticket);
     }
 
+    public List<Ticket> obtenerTodosLosTickets() {
+        return ticketRepository.findAll();
+    }
+
+    public Ticket obtenerTicketPorId(Long id) {
+        return ticketRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Ticket no encontrado"));
+    }
+
     public List<Ticket> obtenerTicketsPorUsuario(String email) {
         Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+                .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
         return ticketRepository.findByCreadoPor(usuario);
     }
 
-    public List<Ticket> obtenerTodosLosTickets() {
-        return ticketRepository.findAll(); // Asegúrate de tener este método en tu repository
+    public Ticket actualizarTicket(Long id, TicketDTO ticketDTO) {
+        Ticket ticket = ticketRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Ticket no encontrado"));
+
+        ticket.setTitulo(ticketDTO.getTitulo());
+        ticket.setDescripcion(ticketDTO.getDescripcion());
+        ticket.setEstado(Ticket.EstadoTicket.valueOf(ticketDTO.getEstado()));
+
+        return ticketRepository.save(ticket);
+    }
+
+    public void eliminarTicket(Long id) {
+        if (!ticketRepository.existsById(id)) {
+            throw new NotFoundException("Ticket no encontrado");
+        }
+        ticketRepository.deleteById(id);
     }
 }

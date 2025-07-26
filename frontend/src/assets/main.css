@@ -1,35 +1,24 @@
-@import './base.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
+/*estilos base*/
+body {
+    @apply bg-black text-green-500 font-mono;
+}
+/*estilo para cajas de terminal*/
+.terminal-box {
+    @apply border border-green-500 p-4 rounded-lg;
+}
+/*efecto de cursor parpadeante*/
+.cursor-blink {
+    animation: blink 1s step-end infinite;
+}
+@ketframes blink {
+    50% { opacity: 0; }
 }
 
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
-}
-
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
-}
-
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
+/*estilo para botones*/
+.btn-matrix {
+    @apply bg-green-500 text-black px-4 py-2 rounded hover:bg-green-400 transition-colors;
 }

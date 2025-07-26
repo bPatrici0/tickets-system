@@ -60,8 +60,7 @@
 </template>
 
 <script>
-
-import axios from 'axios';
+import api from '@/services/api';
 
 export default {
   data() {
@@ -74,44 +73,39 @@ export default {
   },
   methods: {
     async handleLogin() {
-      this.loading = true;
-      this.error = null;
+        this.loading = true;
+        try {
+            // Conexión backend
+            const response = await api.post('/auth/login', {
+                email: this.email,
+                password: this.password
+            });
 
-      try {
-        // Conexión REAL con tu backend
-        const response = await axios.post('http://localhost:8080/api/auth/login', {
-          email: this.email,
-          password: this.password
-        });
-
-        // Si el login es exitoso (status 200)
-        if (response.status === 200) {
-          localStorage.setItem('token', response.data.token);
-          this.$router.push('/tickets');
-        }
-      } catch (error) {
-        // Manejo de errores específicos
-        if (error.response) {
-          switch (error.response.status) {
-            case 401:
-              this.error = "Credenciales inválidas";
-              break;
-            case 404:
-              this.error = "Usuario no registrado";
-              break;
-            default:
-              this.error = "Error en el servidor";
-          }
-        } else {
-          this.error = "Error de conexión";
-        }
+            if (response.status === 200) {
+                this.$router.push('/tickets');
+            }
+        } catch (error) {
+            if (error.response) {
+                switch (error.response.status) {
+                    case 401:
+                        this.error = "Credenciales inválidas";
+                    break;
+                    case 404:
+                        this.error = "Usuario no registrado";
+                    break;
+                    default:
+                    this.error = "Error en el servidor";
+                }
+            } else {
+                this.error = "Error de conexión";
+            }
 
         alert(`> Error: ${this.error}_`);
-      } finally {
+    } finally {
         this.loading = false;
-      }
     }
   }
+}
 }
 </script>
 

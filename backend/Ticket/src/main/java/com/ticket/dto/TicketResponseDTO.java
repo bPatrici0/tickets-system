@@ -2,6 +2,7 @@ package com.ticket.dto;
 
 import com.ticket.entity.EstadoTicket;
 import lombok.Data;
+
 import java.time.LocalDateTime;
 
 @Data

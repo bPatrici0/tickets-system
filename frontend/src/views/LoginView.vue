@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center justify-center min-h-screen bg-black p-4 overflow-hidden">
+  <div class="flex items-center justify-center min-h-screen bg-black p-4">
     <div class="w-full max-w-md">
       <!-- Título centrado -->
       <h1 class="text-3xl text-green-500 text-center mb-8 font-mono">
@@ -104,8 +104,7 @@ export default {
 /* Estilos específicos para esta vista */
 .terminal-box {
   @apply border border-green-500 p-6 rounded-lg;
-  max-height: calc(100vh - 200px);
-  overflow-y: auto;
+  width: 100%;
 }
 
 .btn-matrix {

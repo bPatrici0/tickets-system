@@ -9,10 +9,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -22,9 +30,7 @@ public class AuthController {
 
     @PostMapping("/registro")
     public ResponseEntity<String> registrarUsuario(@RequestBody RegistroDTO registroDTO) {
-        if (usuarioRepository.existsByEmail(registroDTO.getEmail())) {
-            return ResponseEntity.badRequest().body("Error: El email ya está registrado");
-        }
+        System.out.println("Datos recibidos: " + registroDTO.getEmail() + ", " + registroDTO.getPassword());
 
         Usuario usuario = new Usuario();
         usuario.setEmail(registroDTO.getEmail());
@@ -37,13 +43,16 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginDTO loginDTO) {
-        /*Usuario usuario = usuarioRepository.findByEmail(loginDTO.getEmail())
-                .orElse(null);*/
-
-        /*if (usuario == null || !passwordEncoder.matches(loginDTO.getPassword(), usuario.getPassword())) {
-            return ResponseEntity.status(401).body("Credenciales inválidas");
-        }*/
-
-        return ResponseEntity.ok("Autenticación exitosa");
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginDTO.getEmail(),
+                            loginDTO.getPassword()
+                    )
+            );
+            return ResponseEntity.ok("Autenticación exitosa");
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
+        }
     }
 }

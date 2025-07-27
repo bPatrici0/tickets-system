@@ -77,35 +77,26 @@ export default {
         try {
             // Conexión backend
             const response = await api.post('/auth/login', {
-                email: this.email,
+                email: this.email.trim(),
                 password: this.password
+            }, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
             });
 
             if (response.status === 200) {
+                localStorage.setItem('authToken', 'dummy-token'); //temporal para pruebas
                 this.$router.push('/tickets');
             }
         } catch (error) {
-            if (error.response) {
-                switch (error.response.status) {
-                    case 401:
-                        this.error = "Credenciales inválidas";
-                    break;
-                    case 404:
-                        this.error = "Usuario no registrado";
-                    break;
-                    default:
-                    this.error = "Error en el servidor";
-                }
-            } else {
-                this.error = "Error de conexión";
-            }
-
-        alert(`> Error: ${this.error}_`);
-    } finally {
-        this.loading = false;
+            console.error("Error completo: ", error.response);
+            alert(error.response?.data || "Error de conexión");
+        } finally {
+            this.loading = false;
+        }
     }
   }
-}
 }
 </script>
 

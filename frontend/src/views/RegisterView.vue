@@ -49,6 +49,7 @@
 </template>
 
 <script>
+import api from '@/services/api';
 export default {
     data() {
         return {
@@ -61,25 +62,23 @@ export default {
     },
     methods: {
         async handleRegister() {
-            if (this.password !== this.confirmPassword) {
-                alert("> Las contraseñas no coinciden...");
-                return;
-            }
             try {
-                console.log("Registrando: ", {
-                    name: this.name,
-                    email: this.email,
+                const response = await api.post('/auth/registro',{
+                    email: this.email.trim(),
                     password: this.password
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
                 });
 
-                await new Promise(resolve => setTimeout(resolve, 1500));
-
-                this.$router.push('/tickets');
+                if (response.status === 200) {
+                    alert("Registro exitoso!...");
+                    this.$router.push('/login');
+                }
             } catch (error) {
-                console.error("Error en registro: ", error);
-                alert("> Error en registro...");
-            } finally {
-                this.loading = false;
+                console.error("Error en registro: ", error.response);
+                alert(error.response?.data || "> Error al registrar...");
             }
         }
     }

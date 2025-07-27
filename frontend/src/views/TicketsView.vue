@@ -2,7 +2,7 @@
     <div class="min-h-screen bg-black p-4">
         <header class="terminal-box mb-6 text-center">
             <h1 class="text-2x1">
-                > Sistema de Tickets<span class="cursor-blink">|</span>
+                > Panel de Tickets<span class="cursor-blink">|</span>
             </h1>
             <nav class="mt-4">
                 <button
@@ -26,7 +26,9 @@
 export default {
     methods: {
         handleLogout() {
+            localStorage.removeItem('authToken');
             this.$router.push('/login');
+            window.location.reload();
         }
     }
 }

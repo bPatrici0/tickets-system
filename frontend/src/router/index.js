@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import LoginView from '../views/LoginView.vue';
 import RegisterView from '../views/RegisterView.vue';
-import TicketsView from '../views/TicketsView.vue';
+import UserTickets from '../views/UserTickets.vue';
 
 const routes = [
     {
@@ -29,7 +29,7 @@ const routes = [
     {
         path: '/tickets',
         name: 'tickets',
-        component: TicketsView,
+        component: UserTickets,
         meta: {
             title: '> Tickets',
             requiresAuth: true

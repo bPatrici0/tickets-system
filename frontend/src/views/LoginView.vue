@@ -76,7 +76,7 @@ export default {
         this.loading = true;
         try {
             // Conexión backend
-            const response = await api.post('/auth/login', {
+            const response = await api.post('api/auth/login', {
                 email: this.email.trim(),
                 password: this.password
             }, {
@@ -85,15 +85,17 @@ export default {
                 }
             });
 
-            if (response.status === 200) {
-                localStorage.setItem('authToken', 'dummy-token'); //temporal para pruebas
+            if (response.data) {
+                localStorage.setItem('userEmail', response.data.email);
+                localStorage.setItem('userRole', response.data.rol);
+            }
+
+            //redirigir segun usuario
+            if (response.data.rol === "ROLE_ADMIN"){
+                this.$router.push('/admin-panel');
+            } else {
                 this.$router.push('/tickets');
             }
-        } catch (error) {
-            console.error("Error completo: ", error.response);
-            alert(error.response?.data || "Error de conexión");
-        } finally {
-            this.loading = false;
         }
     }
   }

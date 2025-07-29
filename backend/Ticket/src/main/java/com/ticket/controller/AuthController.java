@@ -44,13 +44,23 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginDTO loginDTO) {
         try {
+            //autenticar
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             loginDTO.getEmail(),
                             loginDTO.getPassword()
                     )
             );
-            return ResponseEntity.ok("Autenticación exitosa");
+
+            //obtener usario de la bd
+            Usuario usuario = usuarioRepository.findByEmail(loginDTO.getEmail())
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado!..."));
+
+            //respuesta con datos necesarios
+            return ResponseEntity.ok(new LoginResponseDTO(;
+                usuario.getEmail(),
+                usuario.getRol().name()
+            ));
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
         }

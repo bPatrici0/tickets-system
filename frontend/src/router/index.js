@@ -58,6 +58,9 @@ router.beforeEach ((to, from, next) => {
     const isAuthenticated = localStorage.getItem('userEmail');
     const userRole = localStorage.getItem('userRole');
 
+    /*if(to.meta.public) {
+        return next();
+    }*/
     if (to.meta.requiresAuth && !isAuthenticated) {
         next('/login');
     } else if (isAuthenticated && (to.name === 'login' || to.name === 'register')) {

@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-black p-4">
     <header class="terminal-box mb-6 text-center">
-      <h1 class="text-2xl">> Panel Administrador<span class="cursor-blink">|</span></h1>
+      <h1 class="text-2xl">> Panel Admin<span class="cursor-blink">|</span></h1>
     </header>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -54,10 +54,10 @@ export default {
     },
 
     created() {
-        this.verifyAdminAccess().catch(() => {
-            window.location.href = '/tickets';
-        });
-        this.fetchUsers();
+        const userRole = localStorage.getItem('userRole');
+        if(userRole !== 'ROLE_ADMIN'){
+            this.$router.push('/tickets');
+        }
     },
     methods: {
         async verifyAdminAccess() {

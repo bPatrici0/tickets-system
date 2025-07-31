@@ -1,9 +1,7 @@
 <template>
     <div class="min-h-screen bg-black p-4">
         <header class="terminal-box mb-6 text-center">
-            <h1 class="text-2x1">
-                > Mis Tickets<span class="cursor-blink">|</span>
-            </h1>
+            <h1 class="text-2x1">> Mis Tickets<span class="cursor-blink">|</span></h1>
             <nav class="mt-4">
                 <button
                     @click="handleLogout"
@@ -25,6 +23,12 @@
 <script>
 
 export default {
+    created() {
+        const userRole = localStorage.getItem('userRole');
+        if (userRole === 'ROLE_ADMIN') {
+            this.$router.push('/admin');
+        }
+    },
     methods: {
         handleLogout() {
             localStorage.clear();

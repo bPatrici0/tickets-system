@@ -76,10 +76,14 @@ export default {
         this.loading = true;
         try {
             // Conexión backend
-            const response = await api.post('api/auth/login', {
+            const response = await api.post('/auth/login', {
                 email: this.email.trim(),
                 password: this.password
             }, {
+                auth: {
+                    username: this.email.trim(),
+                    password: this.password
+                },
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -90,12 +94,17 @@ export default {
                 localStorage.setItem('userRole', response.data.rol);
             }
 
-            //redirigir segun usuario
+            //redirigir segun rol
             if (response.data.rol === "ROLE_ADMIN"){
-                this.$router.push('/admin-panel');
+                this.$router.push('/admin');
             } else {
                 this.$router.push('/tickets');
             }
+        } catch (error) {
+            console.error("Error: ", error.response);
+            alert(error.response?.data || "Error de conexión");
+        } finally {
+            this.loading = false;
         }
     }
   }

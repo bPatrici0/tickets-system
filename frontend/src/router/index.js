@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import LoginView from '../views/LoginView.vue';
 import RegisterView from '../views/RegisterView.vue';
+import AdminPanel from '../views/AdminPanel.vue';
 import UserTickets from '../views/UserTickets.vue';
 
 const routes = [
@@ -27,12 +28,23 @@ const routes = [
         }
     },
     {
+        path: '/admin',
+        name: 'admin',
+        component: AdminPanel,
+        meta: {
+            title: '>Admin Panel',
+            requiresAuth: true,
+            requiredRole: 'ROLE_ADMIN'
+        }
+    },
+    {
         path: '/tickets',
         name: 'tickets',
         component: UserTickets,
         meta: {
             title: '> Tickets',
-            requiresAuth: true
+            requiresAuth: true,
+            requiredRole: 'ROLE_USER'
         }
     }
 ];
@@ -43,14 +55,16 @@ const router = createRouter({
 });
 
 router.beforeEach ((to, from, next) => {
-    const isAuthenticated = localStorage.getItem('authToken');
+    const isAuthenticated = localStorage.getItem('userEmail');
+    const userRole = localStorage.getItem('userRole');
 
     if (to.meta.requiresAuth && !isAuthenticated) {
         next('/login');
     } else if (isAuthenticated && (to.name === 'login' || to.name === 'register')) {
-        next('/tickets'); //redirige al dashboard
-    }
-    else {
+        next(userRole === 'ROLE_ADMIN' ? '/admin' : '/tickets'); //redirige al panel admin
+    } else if (to.meta.requiredRole && userRole !== to.meta.requiredRole) {
+        next(userRole === 'ROLE_ADMIN' ? 'admin' : '/tickets');
+    } else {
         next();
     }
 });

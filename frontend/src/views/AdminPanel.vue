@@ -1,13 +1,13 @@
 <template>
   <div class="min-h-screen bg-black p-4">
     <header class="terminal-box mb-6 text-center">
-      <h1 class="text-2xl">> Panel Admin_<span class="cursor-blink">|</span></h1>
+      <h1 class="text-2xl">> Panel Administrador<span class="cursor-blink">|</span></h1>
     </header>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <!-- Sección Usuarios -->
       <div class="terminal-box p-4">
-        <h2 class="text-xl mb-4">> Usuarios_<span class="cursor-blink">|</span></h2>
+        <h2 class="text-xl mb-4">> Usuarios<span class="cursor-blink">|</span></h2>
         <div v-for="user in users" :key="user.id" class="mb-4 p-2 border-b border-green-500">
           <div class="flex justify-between items-center">
             <span>{{ user.email }}</span>
@@ -28,6 +28,16 @@
       <div class="terminal-box p-4">
         <h2 class="text-xl mb-4">> Tickets_<span class="cursor-blink">|</span></h2>
         <!-- Listado de tickets aquí -->
+      </div>
+      <div>
+        <nav class="mt-4">
+            <button
+                @click="handleLogout"
+                class="btn-matrix"
+            >
+                > Cerrar sesión
+            </button>
+        </nav>
       </div>
     </div>
   </div>
@@ -74,6 +84,11 @@ export default {
             } catch (error) {
                 console.error("Error updating role: ", error);
             }
+        },
+
+        handleLogout() {
+            localStorage.clear();
+            this.$router.push('/login');
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.ticket.controller;
 
 import com.ticket.dto.LoginDTO;
+import com.ticket.dto.LoginResponseDTO;
 import com.ticket.dto.RegistroDTO;
 import com.ticket.entity.Usuario;
 import com.ticket.entity.Rol;
@@ -42,7 +43,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<?> login(@RequestBody LoginDTO loginDTO) {
         try {
             //autenticar
             Authentication authentication = authenticationManager.authenticate(
@@ -57,7 +58,7 @@ public class AuthController {
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado!..."));
 
             //respuesta con datos necesarios
-            return ResponseEntity.ok(new LoginResponseDTO(;
+            return ResponseEntity.ok(new LoginResponseDTO(
                 usuario.getEmail(),
                 usuario.getRol().name()
             ));

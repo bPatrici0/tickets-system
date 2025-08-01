@@ -9,5 +9,4 @@ public class TicketDTO {
     private String titulo;
     private String descripcion;
     private String estado;
-    private String emailUsuario;
 }

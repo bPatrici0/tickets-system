@@ -4,10 +4,13 @@ import com.ticket.dto.TicketDTO;
 import com.ticket.entity.Ticket;
 import com.ticket.entity.Usuario;
 import com.ticket.exception.NotFoundException;
+import com.ticket.exception.BadRequestException;
 import com.ticket.repository.TicketRepository;
 import com.ticket.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
@@ -19,48 +22,77 @@ public class TicketService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+    @Transactional
     public Ticket crearTicket(TicketDTO ticketDTO) {
-        Usuario usuario = usuarioRepository.findByEmail(ticketDTO.getEmailUsuario())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        if (ticketDTO.getTitulo() == null || ticketDTO.getTitulo().isEmpty()) {
+            throw new BadRequestException("El titulo del ticket es requerido");
+        }
+
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
 
         Ticket ticket = new Ticket();
         ticket.setTitulo(ticketDTO.getTitulo());
         ticket.setDescripcion(ticketDTO.getDescripcion());
-        ticket.setEstado(Ticket.EstadoTicket.valueOf(ticketDTO.getEstado()));
+
+        try {
+            ticket.setEstado(ticketDTO.getEstado() != null ?
+                    Ticket.EstadoTicket.valueOf(ticketDTO.getEstado()) :
+                    Ticket.EstadoTicket.ABIERTO);
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException("Estado de ticket inválido");
+        }
         ticket.setCreadoPor(usuario);
 
         return ticketRepository.save(ticket);
     }
 
+    @Transactional(readOnly = true)
     public List<Ticket> obtenerTodosLosTickets() {
         return ticketRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public Ticket obtenerTicketPorId(Long id) {
         return ticketRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Ticket no encontrado"));
+                .orElseThrow(() -> new NotFoundException("Ticket no encontrado con id: " + id));
     }
 
+    @Transactional(readOnly = true)
     public List<Ticket> obtenerTicketsPorUsuario(String email) {
-        Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
-        return ticketRepository.findByCreadoPor(usuario);
+        if (!usuarioRepository.existsByEmail(email)){
+            throw new NotFoundException("Usuario no encontrado con email: " + email);
+        }
+        return ticketRepository.findByCreadoPorEmail(email);
     }
 
+    @Transactional
     public Ticket actualizarTicket(Long id, TicketDTO ticketDTO) {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Ticket no encontrado"));
 
-        ticket.setTitulo(ticketDTO.getTitulo());
-        ticket.setDescripcion(ticketDTO.getDescripcion());
-        ticket.setEstado(Ticket.EstadoTicket.valueOf(ticketDTO.getEstado()));
+        if (ticketDTO.getTitulo() != null){
+            ticket.setTitulo(ticketDTO.getTitulo());
+        }
+        if (ticketDTO.getDescripcion() != null) {
+            ticket.setDescripcion(ticketDTO.getDescripcion());
+        }
+        if (ticketDTO.getEstado() != null) {
+            try {
+                ticket.setEstado(Ticket.EstadoTicket.valueOf(ticketDTO.getEstado()));
+            } catch (IllegalArgumentException e) {
+                throw new BadRequestException("Estado de ticket inválido!...");
+            }
+        }
 
         return ticketRepository.save(ticket);
     }
 
+    @Transactional
     public void eliminarTicket(Long id) {
         if (!ticketRepository.existsById(id)) {
-            throw new NotFoundException("Ticket no encontrado");
+            throw new NotFoundException("Ticket no encontrado con id: " + id);
         }
         ticketRepository.deleteById(id);
     }

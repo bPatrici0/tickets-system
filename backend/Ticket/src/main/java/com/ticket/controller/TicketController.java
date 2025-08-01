@@ -6,6 +6,7 @@ import com.ticket.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
@@ -17,6 +18,7 @@ public class TicketController {
     private TicketService ticketService;
 
     @PostMapping
+    @PreAuthorize("isAuthenticated()") //solo usuarios logueados pueden crear tickets
     public ResponseEntity<Ticket> crearTicket(@RequestBody TicketDTO ticketDTO) {
         return ResponseEntity.ok(ticketService.crearTicket(ticketDTO));
     }

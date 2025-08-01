@@ -10,4 +10,5 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     List<Ticket> findByCreadoPor(Usuario usuario);
     List<Ticket> findByEstado(EstadoTicket estado);
     List<Ticket> findByCreadoPorEmailAndEstado(String email, EstadoTicket estado);
+    List<Ticket> findByCreadoPorEmail(String email);
 }

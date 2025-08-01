@@ -83,28 +83,52 @@ export default {
                 auth: {
                     username: this.email.trim(),
                     password: this.password
-                },
-                headers: {
-                    'Content-Type': 'application/json'
                 }
             });
 
             if (response.data) {
-                localStorage.setItem('userEmail', response.data.email);
+                localStorage.setItem('userEmail', this.email.trim());
+                localStorage.setItem('userPassword', this.password);
                 localStorage.setItem('userRole', response.data.rol);
-            }
 
-            //redirigir segun rol
-            if (response.data.rol === "ROLE_ADMIN"){
-                this.$router.push('/admin');
-            } else {
-                this.$router.push('/tickets');
+                //redirigir segun rol
+                if (response.data.rol === "ROLE_ADMIN"){
+                    this.$router.push('/admin');
+                } else {
+                    this.$router.push('/tickets');
+                }
             }
         } catch (error) {
             console.error("Error: ", error.response);
             alert(error.response?.data || "Error de conexión");
         } finally {
             this.loading = false;
+        }
+    },
+    async submitTicket() {
+        this.isSubmitting = true;
+        try {
+            const response = await api.post('/tickets', {
+                title: this.newTicket.subject,
+                description: this.newTicket.description,
+                status: 'ABIERTO'
+            });
+
+            if(response.status === 201) {
+                alert('Ticket creado exitosamente!...');
+                this.newTicket = { subject: '', description: '' };
+                //para actulizar lista de tickets
+            }
+        }catch (error) {
+            console.error("Error completo: ", error);
+            if (error.response?.status === 401) {
+                alert("Tu sesión ha expirado. Por favor inicia sesión nuevamente!...");
+                this.$router.push('/login');
+            } else {
+                alert(error.response?.data?.message || "Error al crear ticket!...");
+            }
+        } finally {
+            this.isSubmitting = false;
         }
     }
   }

@@ -22,3 +22,26 @@ body {
 .btn-matrix {
     @apply bg-green-500 text-black px-4 py-2 rounded hover:bg-green-400 transition-colors;
 }
+
+/*estilo para el menu descplegable*/
+.user-menu {
+    transition: all 0.3s ease;
+    transform-origin: top right;
+}
+/*efecto al abrir menu*/
+.menu-enter-active, .menu-leave-active {
+    transition: opacity 0.2s, transform 0.2s;
+}
+.menu-enter-from, .menu-leave-to {
+    opacity: 0;
+    transform: scale(1.95);
+}
+
+/*mejoras para los input*/
+input, textarea {
+    transition: border-color 0.2s ease;
+}
+input:focus, textarea:focus {
+    border-color: #00FF41;
+    box-shadow: 0 0 0 1px #00FF41;
+}

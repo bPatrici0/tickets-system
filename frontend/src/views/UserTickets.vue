@@ -163,9 +163,17 @@ export default {
                 titulo: '',
                 descripcion: ''
             },
+            tickets:[],
             isSubmitting: false,
             showUserMenu: false,
             userName: localStorage.getItem('userEmail') || 'Usuario'
+        }
+    },
+    computed: {
+        sortedTickets() {
+            return [...this.tickets].sort((a, b) =>
+                new Date(b.fechaCreacion) - new Date(a.fechaCreacion)
+            )
         }
     },
     created() {
@@ -224,6 +232,28 @@ export default {
 
             if (error.response?.status === 401) {
                 this.handleLogout();
+            }
+        },
+        async fetchTickets() {
+            try {
+                const email.localStorage.getItem('userEmail')
+                const response = await api.get('/tickets/usuario/${email}')
+                this.tickets = response.data
+            } catch (error) {
+                console.error("Error obteniendo tickets: ", error)
+            }
+        },
+        formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString('es-MX', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+            })
+        },
+        statusClass(estado) {
+            return {
+                'ABIERTO': 'bg-yellow-500/20 text-yellow-400',
+                'EN_PROGRESO': 'bg-blue-500/20 text-blue-400',
             }
         }
     }

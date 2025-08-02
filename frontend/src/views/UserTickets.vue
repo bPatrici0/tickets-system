@@ -1,7 +1,7 @@
 <template>
     <div class="min-h-screen bg-black p-4">
         <header class="terminal-box mb-5">
-            <div class="flex justify-between items-center">
+            <div class="div1 flex justify-between items-center">
                 <h1 class="text-4xl">
                     > Mis Tickets<span class="cursor-blink">|</span>
                 </h1>
@@ -42,14 +42,12 @@
         </header>
 
         <!--contenido-->
-        <main class="terminal-box max-w-4xl mx-auto">
-            <h2 class="text-x1 mb-4"> {{ $route.meta.title }}<span class="cursor-blink">|</span></h2>
-
+        <main class="flex flex-col md:flex-row gap-6">
             <!--formulario-->
-            <div class="mb-8 p-4 border border-green-500 rounded-lg">
-                <h3 class="text-1g mb-3">> Crear Nuevo Ticket</h3>
+            <div class="terminal-box md:w-1/3">
+                <h3 class="text-lg mb-3">> Crear Ticket</h3>
                 <form @submit.prevent="submitTicket">
-                    <div class="mb-4">
+                    <div class="mb-8">
                         <label class="block text-green-400 mb-1">> Asunto: </label>
                         <input
                             v-model="newTicket.titulo"
@@ -76,6 +74,7 @@
                         type="submit"
                         class="btn-matrix"
                         :disabled="isSubmitting"
+                        aria-label="Enviar ticket"
                     >
                         <span v-if="!isSubmitting">> Enviar ticket</span>
                         <span v-else>> Enviando...</span>
@@ -83,9 +82,72 @@
                 </form>
             </div>
 
-            <div>
-                <h3 class="text-lg mb-3">> Tus Tickets</h3>
+            <div class="terminal-box md:w-2/3">
+                <h3 class="text-lg mb-3">> Tus Tickets <span class="text-green-400"></span></h3>
+
                 <!--lista de tickets-->
+                <div class="space-y-3 max-h-[calc(100vh-200px)] overflow-y-auto pr-2">
+                    <table class="w-full border-green-500">
+                        <thead>
+                            <tr class="bg-black text-green-500 border-b border-green-500">
+                                <th class="p-2 text-left">> ID</th>
+                                <th class="p-2 text-left">> Asunto</th>
+                                <th class="p-2 text-left">> Estado</th>
+                                <th class="p-2 text-left">> Fecha</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr
+                                v-for="ticket in sortedTickets"
+                                :key="ticket.id"
+                                class="border-b border-green-500 hover:bg-green-900/10"
+                            >
+                                <td class="p-2 text-green-400">#{{ ticket.id }}</td>
+                                <td class="p-2 text-green-300">{{ ticket.titulo }}</td>
+                                <td class="p-2">
+                                    <span class="px-2 py-1 rounded text-xs"
+                                        :class="statusClass(ticket.estado)">
+                                        {{ ticket.estado }}
+                                    </span>
+                                </td>
+                                <td class="p-2 text-green-400 text-sm">
+                                    {{ formatDate(ticket.fechaCreacion) }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div
+                        v-for="ticket in sortedTickets"
+                        :key="ticket.id"
+                        class="border border-green-500 p-3 hover:bg-green-900/10 transition-colors"
+                    >
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="text-green-400 font-mono">#{{ ticket.id }} > {{ ticket.titulo }}</h4>
+                                <p class="text-green-300 text-sm mt-1">{{ ticket.descripcion }}</p>
+                            </div>
+                            <span class="text-xs px-2 py-1 rounded"
+                                :class="{
+                                    'bg-yellow-500/20 text-yellow-400': ticket.estado === 'ABIERTO',
+                                    'bg-blue-500/20 text-blue-400': ticket.estado === 'EN_PROGRESO',
+                                    'bg-green-500/20 text-green-400': ticket.estado === 'RESUELTO'
+                                }">
+                                {{ ticket.estado }}
+                            </span>
+                        </div>
+                        <div class="flex justify-between items-center mt-2 text-xs text-green-500">
+                            <span>Creado: {{ formatDate(ticket.fechaCreacion) }}</span>
+                            <button
+                                @click="verTicket(ticket.id)"
+                                class="text-green-400 hover:text-green-300"
+                            >
+                                > Ver detalles
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
@@ -122,11 +184,28 @@ export default {
         async submitTicket() {
             this.isSubmitting = true;
             try {
-                const { data } = await api.post('/tickets', this.newTicket);
-                this.showSuccess('Ticket creado exitosamente');
-                this.resetForm();
+                const response = await api.post('/tickets', {
+                    titulo: this.newTicket.titulo,
+                    descripcion: this.newTicket.descripcion
+                });
+
+                if (response.status === 200 || response.status === 201) {
+                    alert('Ticket creado exitosamente!...');
+                    this.newTicket = { titulo: '', descripcion: '' };
+                }
             } catch (error) {
-                this.handleError(error);
+                console.error("Error completo: ", error);
+                let errorMsg = "Error al crear ticket!...";
+
+                if (error.response) {
+                    if(error.response.status === 401) {
+                        errorMsg = "No autorizado - por favor inicia sesión nuevamente";
+                        this.$router.push('/login');
+                    } else if (error.response.data?.message) {
+                        errorMsg = error.response.data.message;
+                    }
+                }
+                alert(errorMsg);
             } finally {
                 this.isSubmitting = false;
             }

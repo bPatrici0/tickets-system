@@ -45,3 +45,30 @@ input:focus, textarea:focus {
     border-color: #00FF41;
     box-shadow: 0 0 0 1px #00FF41;
 }
+
+/*estilos div1, 2 y 3
+.parent {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.div1 {
+    grid-column: span 2 / span 2;
+}
+
+.div2 {
+    grid-row: span 2 / span 2;
+    grid-row-start: 2;
+}
+
+.div3 {
+    grid-row-start: 2;
+}
+
+.div4 {
+    grid-column-start: 2;
+    grid-row-start: 3;
+}
+*/

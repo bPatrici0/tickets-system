@@ -104,7 +104,7 @@
                                 :key="ticket.id"
                                 class="border-b border-green-500 hover:bg-green-900/10"
                             >
-                                <td class="p-2 text-green-400">#{{ ticket.id }}</td>
+                                <td class="p-2 text-green-400"># {{ ticket.id }}</td>
                                 <td class="p-2 text-green-300">{{ ticket.titulo }}</td>
                                 <td class="p-2">
                                     <span class="px-2 py-1 rounded text-xs"
@@ -134,7 +134,7 @@
                     >
                         <div class="flex justify-between items-start">
                             <div>
-                                <h4 class="text-green-400 font-mono">#{{ ticket.id }} > {{ ticket.titulo }}</h4>
+                                <h4 class="text-green-400 font-mono"># {{ ticket.id }} > {{ ticket.titulo }}</h4>
                                 <p class="text-green-300 text-sm mt-1">{{ ticket.descripcion }}</p>
                             </div>
                             <span class="text-xs px-2 py-1 rounded"
@@ -241,9 +241,9 @@ export default {
         async fetchTickets() {
             try {
                 const email = localStorage.getItem('userEmail');
-                console.log('Email usado para fetch: ', email);
+                console.log('Email obtenido: ', email);
 
-                const response = await api.get('/tickets/usuario/${email}');
+                const response = await api.get(`/tickets/usuario/${email}`);
                 console.log('Respuesta completa: ', response);
 
                 this.tickets = response.data;

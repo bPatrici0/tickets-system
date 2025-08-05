@@ -1,7 +1,7 @@
 <template>
     <div class="min-h-screen bg-black p-4">
         <header class="terminal-box mb-5">
-            <div class="div1 flex justify-between items-center">
+            <div class="flex justify-between items-center">
                 <h1 class="text-4xl">
                     > Mis Tickets<span class="cursor-blink">|</span>
                 </h1>
@@ -247,9 +247,12 @@ export default {
                 console.log('Respuesta completa: ', response);
 
                 this.tickets = response.data;
-                console.log('Tickets asignados: ', this.tickets);
+                console.log('Tickets recibidos: ', this.tickets);
             } catch (error) {
-                console.error("Error obteniendo tickets: ", error);
+                console.error("Error obteniendo tickets: ", {
+                    error: error.message,
+                    response: error.response?.data
+                });
                 console.error("Error response: ", error.response);
             }
         },

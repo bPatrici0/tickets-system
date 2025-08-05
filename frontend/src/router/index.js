@@ -3,6 +3,7 @@ import LoginView from '../views/LoginView.vue';
 import RegisterView from '../views/RegisterView.vue';
 import AdminPanel from '../views/AdminPanel.vue';
 import UserTickets from '../views/UserTickets.vue';
+import TicketView from '../views/TicketView.vue';
 
 const routes = [
     {
@@ -46,7 +47,17 @@ const routes = [
             requiresAuth: true,
             requiredRole: 'ROLE_USER'
         }
-    }
+    },
+    {
+        path: '/tickets/:id',
+        name: 'TicketView',
+        component: TicketView,
+        meta: {
+            title: '> Detalle tickets',
+            requiresAuth: true,
+            requiredRole: 'ROLE_USER'
+        }
+    },
 ];
 
 const router = createRouter({

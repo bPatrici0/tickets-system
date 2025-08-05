@@ -82,10 +82,11 @@
                 </form>
             </div>
 
+            <!--lista de tickets-->
             <div class="terminal-box md:w-2/3">
-                <h3 class="text-lg mb-3">> Tus Tickets <span class="text-green-400"></span></h3>
+                <h3 class="text-lg mb-3">> Tus Tickets <span class="text-green-400">({{ tickets.length }})</span></h3>
 
-                <!--lista de tickets-->
+                <!--tabla de tickets-->
                 <div class="space-y-3 max-h-[calc(100vh-200px)] overflow-y-auto pr-2">
                     <table class="w-full border-green-500">
                         <thead>
@@ -94,9 +95,9 @@
                                 <th class="p-2 text-left">> Asunto</th>
                                 <th class="p-2 text-left">> Estado</th>
                                 <th class="p-2 text-left">> Fecha</th>
+                                <th class="p-2 text-left">> Acciones</th>
                             </tr>
                         </thead>
-
                         <tbody>
                             <tr
                                 v-for="ticket in sortedTickets"
@@ -113,6 +114,14 @@
                                 </td>
                                 <td class="p-2 text-green-400 text-sm">
                                     {{ formatDate(ticket.fechaCreacion) }}
+                                </td>
+                                <td class="p-2">
+                                    <button
+                                        @click="verTicket(ticket.id)"
+                                        class="text-green-400 hover:text-green-300 text-sm"
+                                    >
+                                        > Ver
+                                    </button>
                                 </td>
                             </tr>
                         </tbody>
@@ -172,11 +181,11 @@ export default {
     computed: {
         sortedTickets() {
             return [...this.tickets].sort((a, b) =>
-                new Date(b.fechaCreacion) - new Date(a.fechaCreacion)
-            )
+                new Date(b.fechaCreacion) - new Date(a.fechaCreacion))
         }
     },
     created() {
+        this.fetchTickets();
         if (localStorage.getItem('userRole') === 'ROLE_ADMIN') {
             this.$router.push('/admin');
         }
@@ -200,30 +209,25 @@ export default {
                 if (response.status === 200 || response.status === 201) {
                     alert('Ticket creado exitosamente!...');
                     this.newTicket = { titulo: '', descripcion: '' };
+                    this.fetchTickets();
                 }
             } catch (error) {
-                console.error("Error completo: ", error);
+                console.error("Error al crear ticket: ", error);
                 let errorMsg = "Error al crear ticket!...";
 
                 if (error.response) {
                     if(error.response.status === 401) {
                         errorMsg = "No autorizado - por favor inicia sesión nuevamente";
-                        this.$router.push('/login');
+                        this.handleLogout();
                     } else if (error.response.data?.message) {
                         errorMsg = error.response.data.message;
                     }
                 }
+
                 alert(errorMsg);
             } finally {
                 this.isSubmitting = false;
             }
-        },
-        showSuccess(message) {
-            alert(message);
-            //usar notificaciones como toast
-        },
-        resetForm() {
-            this.newTicket = { titulo: '', descripcion: '' };
         },
         handleError(error) {
             console.error("Error al crear ticket: ", error);
@@ -236,25 +240,41 @@ export default {
         },
         async fetchTickets() {
             try {
-                const email.localStorage.getItem('userEmail')
-                const response = await api.get('/tickets/usuario/${email}')
-                this.tickets = response.data
+                const email = localStorage.getItem('userEmail');
+                console.log('Email usado para fetch: ', email);
+
+                const response = await api.get('/tickets/usuario/${email}');
+                console.log('Respuesta completa: ', response);
+
+                this.tickets = response.data;
+                console.log('Tickets asignados: ', this.tickets);
             } catch (error) {
-                console.error("Error obteniendo tickets: ", error)
+                console.error("Error obteniendo tickets: ", error);
+                console.error("Error response: ", error.response);
             }
         },
+
         formatDate(dateString) {
-            return new Date(dateString).toLocaleDateString('es-MX', {
+            const options = {
                 day: '2-digit',
                 month: 'short',
-                year: 'numeric'
-            })
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            return new Date(dateString).toLocaleDateString('es-MX', options);
         },
         statusClass(estado) {
-            return {
+            const statusMap = {
                 'ABIERTO': 'bg-yellow-500/20 text-yellow-400',
                 'EN_PROGRESO': 'bg-blue-500/20 text-blue-400',
-            }
+                'RESUELTO': 'bg-green-500/20 text-green-400'
+            };
+            return statusMap[estado] || 'bg-gray-500/20 text-gray-400';
+        },
+        verTicket(id) {
+            console.log('Ver ticket con ID: ', id);
+            this.$router.push('/tickets/${id}');
         }
     }
 }

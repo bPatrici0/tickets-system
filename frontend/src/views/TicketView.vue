@@ -147,7 +147,7 @@ export default {
         },
 
         statusClass(estado) {
-            const estatusMap = {
+            const statusMap = {
                 'ABIERTO': 'bg-yellow-500/20 text-yellow-400',
                 'EN_PROGRESO': 'bg-blue-500/20 text-blue-400',
                 'RESUELTO': 'bg-green-500/20 text-green-400'

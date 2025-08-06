@@ -53,8 +53,9 @@ public class TicketController {
 
     @PostMapping("/{id}/comentarios")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Ticket> agregarComentario(@PathVariable Long id, @RequestBody ComentarioDTO comentarioDTO) {
-        return ResponseEntity.ok(ticketService.agregarComentario(id, comentarioDTO));
+    public ResponseEntity<Ticket> agregarComentario(@PathVariable Long id, @RequestBody ComentarioDTO comentarioDTO, Authentication authentication) {
+        String username = authentication.getName();
+        return ResponseEntity.ok(ticketService.agregarComentario(id, comentarioDTO, username));
     }
 
     @PutMapping("/{id}/estado")

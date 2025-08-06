@@ -1,7 +1,10 @@
 package com.ticket.service;
 
 import com.ticket.dto.TicketDTO;
+import com.ticket.dto.ComentarioDTO;
+import java.time.LocalDateTime;
 import com.ticket.entity.Ticket;
+import com.ticket.entity.Comentario;
 import com.ticket.entity.Usuario;
 import com.ticket.exception.NotFoundException;
 import com.ticket.exception.BadRequestException;
@@ -14,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@Transactional
 public class TicketService {
 
     @Autowired
@@ -22,7 +26,6 @@ public class TicketService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    @Transactional
     public Ticket crearTicket(TicketDTO ticketDTO) {
         if (ticketDTO.getTitulo() == null || ticketDTO.getTitulo().isEmpty()) {
             throw new BadRequestException("El titulo del ticket es requerido");
@@ -67,7 +70,6 @@ public class TicketService {
         return ticketRepository.findByCreadoPorEmail(email);
     }
 
-    @Transactional
     public Ticket actualizarTicket(Long id, TicketDTO ticketDTO) {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Ticket no encontrado"));
@@ -89,11 +91,33 @@ public class TicketService {
         return ticketRepository.save(ticket);
     }
 
-    @Transactional
     public void eliminarTicket(Long id) {
         if (!ticketRepository.existsById(id)) {
             throw new NotFoundException("Ticket no encontrado con id: " + id);
         }
         ticketRepository.deleteById(id);
+    }
+
+    public Ticket agregarComentario(Long ticketId, ComentarioDTO comentarioDTO) {
+        Ticket ticket = obtenerTicketPorId(ticketId);
+
+        Comentario comentario = new Comentario();
+        comentario.setContenido(comentarioDTO.getContenido());
+        comentario.setAutor(comentarioDTO.getAutor());
+        comentario.setFechaCreacion(LocalDateTime.now());
+        comentario.setTicket(ticket);
+
+        ticket.agregarComentario(comentario);
+        return ticketRepository.save(ticket);
+    }
+
+    public Ticket cambiarEstado(Long ticketId, String estado){
+        Ticket ticket = obtenerTicketPorId(ticketId);
+        try {
+            ticket.setEstado(Ticket.EstadoTicket.valueOf(estado));
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException("Estado de ticket inválido!...");
+        }
+        return ticketRepository.save(ticket);
     }
 }

@@ -18,12 +18,8 @@ public class Comentario {
     @JoinColumn(name = "ticket_id")
     private Ticket ticket;
 
-    public Comentario(Long id, String contenido, String autor, LocalDateTime fechaCreacion, Ticket ticket) {
-        this.id = id;
-        this.contenido = contenido;
-        this.autor = autor;
-        this.fechaCreacion = fechaCreacion;
-        this.ticket = ticket;
+    public Comentario() {
+        this.fechaCreacion = LocalDateTime.now();
     }
 
     public Long getId() {

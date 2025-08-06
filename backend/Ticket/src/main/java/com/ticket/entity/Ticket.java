@@ -2,6 +2,7 @@ package com.ticket.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 public class Ticket {
@@ -25,6 +26,9 @@ public class Ticket {
     public enum EstadoTicket {
         ABIERTO, EN_PROGRESO, CERRADO
     }
+
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL)
+    private List<Comentario> comentarios;
 
     public Long getId() {
         return id;
@@ -72,5 +76,18 @@ public class Ticket {
 
     public void setFechaCreacion(LocalDateTime fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
+    }
+
+    public List<Comentario> getComentarios() {
+        return comentarios;
+    }
+
+    public void setComentarios(List<Comentario> comentarios) {
+        this.comentarios = comentarios;
+    }
+
+    public void agregarComentario(Comentario comentario) {
+        comentarios.add(comentario);
+        comentario.setTicket(this);
     }
 }

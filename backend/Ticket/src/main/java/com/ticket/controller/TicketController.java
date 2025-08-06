@@ -1,6 +1,8 @@
 package com.ticket.controller;
 
 import com.ticket.dto.TicketDTO;
+import com.ticket.dto.ComentarioDTO;
+import com.ticket.dto.EstadoDTO;
 import com.ticket.entity.Ticket;
 import com.ticket.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,5 +49,17 @@ public class TicketController {
     public ResponseEntity<Void> eliminarTicket(@PathVariable Long id) {
         ticketService.eliminarTicket(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/comentarios")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Ticket> agregarComentario(@PathVariable Long id, @RequestBody ComentarioDTO comentarioDTO) {
+        return ResponseEntity.ok(ticketService.agregarComentario(id, comentarioDTO));
+    }
+
+    @PutMapping("/{id}/estado")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Ticket> cambiarEstado(@PathVariable Long id, @RequestBody EstadoDTO estadoDTO) {
+        return ResponseEntity.ok(ticketService.cambiarEstado(id, estadoDTO.getEstado()));
     }
 }

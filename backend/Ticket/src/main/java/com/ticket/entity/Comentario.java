@@ -1,0 +1,68 @@
+package com.ticket.entity;
+
+import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Entity
+public class Comentario {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String contenido;
+    private String autor;
+    private LocalDateTime fechaCreacion;
+
+    @ManyToOne
+    @JoinColumn(name = "ticket_id")
+    private Ticket ticket;
+
+    public Comentario(Long id, String contenido, String autor, LocalDateTime fechaCreacion, Ticket ticket) {
+        this.id = id;
+        this.contenido = contenido;
+        this.autor = autor;
+        this.fechaCreacion = fechaCreacion;
+        this.ticket = ticket;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getContenido() {
+        return contenido;
+    }
+
+    public void setContenido(String contenido) {
+        this.contenido = contenido;
+    }
+
+    public String getAutor() {
+        return autor;
+    }
+
+    public void setAutor(String autor) {
+        this.autor = autor;
+    }
+
+    public LocalDateTime getFechaCreacion() {
+        return fechaCreacion;
+    }
+
+    public void setFechaCreacion(LocalDateTime fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
+
+    public Ticket getTicket() {
+        return ticket;
+    }
+
+    public void setTicket(Ticket ticket) {
+        this.ticket = ticket;
+    }
+}

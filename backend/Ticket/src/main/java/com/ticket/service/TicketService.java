@@ -103,11 +103,11 @@ public class TicketService {
 
         Comentario comentario = new Comentario();
         comentario.setContenido(comentarioDTO.getContenido());
-        comentario.setAutor(comentarioDTO.getAutor());
+        comentario.setAutor(username);
         comentario.setFechaCreacion(LocalDateTime.now());
         comentario.setTicket(ticket);
 
-        ticket.agregarComentario(comentario);
+        ticket.getComentarios().add(comentario);
         return ticketRepository.save(ticket);
     }
 

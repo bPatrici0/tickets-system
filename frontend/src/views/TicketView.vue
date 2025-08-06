@@ -32,7 +32,7 @@
                     </div>
                     <div>
                         <span class="text-green-500">> Por: </span>
-                        <span class="ml-2">{{ ticket.usuario }}</span>
+                        <span class="ml-2">{{ userName }}</span>
                     </div>
                 </div>
             </div>

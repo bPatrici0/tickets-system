@@ -277,7 +277,7 @@ export default {
         },
         verTicket(id) {
             console.log('Ver ticket con ID: ', id);
-            this.$router.push('/tickets/${id}');
+            this.$router.push(`/tickets/${id}`);
         }
     }
 }

@@ -294,5 +294,8 @@ export default {
 button:hover {
     transition: color 0.2s ease;
 }
+.cursor-blink {
+    animation: blink 1s step-end infinite;
+}
 
 </style>

@@ -3,8 +3,10 @@ import router from '@/router';
 
 const api = axios.create({
     baseURL: 'http://localhost:8081/api',
+    withCredentials: true,
     headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': 'Basic ' + btoa(localStorage.getItem('userEmail') + ':' + localStorage.getItem('userPassword'))
     }
 });
 

@@ -143,7 +143,12 @@ export default {
         async agregarComentario() {
             this.isSubmitting = true;
             try {
-                const response = await api.post(`/tickets/${this.ticket.id}/comentarios`, {
+                if (this.ticket.estado !== 'ABIERTO'){
+                    alert("Solo puedes agregar comentarios a tickets ABIERTOS");
+                    return;
+                }
+
+                const response = await api.post(`/api/tickets/${this.ticket.id}/comentarios`, {
                     contenido: this.nuevoComentario
                 });
 
@@ -153,7 +158,13 @@ export default {
                 }
             } catch (error) {
                 console.error("Error agregando comentario: ", error);
-                alert("Error al agregar comentario");
+                let errorMsg = "Error al agregar comentario";
+
+                if(error.repsonse && error.response.data) {
+                    errorMsg = error.response.data;
+                }
+
+                alert(errorMsg);
             } finally {
                 this.isSubmitting = false;
             }

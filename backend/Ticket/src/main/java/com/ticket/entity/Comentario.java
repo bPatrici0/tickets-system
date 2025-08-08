@@ -3,6 +3,7 @@ package com.ticket.entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 public class Comentario {
@@ -14,6 +15,7 @@ public class Comentario {
     private String autor;
     private LocalDateTime fechaCreacion;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "ticket_id")
     private Ticket ticket;

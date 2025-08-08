@@ -98,14 +98,17 @@ public class TicketService {
         ticketRepository.deleteById(id);
     }
 
-    public Ticket agregarComentario(Long ticketId, ComentarioDTO comentarioDTO) {
+    public Ticket agregarComentario(Long ticketId, ComentarioDTO comentarioDTO, String autor) {
         Ticket ticket = obtenerTicketPorId(ticketId);
+
+        if (!ticket.getEstado().equals("ABIERTO")) {
+            throw new BadRequestException("No se puede agregar comentarios a un ticket cerrado");
+        }
 
         Comentario comentario = new Comentario();
         comentario.setContenido(comentarioDTO.getContenido());
-        comentario.setAutor(username);
+        comentario.setAutor(autor);
         comentario.setFechaCreacion(LocalDateTime.now());
-        comentario.setTicket(ticket);
 
         ticket.getComentarios().add(comentario);
         return ticketRepository.save(ticket);

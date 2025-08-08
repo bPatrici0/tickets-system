@@ -5,11 +5,14 @@ import com.ticket.dto.ComentarioDTO;
 import com.ticket.dto.EstadoDTO;
 import com.ticket.entity.Ticket;
 import com.ticket.service.TicketService;
+import com.ticket.exception.NotFoundException;
+import org.springframework.http.HttpStatus;
+import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.prepost.PreAuthorize;
-
+import org.springframework.security.core.Authentication;
 import java.util.List;
 
 @RestController
@@ -53,9 +56,22 @@ public class TicketController {
 
     @PostMapping("/{id}/comentarios")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Ticket> agregarComentario(@PathVariable Long id, @RequestBody ComentarioDTO comentarioDTO, Authentication authentication) {
-        String username = authentication.getName();
-        return ResponseEntity.ok(ticketService.agregarComentario(id, comentarioDTO, username));
+    public ResponseEntity<?> agregarComentario(@PathVariable Long id, @RequestBody ComentarioDTO comentarioDTO, Authentication authentication) {
+        try {
+            Ticket ticket = ticketService.obtenerTicketPorId(id);
+            if (!ticket.getEstado().equals("ABIERTO")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body("Solo se pueden agregar comentarios a tickets ABIERTOS!...");
+            }
+
+            //agregar comentario
+            Ticket ticketActualizado = ticketService.agregarComentario(id, comentarioDTO, authentication.getName());
+            return ResponseEntity.ok(ticketActualizado);
+        } catch (NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("error al agregar comentario");
+        }
     }
 
     @PutMapping("/{id}/estado")

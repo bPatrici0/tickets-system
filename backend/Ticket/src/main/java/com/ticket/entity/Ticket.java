@@ -3,6 +3,8 @@ package com.ticket.entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import java.util.ArrayList;
 
 @Entity
 public class Ticket {
@@ -18,6 +20,7 @@ public class Ticket {
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
+    @JsonBackReference
     private Usuario creadoPor; //relacion con usuario
 
 
@@ -27,8 +30,9 @@ public class Ticket {
         ABIERTO, EN_PROGRESO, CERRADO
     }
 
-    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL)
-    private List<Comentario> comentarios;
+    @JsonBackReference
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comentario> comentarios = new ArrayList<>();
 
     public Long getId() {
         return id;

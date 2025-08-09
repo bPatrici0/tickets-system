@@ -27,7 +27,7 @@ public class Ticket {
     private LocalDateTime fechaCreacion = LocalDateTime.now();
 
     public enum EstadoTicket {
-        ABIERTO, EN_PROGRESO, CERRADO
+        ABIERTO, EN_PROGRESO, RESUELTO, CERRADO
     }
 
     @JsonBackReference

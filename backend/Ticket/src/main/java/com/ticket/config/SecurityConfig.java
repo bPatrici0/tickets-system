@@ -33,7 +33,7 @@ public class SecurityConfig {
                 .csrf().disable()
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/tickets/**/comentarios").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/tickets/*/comentarios").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/tickets/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/tickets/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/tickets/**").authenticated()

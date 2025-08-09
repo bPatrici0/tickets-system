@@ -148,7 +148,12 @@ export default {
                     return;
                 }
 
-                const response = await api.post(`/api/tickets/${this.ticket.id}/comentarios`, {
+                if (!this.nuevoComentario || this.nuevoComentario.trim() === '') {
+                    alert("El nuevo comentario no puede estar vacio");
+                    return;
+                }
+
+                const response = await api.post(`/tickets/${this.ticket.id}/comentarios`, {
                     contenido: this.nuevoComentario
                 });
 
@@ -158,10 +163,15 @@ export default {
                 }
             } catch (error) {
                 console.error("Error agregando comentario: ", error);
-                let errorMsg = "Error al agregar comentario";
 
-                if(error.repsonse && error.response.data) {
-                    errorMsg = error.response.data;
+                let errorMsg = "Error al agregar comentario";
+                if(error.response) {
+                    errorMsg = error.response.data || errorMsg;
+
+                    if(error.response.status === 401) {
+                        errorMsg = "No Autorizado - por favor inicia sesión nuevamente";
+                        this.$router.push('/login');
+                    }
                 }
 
                 alert(errorMsg);

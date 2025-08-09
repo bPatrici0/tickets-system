@@ -2,6 +2,7 @@ package com.ticket.service;
 
 import com.ticket.dto.TicketDTO;
 import com.ticket.dto.ComentarioDTO;
+import com.ticket.dto.TicketResponseDTO;
 import java.time.LocalDateTime;
 import com.ticket.entity.Ticket;
 import com.ticket.entity.Comentario;
@@ -63,11 +64,39 @@ public class TicketService {
     }
 
     @Transactional(readOnly = true)
-    public List<Ticket> obtenerTicketsPorUsuario(String email) {
-        if (!usuarioRepository.existsByEmail(email)){
-            throw new NotFoundException("Usuario no encontrado con email: " + email);
+    public List<TicketResponseDTO> obtenerTicketsPorUsuario(String email) {
+        List<Ticket> tickets = ticketRepository.findByCredoPorEmail(email);
+        return tickets.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    private TicketResponseDTO convertToDTO(Ticket ticket) {
+        TicketResponseDTO dto = new TicketResponseDTO();
+        dto.setId(ticket.getId());
+        dto.setTitulo(ticket.getTitulo());
+        dto.setDescripcion(ticket.getDescripcion());
+        dto.setEstado(ticket.getEstado());
+        dto.setFechaCreacion(ticket.getFechaCreacion());
+
+        if (ticket.getComentarios() != null) {
+            dto.setComentarios(ticket.getComentarios().stream()
+                    .map(this::convertComentarioToDTO)
+                    .collect(Collectors.toList()));
+        } else {
+            dto.setComentarios(new ArrayList<>());
         }
-        return ticketRepository.findByCreadoPorEmail(email);
+
+        return dto;
+    }
+
+    private ComentarioDTO convertComentarioToDTO(Comentario comentario) {
+        ComentarioDTO dto = new ComentarioDTO();
+        dto.setId(comentario.getId());
+        dto.setContenido(comentario.getContenido());
+        dto.setAutor(comentario.getAutor());
+        dto.setFechaCreacion(comentario.getFechaCreacion());
+        return dto;
     }
 
     public Ticket actualizarTicket(Long id, TicketDTO ticketDTO) {
@@ -99,9 +128,10 @@ public class TicketService {
     }
 
     public Ticket agregarComentario(Long ticketId, ComentarioDTO comentarioDTO, String autor) {
-        Ticket ticket = obtenerTicketPorId(ticketId);
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new NotFoundException("Ticket no encontrado"));
 
-        if (!ticket.getEstado().equals("ABIERTO")) {
+        if (!"ABIERTO".equals(ticket.getEstado())) {
             throw new BadRequestException("No se puede agregar comentarios a un ticket cerrado");
         }
 

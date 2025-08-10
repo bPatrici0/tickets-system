@@ -16,7 +16,7 @@ public class Ticket {
     private String descripcion;
 
     @Enumerated(EnumType.STRING)
-    private EstadoTicket estado = EstadoTicket.ABIERTO; //valor por defecto
+    private EstadoTicket estado; //valor por defecto
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")

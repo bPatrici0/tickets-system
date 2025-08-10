@@ -2,11 +2,13 @@ package com.ticket.service;
 
 import com.ticket.dto.TicketDTO;
 import com.ticket.dto.ComentarioDTO;
+import com.ticket.dto.EstadoDTO;
 import com.ticket.dto.TicketResponseDTO;
 import java.time.LocalDateTime;
 import com.ticket.entity.Ticket;
 import com.ticket.entity.Comentario;
 import com.ticket.entity.Usuario;
+import com.ticket.entity.EstadoTicket;
 import com.ticket.exception.NotFoundException;
 import com.ticket.exception.BadRequestException;
 import com.ticket.repository.TicketRepository;
@@ -15,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.stream.Collectors;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -65,7 +69,7 @@ public class TicketService {
 
     @Transactional(readOnly = true)
     public List<TicketResponseDTO> obtenerTicketsPorUsuario(String email) {
-        List<Ticket> tickets = ticketRepository.findByCredoPorEmail(email);
+        List<Ticket> tickets = ticketRepository.findByCreadoPorEmail(email);
         return tickets.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
@@ -76,7 +80,7 @@ public class TicketService {
         dto.setId(ticket.getId());
         dto.setTitulo(ticket.getTitulo());
         dto.setDescripcion(ticket.getDescripcion());
-        dto.setEstado(ticket.getEstado());
+        dto.setEstado(ticket.getEstado().toString());
         dto.setFechaCreacion(ticket.getFechaCreacion());
 
         if (ticket.getComentarios() != null) {
@@ -131,14 +135,15 @@ public class TicketService {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new NotFoundException("Ticket no encontrado"));
 
-        if (!"ABIERTO".equals(ticket.getEstado())) {
-            throw new BadRequestException("No se puede agregar comentarios a un ticket cerrado");
+        if (!ticket.getEstado().equals(EstadoTicket.ABIERTO)) {
+            throw new BadRequestException("No se puedeN agregar comentarios a tickets ABIERTOS");
         }
 
         Comentario comentario = new Comentario();
         comentario.setContenido(comentarioDTO.getContenido());
         comentario.setAutor(autor);
         comentario.setFechaCreacion(LocalDateTime.now());
+        comentario.setTicket(ticket);
 
         ticket.getComentarios().add(comentario);
         return ticketRepository.save(ticket);

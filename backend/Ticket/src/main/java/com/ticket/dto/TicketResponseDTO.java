@@ -2,6 +2,7 @@ package com.ticket.dto;
 
 import com.ticket.entity.EstadoTicket;
 import lombok.Data;
+import java.util.List;
 
 import java.time.LocalDateTime;
 
@@ -10,9 +11,9 @@ public class TicketResponseDTO {
     private Long id;
     private String titulo;
     private String descripcion;
-    private EstadoTicket estado;
-    private String creadoPor; // Email del usuario
+    private String estado;
     private LocalDateTime fechaCreacion;
+    private List<ComentarioDTO> comentarios;
 
     public Long getId() {
         return id;
@@ -38,20 +39,12 @@ public class TicketResponseDTO {
         this.descripcion = descripcion;
     }
 
-    public EstadoTicket getEstado() {
+    public String getEstado() {
         return estado;
     }
 
-    public void setEstado(EstadoTicket estado) {
+    public void setEstado(String estado) {
         this.estado = estado;
-    }
-
-    public String getCreadoPor() {
-        return creadoPor;
-    }
-
-    public void setCreadoPor(String creadoPor) {
-        this.creadoPor = creadoPor;
     }
 
     public LocalDateTime getFechaCreacion() {
@@ -60,5 +53,13 @@ public class TicketResponseDTO {
 
     public void setFechaCreacion(LocalDateTime fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
+    }
+
+    public List<ComentarioDTO> getComentarios() {
+        return comentarios;
+    }
+
+    public void setComentarios(List<ComentarioDTO> comentarios) {
+        this.comentarios = comentarios;
     }
 }

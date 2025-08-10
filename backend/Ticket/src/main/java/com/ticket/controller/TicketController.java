@@ -5,6 +5,7 @@ import com.ticket.dto.ComentarioDTO;
 import com.ticket.dto.TicketResponseDTO;
 import com.ticket.dto.EstadoDTO;
 import com.ticket.entity.Ticket;
+import com.ticket.entity.EstadoTicket;
 import com.ticket.service.TicketService;
 import com.ticket.exception.NotFoundException;
 import com.ticket.exception.BadRequestException;
@@ -72,7 +73,7 @@ public class TicketController {
             String username = authentication.getName();
             Ticket ticket = ticketService.obtenerTicketPorId(id);
 
-            if (!"ABIERTO".equals(ticket.getEstado())) {
+            if (!ticket.getEstado().equals(EstadoTicket.ABIERTO)) {
                 return ResponseEntity.badRequest()
                         .body("Solo se pueden agregar comentarios a tickets ABIERTOS!...");
             }
@@ -86,7 +87,7 @@ public class TicketController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }catch (Exception e) {
             log.error("Error al agregar comentario", e);
-            return ResponseEntity.internalServerError().body("error interno al agregar comentario");
+            return ResponseEntity.internalServerError().body("error interno al agregar comentario" + e.getMessage());
         }
     }
 

@@ -65,26 +65,26 @@ public class TicketController {
     public ResponseEntity<?> agregarComentario(@PathVariable Long id, @RequestBody ComentarioDTO comentarioDTO, Authentication authentication) {
         log.info("intentando agregar comentario al ticket {} por usuario {}", id, authentication.getName());
         try {
+            log.info("Intento de agregar comentario. Tciket ID: {}, Usuario: {}, Contenido: {}",
+                id, authentication.getName(), comentarioDTO.getContenido());
             if (comentarioDTO.getContenido() == null || comentarioDTO.getContenido().trim().isEmpty()) {
                 return ResponseEntity.badRequest()
                         .body("El contenido del comentario no puede estar vacio");
             }
 
-            String username = authentication.getName();
             Ticket ticket = ticketService.obtenerTicketPorId(id);
+            log.info("Estado REAL del ticket {}: {} - Tipo: {}",
+                id, ticket.getEstado(), ticket.getEstado().getClass());
 
             if (!ticket.getEstado().equals(EstadoTicket.ABIERTO)) {
+                log.error("Intento de comentar ticket {} con estado {}", id, ticket.getEstado());
                 return ResponseEntity.badRequest()
-                        .body("Solo se pueden agregar comentarios a tickets ABIERTOS!...");
+                        .body("Solo se pueden agregar comentarios en tickets ABIERTOS. Estado actual: " + ticket.getEstado());
             }
 
             //agregar comentario
-            Ticket ticketActualizado = ticketService.agregarComentario(id, comentarioDTO, username);
+            Ticket ticketActualizado = ticketService.agregarComentario(id, comentarioDTO, authentication.getName());
             return ResponseEntity.ok(ticketActualizado);
-        } catch (NotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (BadRequestException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
         }catch (Exception e) {
             log.error("Error al agregar comentario", e);
             return ResponseEntity.internalServerError().body("error interno al agregar comentario" + e.getMessage());

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
+import org.slf4j.Logger;
 import java.util.List;
 
 @Service
@@ -130,15 +131,21 @@ public class TicketService {
         }
         ticketRepository.deleteById(id);
     }
-
+    @Transactional
     public Ticket agregarComentario(Long ticketId, ComentarioDTO comentarioDTO, String autor) {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new NotFoundException("Ticket no encontrado"));
 
-        if (!ticket.getEstado().equals(EstadoTicket.ABIERTO)) {
-            throw new BadRequestException("No se puedeN agregar comentarios a tickets ABIERTOS");
+        //debug temporal
+        log.info("Validando estado del ticket {}: {}", ticketId, ticket.getEstado());
+        log.info("Comparando con ABIERTO: {}", EstadoTicket.ABIERTO.equals(ticket.getEstado()));
+
+        //validacion explicita del estado
+        if (!EstadoTicket.ABIERTO.equals(ticket.getEstado())) {
+            throw new BadRequestException("Estado inválido para comentar. Estado actual: " + ticket.getEstado());
         }
 
+        //crear y guardar comentario
         Comentario comentario = new Comentario();
         comentario.setContenido(comentarioDTO.getContenido());
         comentario.setAutor(autor);

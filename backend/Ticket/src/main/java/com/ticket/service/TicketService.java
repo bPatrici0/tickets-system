@@ -14,17 +14,21 @@ import com.ticket.exception.BadRequestException;
 import com.ticket.repository.TicketRepository;
 import com.ticket.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.stream.Collectors;
 import java.util.ArrayList;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.List;
 
 @Service
 @Transactional
 public class TicketService {
+
+    private static final Logger logger = LoggerFactory.getLogger(TicketService.class);
 
     @Autowired
     private TicketRepository ticketRepository;
@@ -133,12 +137,17 @@ public class TicketService {
     }
     @Transactional
     public Ticket agregarComentario(Long ticketId, ComentarioDTO comentarioDTO, String autor) {
+        logger.debug("Agregando comentario al ticket {}", ticketId);
+
         Ticket ticket = ticketRepository.findById(ticketId)
-                .orElseThrow(() -> new NotFoundException("Ticket no encontrado"));
+                .orElseThrow(() ->{
+                    logger.error("Ticket no encontrado: {}", ticketId);
+                    return new NotFoundException("Ticket no encontrado");
+                });
+
 
         //debug temporal
-        log.info("Validando estado del ticket {}: {}", ticketId, ticket.getEstado());
-        log.info("Comparando con ABIERTO: {}", EstadoTicket.ABIERTO.equals(ticket.getEstado()));
+        logger.info("Estado del ticket: {}", ticket.getEstado());
 
         //validacion explicita del estado
         if (!EstadoTicket.ABIERTO.equals(ticket.getEstado())) {

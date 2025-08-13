@@ -16,7 +16,7 @@ public class Ticket {
     private String descripcion;
 
     @Enumerated(EnumType.STRING)
-    private EstadoTicket estado; //valor por defecto
+    private EstadoTicket estado = EstadoTicket.ABIERTO; //valor por defecto
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
@@ -25,10 +25,6 @@ public class Ticket {
 
 
     private LocalDateTime fechaCreacion = LocalDateTime.now();
-
-    public enum EstadoTicket {
-        ABIERTO, EN_PROGRESO, RESUELTO, CERRADO
-    }
 
     @JsonBackReference
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -51,8 +51,8 @@ public class TicketService {
 
         try {
             ticket.setEstado(ticketDTO.getEstado() != null ?
-                    Ticket.EstadoTicket.valueOf(ticketDTO.getEstado()) :
-                    Ticket.EstadoTicket.ABIERTO);
+                    EstadoTicket.valueOf(ticketDTO.getEstado()) :
+                    EstadoTicket.ABIERTO);
         } catch (IllegalArgumentException e) {
             throw new BadRequestException("Estado de ticket inválido");
         }
@@ -120,7 +120,7 @@ public class TicketService {
         }
         if (ticketDTO.getEstado() != null) {
             try {
-                ticket.setEstado(Ticket.EstadoTicket.valueOf(ticketDTO.getEstado()));
+                ticket.setEstado(EstadoTicket.valueOf(ticketDTO.getEstado()));
             } catch (IllegalArgumentException e) {
                 throw new BadRequestException("Estado de ticket inválido!...");
             }
@@ -147,10 +147,10 @@ public class TicketService {
 
 
         //debug temporal
-        logger.info("Estado del ticket: {}", ticket.getEstado());
+        logger.info("comparando estados - Enum: {}, Ticket: {}, Iguales: {}", EstadoTicket.ABIERTO, ticket.getEstado(), EstadoTicket.ABIERTO == ticket.getEstado());
 
         //validacion explicita del estado
-        if (!EstadoTicket.ABIERTO.equals(ticket.getEstado())) {
+        if (ticket.getEstado() != EstadoTicket.ABIERTO) {
             throw new BadRequestException("Estado inválido para comentar. Estado actual: " + ticket.getEstado());
         }
 
@@ -168,7 +168,7 @@ public class TicketService {
     public Ticket cambiarEstado(Long ticketId, String estado){
         Ticket ticket = obtenerTicketPorId(ticketId);
         try {
-            ticket.setEstado(Ticket.EstadoTicket.valueOf(estado));
+            ticket.setEstado(EstadoTicket.valueOf(estado));
         } catch (IllegalArgumentException e) {
             throw new BadRequestException("Estado de ticket inválido!...");
         }

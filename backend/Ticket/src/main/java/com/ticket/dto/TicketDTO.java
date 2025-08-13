@@ -1,6 +1,6 @@
 package com.ticket.dto;
 
-import com.ticket.entity.Ticket.EstadoTicket;
+import com.ticket.entity.EstadoTicket;
 import lombok.Data;
 import java.time.LocalDateTime;
 

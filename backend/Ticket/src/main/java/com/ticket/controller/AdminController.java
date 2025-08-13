@@ -3,11 +3,11 @@ package com.ticket.controller;
 import com.ticket.entity.Usuario;
 import com.ticket.entity.Rol;
 import com.ticket.repository.UsuarioRepository;
+import com.ticket.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import javassist.NotFoundException;
 
 @RestController
 @RequestMapping("/api/admin")

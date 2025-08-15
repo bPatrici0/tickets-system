@@ -78,6 +78,35 @@
                     </button>
                 </form>
             </div>
+            <!--historial-->
+            <div class="mb-6" v-if="ticket.comentarios && ticket.comentarios.length > 0">
+                <h3 class="text-lg text-green-400 mb-2">> Historial.log --tail=all</h3>
+                <div class="terminal-history">
+                    <div v-for="(comentario, index) in ticket.comentarios" :key="comentario.id" class="history-entry" :class="{'last-entry': index === ticket.comentarios.length - 1}">
+                        <!--linea de comandos simulada-->
+                        <div class="command-line">
+                            <span class="prompt">user@ticketsystem:~$</span>
+                            <span class="command">comment --ticket={{ticket.id}} --user={{comentario.autor}}</span>
+                        </div>
+
+                        <!--metadatos-->
+                        <div class="metadata">
+                            <span class="timestamp">[{{ formatTerminalDate(comentario.fechaCreacion) }}]</span>
+                            <span class="user">USER: {{ comentario.autor }}</span>
+                        </div>
+
+                        <!--contenido del comentario-->
+                        <div class="output">
+                            <pre class="content">{{ comentario.contenido }}</pre>
+                        </div>
+
+                        <!--separador (solo si no es el último)-->
+                        <div v-if="index !== ticket.comentarios.length - 1" class="separator">
+                            <span class="line">----------------------------------------</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 </template>
@@ -158,8 +187,12 @@ export default {
                 });
 
                 if (response.status === 200 || response.status === 201) {
-                    this.nuevoComentario = '';
-                    await this.cargarTicket();
+                    //agregar el nuevo comentario localmente
+                    const nuevoComentario = {
+                        id: reponse.data.id, // asegurate que tu backend devuelva el ID
+                        contenido: this.nuevoComentario,
+                        autor: this.$store.state.user.email,
+                    }
                 }
             } catch (error) {
                 console.error("Error agregando comentario: ", error);
@@ -178,6 +211,18 @@ export default {
             } finally {
                 this.isSubmitting = false;
             }
+        },
+
+        formatTerminalDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString('es-MX', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            }).replace(/\//g, '-').replace(',', '');
         }
     }
 }
@@ -199,5 +244,59 @@ export default {
 
 .terminal-box {
     @apply border border-green-500 p-4;
+}
+
+/* Estilos para el historial tipo terminal */
+.terminal-history {
+    @apply bg-black border border-green-500 p-4 font-mono text-sm;
+}
+
+.command-line {
+    @apply text-green-400 mb-1;
+}
+
+.prompt {
+    @apply text-green-500;
+}
+
+.command {
+    @apply text-yellow-400;
+}
+
+.metadata {
+    @apply flex justify-between text-gray-500 text-xs mb-1;
+}
+
+.output .content {
+    @apply text-green-300 whitespace-pre-wrap ml-4;
+    font-family: 'Courier New', monospace;
+}
+
+.separator {
+    @apply my-3 text-gray-600;
+}
+
+.last-entry {
+    @apply pb-0;
+}
+
+/* Efecto de scroll automático para el último comentario */
+.history-entry:last-child {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0.8; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/*destacar nuevos comentarios*/
+.new-comment {
+    animation: pulse 2s ease-in-out;
+}
+
+@keyframes pulse {
+    0% { background-color: rgba(74, 222, 128, 0.1); }
+    100% { background-color: transparent; }
 }
 </style>

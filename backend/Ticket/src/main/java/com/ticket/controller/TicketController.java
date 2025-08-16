@@ -91,6 +91,11 @@ public class TicketController {
         }
     }
 
+    @GetMapping("/{id}/comentarios")
+    public ResponseEntity<List<ComentarioDTO>> obtenerComentarios(@PathVariable Long id) {
+        return ResponseEntity.ok(ticketService.obtenerComtariosPorTicket(id));
+    }
+
     @PutMapping("/{id}/estado")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Ticket> cambiarEstado(@PathVariable Long id, @RequestBody EstadoDTO estadoDTO) {

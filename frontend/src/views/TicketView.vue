@@ -80,26 +80,18 @@
             </div>
             <!--historial-->
             <div class="mb-6" v-if="ticket.comentarios && ticket.comentarios.length > 0">
-                <h3 class="text-lg text-green-400 mb-2">> Historial.log --tail=all</h3>
+                <h3 class="text-lg text-green-400 mb-2">> Historial</h3>
                 <div class="terminal-history">
-                    <div v-for="(comentario, index) in ticket.comentarios" :key="comentario.id" class="history-entry" :class="{'last-entry': index === ticket.comentarios.length - 1}">
-                        <!--linea de comandos simulada-->
-                        <div class="command-line">
-                            <span class="prompt">user@ticketsystem:~$</span>
-                            <span class="command">comment --ticket={{ticket.id}} --user={{comentario.autor}}</span>
-                        </div>
-
+                    <div v-for="(comentario, index) in ticket.comentarios" :key="comentario.id" class="history-entry">
                         <!--metadatos-->
                         <div class="metadata">
                             <span class="timestamp">[{{ formatTerminalDate(comentario.fechaCreacion) }}]</span>
                             <span class="user">USER: {{ comentario.autor }}</span>
                         </div>
-
                         <!--contenido del comentario-->
                         <div class="output">
                             <pre class="content">{{ comentario.contenido }}</pre>
                         </div>
-
                         <!--separador (solo si no es el último)-->
                         <div v-if="index !== ticket.comentarios.length - 1" class="separator">
                             <span class="line">----------------------------------------</span>
@@ -123,25 +115,46 @@ export default {
                 descripcion: '',
                 estado: '',
                 fechaCreacion: '',
-                comentarios: []
+                comentarios: [],
+                polling: null
             },
             nuevoComentario: '',
             isSubmitting: false
         }
     },
+
     created() {
         this.cargarTicket();
+        this.iniciarPolling();
     },
+
+    beforeUnmount() {
+        this.detenerPolling();
+    },
+
     methods: {
+        iniciarPolling() {
+            this.polling = setInterval(() => {
+                this.cargarTicket();
+            }, 10000); //Actualiza cada 10 seg.
+        },
+        detenerPolling() {
+            if (this.polling) {
+                clearInterval(this.polling);
+            }
+        },
+
         async cargarTicket() {
             try {
                 const ticketId = this.$route.params.id;
                 const response = await api.get(`/tickets/${ticketId}`);
                 this.ticket = response.data;
 
-                if (!this.ticket.comentarios) {
-                    this.ticket.comentarios = [];
-                }
+                this.ticket.comentarios = this.ticket.comentarios || [];
+
+                this.ticket.comentarios.sort((a, b) =>
+                    new Date(b.fechaCreacion) - new Date(a.fechaCreacion)
+                );
             } catch (error) {
                 console.error("Error cargando ticket: ", error);
                 alert("Error al cargar el ticket");
@@ -150,14 +163,21 @@ export default {
         },
 
         formatDate(dateString) {
-            const options = {
-                day: '2-digit',
-                month: 'short',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            };
-            return new Date(dateString).toLocaleDateString('es-MX', options);
+            if (!dateString) return '[Fecha no disponible]';
+
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleString('es-MX', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                }).replace(/\//g, '-').replace(',', '');
+            } catch {
+                return '[Fecha inválida]';
+            }
         },
 
         statusClass(estado) {
@@ -187,26 +207,32 @@ export default {
                 });
 
                 if (response.status === 200 || response.status === 201) {
-                    //agregar el nuevo comentario localmente
-                    const nuevoComentario = {
-                        id: reponse.data.id, // asegurate que tu backend devuelva el ID
-                        contenido: this.nuevoComentario,
-                        autor: this.$store.state.user.email,
-                    }
+                    //limpiar el campo de texto
+                    this.nuevoComentario = '';
+
+                    //recargar los datos del ticket incluyendo los comentarios
+                    await this.cargarTicket();
                 }
+
+                //hacer scroll al nuevo comentario
+                this.$nextTick(() => {
+                    const element = document.querySelector('.history-entry:first-child');
+                    if (element) {
+                        element.scrollIntoView({ behavior: 'smooth' });
+                        //animacion
+                        element.classList.add('new-comment');
+                    }
+                });
             } catch (error) {
                 console.error("Error agregando comentario: ", error);
-
                 let errorMsg = "Error al agregar comentario";
                 if(error.response) {
                     errorMsg = error.response.data || errorMsg;
-
                     if(error.response.status === 401) {
                         errorMsg = "No Autorizado - por favor inicia sesión nuevamente";
                         this.$router.push('/login');
                     }
                 }
-
                 alert(errorMsg);
             } finally {
                 this.isSubmitting = false;
@@ -226,6 +252,7 @@ export default {
         }
     }
 }
+
 </script>
 
 <style scoped>
@@ -246,9 +273,22 @@ export default {
     @apply border border-green-500 p-4;
 }
 
-/* Estilos para el historial tipo terminal */
+/* Estilos para el historial */
 .terminal-history {
-    @apply bg-black border border-green-500 p-4 font-mono text-sm;
+    max-height: 500px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #10b981 #000;
+}
+.terminal-history::-webkit-scrollbar {
+    width: 8px;
+}
+.terminal-history::-webkit-scrollbar-track {
+    background: #000;
+}
+.terminal-history::-webkit-scrollbar-thumb {
+    background-color: #10b981;
+    border-radius: 4px;
 }
 
 .command-line {

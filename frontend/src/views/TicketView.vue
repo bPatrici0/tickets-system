@@ -42,7 +42,7 @@
                 </div>
             </div>
 
-            <!--comentarios-->
+            <!--historial-->
             <div class="mb-6" v-if="ticket.comentarios && ticket.comentarios.length > 0">
                 <h3 class="text-lg text-green-400 mb-2">> Historial: </h3>
                 <div class="space-y-6">
@@ -78,11 +78,12 @@
                     </button>
                 </form>
             </div>
-            <!--historial-->
+
+            /*historial
             <div class="mb-6" v-if="ticket.comentarios && ticket.comentarios.length > 0">
                 <h3 class="text-lg text-green-400 mb-2">> Historial</h3>
                 <div class="terminal-history">
-                    <div v-for="(comentario, index) in ticket.comentarios" :key="comentario.id" class="history-entry">
+                    <div v-for="comentario in ticket.comentarios" :key="comentario.id" class="history-entry">
                         <!--metadatos-->
                         <div class="metadata">
                             <span class="timestamp">[{{ formatTerminalDate(comentario.fechaCreacion) }}]</span>
@@ -98,7 +99,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>*/
         </main>
     </div>
 </template>
@@ -150,9 +151,11 @@ export default {
                 const response = await api.get(`/tickets/${ticketId}`);
                 this.ticket = response.data;
 
-                this.ticket.comentarios = this.ticket.comentarios || [];
+                console.log("Comentarios recibidos: ", this.ticket.comentarios);
 
-                this.ticket.comentarios.sort((a, b) =>
+                this.ticket.comentarios = this.ticket.comentarios?.map(c => ({...c})) || [];
+
+                this.ticket.comentarios?.sort((a, b) =>
                     new Date(b.fechaCreacion) - new Date(a.fechaCreacion)
                 );
             } catch (error) {
@@ -197,7 +200,7 @@ export default {
                     return;
                 }
 
-                if (!this.nuevoComentario || this.nuevoComentario.trim() === '') {
+                if (!this.nuevoComentario.trim()) {
                     alert("El nuevo comentario no puede estar vacio");
                     return;
                 }
@@ -275,10 +278,22 @@ export default {
 
 /* Estilos para el historial */
 .terminal-history {
-    max-height: 500px;
+    display: block !important;
+    max-height: 60vh;
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: #10b981 #000;
+}
+.history-entry {
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    border-left: 2px solid #10b981;
+}
+.output .conten {
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: #10b981;
+    font-family: monospace;
 }
 .terminal-history::-webkit-scrollbar {
     width: 8px;

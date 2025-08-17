@@ -137,22 +137,13 @@ public class TicketService {
     }
     @Transactional
     public Ticket agregarComentario(Long ticketId, ComentarioDTO comentarioDTO, String autor) {
-        logger.debug("Agregando comentario al ticket {}", ticketId);
+        logger.info("datos recibidos - ticketId: {}, autor: {}, contenido: {}", ticketId, autor, comentarioDTO.getContenido());
 
         Ticket ticket = ticketRepository.findById(ticketId)
-                .orElseThrow(() ->{
-                    logger.error("Ticket no encontrado: {}", ticketId);
-                    return new NotFoundException("Ticket no encontrado");
-                });
-
+                .orElseThrow(() -> new NotFoundException("ticket no encontrado"));
 
         //debug temporal
-        logger.info("comparando estados - Enum: {}, Ticket: {}, Iguales: {}", EstadoTicket.ABIERTO, ticket.getEstado(), EstadoTicket.ABIERTO == ticket.getEstado());
-
-        //validacion explicita del estado
-        if (ticket.getEstado() != EstadoTicket.ABIERTO) {
-            throw new BadRequestException("Estado inválido para comentar. Estado actual: " + ticket.getEstado());
-        }
+        logger.info("estado actual del ticket: {}", ticket.getEstado());
 
         //crear y guardar comentario
         Comentario comentario = new Comentario();
@@ -173,5 +164,14 @@ public class TicketService {
             throw new BadRequestException("Estado de ticket inválido!...");
         }
         return ticketRepository.save(ticket);
+    }
+
+    public List<ComentarioDTO> obtenerComentariosPorTicket(Long ticketId) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new NotFoundException("Ticket no encontrado"));
+
+        return ticket.getComentarios().stream()
+                .map(this::convertComentarioToDTO)
+                .collect(Collectors.toList());
     }
 }

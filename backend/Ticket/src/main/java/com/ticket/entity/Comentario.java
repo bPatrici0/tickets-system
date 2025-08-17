@@ -15,7 +15,7 @@ public class Comentario {
     private String autor;
     private LocalDateTime fechaCreacion;
 
-    @JsonBackReference
+    //@JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ticket_id")
     private Ticket ticket;

@@ -45,16 +45,21 @@
             <!--historial-->
             <div class="mb-6" v-if="ticket.comentarios && ticket.comentarios.length > 0">
                 <h3 class="text-lg text-green-400 mb-2">> Historial: </h3>
-                <div class="space-y-6">
+                <div class="space-y-4">
                     <div v-for="comentario in ticket.comentarios" :key="comentario.id"
-                        class="border-1-2 border-green-500 pl-3 py-1">
+                        class="border-1-2 border-green-500 pl-3 py-2">
                         <div class="flex justify-between text-sm text-green-500">
-                            <span>> {{ comentario.autor }}</span>
+                            <span>> {{ comentario.autor || 'Usuario desconocido' }}</span>
                             <span> {{ formatDate(comentario.fechaCreacion) }}</span>
                         </div>
-                        <p class="text-green-300 mt-1">{{ comentario.contenido }}</p>
+                        <pre class="text-green-300 mt-1 font-mono">{{ comentario.contenido }}</pre>
                     </div>
                 </div>
+            </div>
+
+            <!--mensaje cuando no hay comentarios-->
+            <div v-else class="text-gray-500 italic">
+                > No hay comentarios para este ticket!...
             </div>
 
             <!--formulario para nuevo comentario solo si el ticket no esta resuelto-->
@@ -78,28 +83,6 @@
                     </button>
                 </form>
             </div>
-
-            /*historial
-            <div class="mb-6" v-if="ticket.comentarios && ticket.comentarios.length > 0">
-                <h3 class="text-lg text-green-400 mb-2">> Historial</h3>
-                <div class="terminal-history">
-                    <div v-for="comentario in ticket.comentarios" :key="comentario.id" class="history-entry">
-                        <!--metadatos-->
-                        <div class="metadata">
-                            <span class="timestamp">[{{ formatTerminalDate(comentario.fechaCreacion) }}]</span>
-                            <span class="user">USER: {{ comentario.autor }}</span>
-                        </div>
-                        <!--contenido del comentario-->
-                        <div class="output">
-                            <pre class="content">{{ comentario.contenido }}</pre>
-                        </div>
-                        <!--separador (solo si no es el último)-->
-                        <div v-if="index !== ticket.comentarios.length - 1" class="separator">
-                            <span class="line">----------------------------------------</span>
-                        </div>
-                    </div>
-                </div>
-            </div>*/
         </main>
     </div>
 </template>
@@ -137,7 +120,7 @@ export default {
         iniciarPolling() {
             this.polling = setInterval(() => {
                 this.cargarTicket();
-            }, 10000); //Actualiza cada 10 seg.
+            }, 600000); //Actualiza cada 1 minuto.
         },
         detenerPolling() {
             if (this.polling) {
@@ -149,18 +132,23 @@ export default {
             try {
                 const ticketId = this.$route.params.id;
                 const response = await api.get(`/tickets/${ticketId}`);
-                this.ticket = response.data;
 
-                console.log("Comentarios recibidos: ", this.ticket.comentarios);
+                this.ticket = {
+                    ...response.data,
+                    comentarios: response.data.comentarios || []
+                };
 
-                this.ticket.comentarios = this.ticket.comentarios?.map(c => ({...c})) || [];
+                console.log("Datos completos del ticket: ", this.ticket);
 
-                this.ticket.comentarios?.sort((a, b) =>
+                //this.ticket.comentarios = this.ticket.comentarios?.map(c => ({...c})) || [];
+
+                this.ticket.comentarios.sort((a, b) =>
                     new Date(b.fechaCreacion) - new Date(a.fechaCreacion)
                 );
             } catch (error) {
                 console.error("Error cargando ticket: ", error);
                 alert("Error al cargar el ticket");
+                this.ticket.comentarios = [];
                 this.$router.push('/tickets');
             }
         },
@@ -289,7 +277,7 @@ export default {
     padding: 0.5rem;
     border-left: 2px solid #10b981;
 }
-.output .conten {
+.output .content {
     white-space: pre-wrap;
     word-break: break-word;
     color: #10b981;

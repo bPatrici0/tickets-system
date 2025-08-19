@@ -142,15 +142,26 @@ public class TicketService {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new NotFoundException("ticket no encontrado"));
 
+        if (comentarioDTO.getContenido() == null || comentarioDTO.getContenido().trim().isEmpty()) {
+            throw new BadRequestException("El contenido del comentario no puede estar vacio");
+        }
+
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new NotFoundException("ticket no encontrado"));
+
         //debug temporal
-        logger.info("estado actual del ticket: {}", ticket.getEstado());
+        //logger.info("estado actual del ticket: {}", ticket.getEstado());
 
         //crear y guardar comentario
         Comentario comentario = new Comentario();
         comentario.setContenido(comentarioDTO.getContenido());
         comentario.setAutor(autor);
-        comentario.setFechaCreacion(LocalDateTime.now());
+        //comentario.setFechaCreacion(LocalDateTime.now());
         comentario.setTicket(ticket);
+
+        if (ticket.getComentarios() == null) {
+            ticket.setComentarios(new ArrayList<>());
+        }
 
         ticket.getComentarios().add(comentario);
         return ticketRepository.save(ticket);

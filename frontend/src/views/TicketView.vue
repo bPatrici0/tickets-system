@@ -122,6 +122,7 @@ export default {
                 this.cargarTicket();
             }, 600000); //Actualiza cada 1 minuto.
         },
+
         detenerPolling() {
             if (this.polling) {
                 clearInterval(this.polling);
@@ -195,15 +196,21 @@ export default {
 
                 const response = await api.post(`/tickets/${this.ticket.id}/comentarios`, {
                     contenido: this.nuevoComentario
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
                 });
 
-                if (response.status === 200 || response.status === 201) {
-                    //limpiar el campo de texto
-                    this.nuevoComentario = '';
-
-                    //recargar los datos del ticket incluyendo los comentarios
+                //verificar la respuesta correctamente
+                if (response.data && response.data.comenatarios) {
+                    this.ticket.comentarios = response.data.comentarios;
+                } else {
+                    //si la respuesta no trae los comentarios, recarga el ticket
                     await this.cargarTicket();
                 }
+
+                this.nuevoComentario = '';
 
                 //hacer scroll al nuevo comentario
                 this.$nextTick(() => {

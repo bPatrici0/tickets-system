@@ -20,6 +20,9 @@ import org.springframework.security.core.Authentication;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import java.util.Map;
+import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 @RequestMapping("/api/tickets")
@@ -28,12 +31,6 @@ public class TicketController {
 
     @Autowired
     private TicketService ticketService;
-
-    @PostMapping
-    @PreAuthorize("isAuthenticated()") //solo usuarios logueados pueden crear tickets
-    public ResponseEntity<Ticket> crearTicket(@RequestBody TicketDTO ticketDTO) {
-        return ResponseEntity.ok(ticketService.crearTicket(ticketDTO));
-    }
 
     @GetMapping
     public ResponseEntity<List<Ticket>> obtenerTodosLosTickets() {
@@ -51,57 +48,60 @@ public class TicketController {
         return ResponseEntity.ok(tickets);
     }
 
+    @GetMapping("/{id}/comentarios")
+    public ResponseEntity<List<ComentarioDTO>> obtenerComentarios(@PathVariable Long id) {
+        return ResponseEntity.ok(ticketService.obtenerComentariosPorTicket(id));
+    }
+
+    @PostMapping("/{id}/comentarios")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Object> agregarComentario(@PathVariable Long id, @RequestBody ComentarioDTO comentarioDTO, Authentication authentication) {
+        log.info("intentando agregar comentario al ticket {} por usuario {}", id, authentication.getName());
+
+        try {
+            log.info("Intento de agregar comentario. Tciket ID: {}, Usuario: {}, Contenido: {}",
+                    id, authentication.getName(), comentarioDTO.getContenido());
+            //String contenido = request.get("contenido");
+            if (comentarioDTO.getContenido() == null || comentarioDTO.getContenido().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("El contenido no puede estar vacio");
+            }
+
+            Ticket ticket = ticketService.agregarComentario(id, comentarioDTO, authentication.getName());
+
+            //agregar comentario
+            //Ticket ticketActualizado = ticketService.agregarComentario(id, comentarioDTO, authentication.getName());
+            return ResponseEntity.ok(ticket);
+        } catch (BadRequestException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            log.error("Error al agregar comentario", e);
+            return ResponseEntity.internalServerError().body("Error interno: " + e.getMessage());
+        }
+    }
+
+    @PostMapping
+    @PreAuthorize("isAuthenticated()") //solo usuarios logueados pueden crear tickets
+    public ResponseEntity<Ticket> crearTicket(@RequestBody TicketDTO ticketDTO) {
+        return ResponseEntity.ok(ticketService.crearTicket(ticketDTO));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<Ticket> actualizarTicket(@PathVariable Long id, @RequestBody TicketDTO ticketDTO) {
         return ResponseEntity.ok(ticketService.actualizarTicket(id, ticketDTO));
+    }
+
+    @PutMapping("/{id}/estado")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Ticket> cambiarEstado(@PathVariable Long id, @RequestBody EstadoDTO estadoDTO) {
+        return ResponseEntity.ok(ticketService.cambiarEstado(id, estadoDTO.getEstado()));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarTicket(@PathVariable Long id) {
         ticketService.eliminarTicket(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("/{id}/comentarios")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Map<String, Object>> agregarComentario(@PathVariable Long id, @RequestBody ComentarioDTO comentarioDTO, Authentication authentication) {
-        log.info("intentando agregar comentario al ticket {} por usuario {}", id, authentication.getName());
-
-        try {
-            log.info("Intento de agregar comentario. Tciket ID: {}, Usuario: {}, Contenido: {}",
-                id, authentication.getName(), comentarioDTO.getContenido());
-            String contenido = request.get("contenido");
-            if (contenido == null || contenido.trim().isEmpty()) {
-                return ResponseEntity.badRequest().body(Map.of("error", "El contenido no puede estar vacio"));
-            }
-
-            ComentarioDTO comentarioDTO = new ComentarioDTO();
-            comentarioDTO.setContenido(contenido);
-
-            Ticket ticket = ticketService.agregarComentario(id, comentarioDTO, authentication.getNmae());
-
-            /*Ticket ticket = ticketService.obtenerTicketPorId(id);
-            log.info("Estado REAL del ticket {}: {} - Tipo: {}",
-                id, ticket.getEstado(), ticket.getEstado().getClass());
-
-            if (!ticket.getEstado().equals(EstadoTicket.ABIERTO)) {
-                log.error("Intento de comentar ticket {} con estado {}", id, ticket.getEstado());
-                return ResponseEntity.badRequest()
-                        .body("Solo se pueden agregar comentarios en tickets ABIERTOS. Estado actual: " + ticket.getEstado());
-            }*/
-
-            //agregar comentario
-            //Ticket ticketActualizado = ticketService.agregarComentario(id, comentarioDTO, authentication.getName());
-            return ResponseEntity.ok(Map.of("comentarios",
-                    ticket.getComentarios().stream()
-                            .map(this::convertToComentarioDTO)
-                            .collect(Collectors.toList())
-            ));
-        }catch (Exception e) {
-            log.error("Error al agregar comentario", e);
-            return ResponseEntity.internalServerError().body(Map.of("error", "Error interno: " + e.getMessage())
-            );
-        }
     }
 
     private ComentarioDTO convertToComentarioDTO(Comentario comentario) {
@@ -111,16 +111,5 @@ public class TicketController {
         dto.setAutor(comentario.getAutor());
         dto.setFechaCreacion(comentario.getFechaCreacion());
         return dto;
-    }
-
-    @GetMapping("/{id}/comentarios")
-    public ResponseEntity<List<ComentarioDTO>> obtenerComentarios(@PathVariable Long id) {
-        return ResponseEntity.ok(ticketService.obtenerComentariosPorTicket(id));
-    }
-
-    @PutMapping("/{id}/estado")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Ticket> cambiarEstado(@PathVariable Long id, @RequestBody EstadoDTO estadoDTO) {
-        return ResponseEntity.ok(ticketService.cambiarEstado(id, estadoDTO.getEstado()));
     }
 }

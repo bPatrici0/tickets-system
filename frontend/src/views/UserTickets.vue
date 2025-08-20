@@ -194,12 +194,10 @@ export default {
         toggleUserMenu() {
             this.showUserMenu = !this.showUserMenu;
         },
-
         handleLogout() {
             localStorage.clear();
             this.$router.push('/login');
         },
-
         async submitTicket() {
             this.isSubmitting = true;
             try {
@@ -231,7 +229,6 @@ export default {
                 this.isSubmitting = false;
             }
         },
-
         handleError(error) {
             console.error("Error al crear ticket: ", error);
             const message = error.response?.data?.message || "Error al crear ticket";
@@ -241,7 +238,6 @@ export default {
                 this.handleLogout();
             }
         },
-
         async fetchTickets() {
             try {
                 const email = localStorage.getItem('userEmail');
@@ -271,7 +267,6 @@ export default {
             };
             return new Date(dateString).toLocaleDateString('es-MX', options);
         },
-
         statusClass(estado) {
             const statusMap = {
                 'ABIERTO': 'bg-yellow-500/20 text-yellow-400',
@@ -280,7 +275,6 @@ export default {
             };
             return statusMap[estado] || 'bg-gray-500/20 text-gray-400';
         },
-
         verTicket(id) {
             console.log('Ver ticket con ID: ', id);
             this.$router.push(`/tickets/${id}`);

@@ -135,6 +135,7 @@ public class TicketService {
         }
         ticketRepository.deleteById(id);
     }
+
     @Transactional
     public Ticket agregarComentario(Long ticketId, ComentarioDTO comentarioDTO, String autor) {
         logger.info("datos recibidos - ticketId: {}, autor: {}, contenido: {}", ticketId, autor, comentarioDTO.getContenido());

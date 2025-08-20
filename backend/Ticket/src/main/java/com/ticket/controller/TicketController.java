@@ -32,27 +32,6 @@ public class TicketController {
     @Autowired
     private TicketService ticketService;
 
-    @GetMapping
-    public ResponseEntity<List<Ticket>> obtenerTodosLosTickets() {
-        return ResponseEntity.ok(ticketService.obtenerTodosLosTickets());
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Ticket> obtenerTicketPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(ticketService.obtenerTicketPorId(id));
-    }
-
-    @GetMapping("/usuario/{email}")
-    public ResponseEntity<List<TicketResponseDTO>> obtenerTicketsPorUsuario(@PathVariable String email) {
-        List<TicketResponseDTO> tickets = ticketService.obtenerTicketsPorUsuario(email);
-        return ResponseEntity.ok(tickets);
-    }
-
-    @GetMapping("/{id}/comentarios")
-    public ResponseEntity<List<ComentarioDTO>> obtenerComentarios(@PathVariable Long id) {
-        return ResponseEntity.ok(ticketService.obtenerComentariosPorTicket(id));
-    }
-
     @PostMapping("/{id}/comentarios")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Object> agregarComentario(@PathVariable Long id, @RequestBody ComentarioDTO comentarioDTO, Authentication authentication) {
@@ -79,6 +58,27 @@ public class TicketController {
             log.error("Error al agregar comentario", e);
             return ResponseEntity.internalServerError().body("Error interno: " + e.getMessage());
         }
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Ticket>> obtenerTodosLosTickets() {
+        return ResponseEntity.ok(ticketService.obtenerTodosLosTickets());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Ticket> obtenerTicketPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(ticketService.obtenerTicketPorId(id));
+    }
+
+    @GetMapping("/usuario/{email}")
+    public ResponseEntity<List<TicketResponseDTO>> obtenerTicketsPorUsuario(@PathVariable String email) {
+        List<TicketResponseDTO> tickets = ticketService.obtenerTicketsPorUsuario(email);
+        return ResponseEntity.ok(tickets);
+    }
+
+    @GetMapping("/{id}/comentarios")
+    public ResponseEntity<List<ComentarioDTO>> obtenerComentarios(@PathVariable Long id) {
+        return ResponseEntity.ok(ticketService.obtenerComentariosPorTicket(id));
     }
 
     @PostMapping

@@ -146,12 +146,6 @@ public class TicketService {
             throw new BadRequestException("El contenido del comentario no puede estar vacio");
         }
 
-        Ticket ticket = ticketRepository.findById(ticketId)
-                .orElseThrow(() -> new NotFoundException("ticket no encontrado"));
-
-        //debug temporal
-        //logger.info("estado actual del ticket: {}", ticket.getEstado());
-
         //crear y guardar comentario
         Comentario comentario = new Comentario();
         comentario.setContenido(comentarioDTO.getContenido());
@@ -164,6 +158,7 @@ public class TicketService {
         }
 
         ticket.getComentarios().add(comentario);
+
         return ticketRepository.save(ticket);
     }
 

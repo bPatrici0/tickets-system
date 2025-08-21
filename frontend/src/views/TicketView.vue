@@ -42,26 +42,6 @@
                 </div>
             </div>
 
-            <!--historial-->
-            <div class="mb-6" v-if="ticket.comentarios && ticket.comentarios.length > 0">
-                <h3 class="text-lg text-green-400 mb-2">> Historial: </h3>
-                <div class="space-y-4">
-                    <div v-for="comentario in ticket.comentarios" :key="comentario.id"
-                        class="border-1-2 border-green-500 pl-3 py-2 history-entry">
-                        <div class="flex justify-between text-sm text-green-500">
-                            <span>> {{ comentario.autor || 'Usuario desconocido' }}</span>
-                            <span>{{ formatDate(comentario.fechaCreacion) }}</span>
-                        </div>
-                        <pre class="text-green-300 mt-1 font-mono whitespace-pre-wrap">{{ comentario.contenido }}</pre>
-                    </div>
-                </div>
-            </div>
-
-            <!--mensaje cuando no hay comentarios-->
-            <div v-else class="text-gray-500 italic">
-                > No hay comentarios para este ticket!...
-            </div>
-
             <!--formulario para nuevo comentario solo si el ticket no esta resuelto-->
             <div v-if="ticket.estado !== 'RESUELTO'">
                 <h3 class="text-lg text-green-400 mb-2">> Añadir comentario:</h3>
@@ -82,6 +62,26 @@
                         <span v-else>> Agregando...</span>
                     </button>
                 </form>
+            </div>
+
+            <!--historial-->
+            <div class="mb-6" v-if="ticket.comentarios && ticket.comentarios.length > 0">
+                <h3 class="text-lg text-green-400 mb-6">> Historial: </h3>
+                <div class="space-y-4">
+                    <div v-for="comentario in ticket.comentarios" :key="comentario.id"
+                        class="border-1-2 border-green-500 pl-3 py-2 history-entry">
+                        <div class="flex justify-between text-sm text-green-500">
+                            <span>> {{ comentario.autor || 'Usuario desconocido' }}</span>
+                            <span>{{ formatDate(comentario.fechaCreacion) }}</span>
+                        </div>
+                        <pre class="text-green-300 mt-1 font-mono whitespace-pre-wrap">{{ comentario.contenido }}</pre>
+                    </div>
+                </div>
+            </div>
+
+            <!--mensaje cuando no hay comentarios-->
+            <div v-else class="text-gray-500 italic">
+                > No hay comentarios para este ticket!...
             </div>
         </main>
     </div>
@@ -142,8 +142,10 @@ export default {
 
         iniciarPolling() {
             this.polling = setInterval(() => {
-                this.cargarComentariosSeparado();
-            }, 10000); //Actualiza cada segundos.
+                if (this.ticket && this.ticket.id) {
+                    this.cargarComentariosSeparado();
+                }
+            }, 30000); //Actualiza cada 30 segundos.
         },
 
         detenerPolling() {
@@ -180,7 +182,7 @@ export default {
         },
 
         formatDate(dateString) {
-            if (!dateString) return '[Fecha no disponible]';
+            if (!dateString) return `[Fecha no disponible]`;
 
             try {
                 const date = new Date(dateString);
@@ -251,7 +253,7 @@ export default {
 
         async cargarComentariosSeparado() {
             try {
-                const response = await api.get('/tickets/${this.ticket.id}/comentarios');
+                const response = await api.get(`/tickets/${this.ticket.id}/comentarios`);
                 this.ticket.comentarios = Array.isArray(response.data)
                     ? response.data
                     : [];

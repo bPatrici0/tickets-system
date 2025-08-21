@@ -67,9 +67,9 @@
             <!--historial-->
             <div class="mb-6" v-if="ticket.comentarios && ticket.comentarios.length > 0">
                 <h3 class="text-lg text-green-400 mb-6">> Historial: </h3>
-                <div class="space-y-4">
+                <div class="space-y-8">
                     <div v-for="comentario in ticket.comentarios" :key="comentario.id"
-                        class="border-1-2 border-green-500 pl-3 py-2 history-entry">
+                        class="border-l-2 border-green-500 pl-3 py-2 history-entry">
                         <div class="flex justify-between text-sm text-green-500">
                             <span>> {{ comentario.autor || 'Usuario desconocido' }}</span>
                             <span>{{ formatDate(comentario.fechaCreacion) }}</span>
@@ -99,11 +99,11 @@ export default {
                 descripcion: '',
                 estado: '',
                 fechaCreacion: '',
-                comentarios: [],
-                polling: null
+                comentarios: []
             },
             nuevoComentario: '',
-            isSubmitting: false
+            isSubmitting: false,
+            polling: null
         }
     },
 
@@ -117,6 +117,20 @@ export default {
     },
 
     methods: {
+        iniciarPolling() {
+            this.polling = setInterval(() => {
+                if (this.ticket && this.ticket.id) {
+                    this.cargarComentariosSeparado();
+                }
+            }, 30000); // Actualiza cada 30 segundos.
+        },
+
+        detenerPolling() {
+            if (this.polling) {
+                clearInterval(this.polling);
+            }
+        },
+
         async cargarTicketCompleto() {
             try {
                 const ticketId = this.$route.params.id;
@@ -126,6 +140,12 @@ export default {
                     api.get(`/tickets/${ticketId}/comentarios`)
                 ]);
 
+                console.log('Fecha creación ticket:', ticketResponse.data.fechaCreacion);
+                if (comentariosResponse.data && comentariosResponse.data.length > 0) {
+                    console.log('Fecha primer comentario:', comentariosResponse.data[0].fechaCreacion);
+                    this.debugDate(comentariosResponse.data[0].fechaCreacion);
+                }
+
                 this.ticket = {
                     ...ticketResponse.data,
                     comentarios: Array.isArray(comentariosResponse.data)
@@ -133,70 +153,80 @@ export default {
                         : []
                 };
 
-                this.ticket.comentarios.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
+                // Ordenar comentarios (más recientes primero)
+                this.ordenarComentarios();
+
+                console.log('Comentarios ordenados:', this.ticket.comentarios);
             } catch (error) {
                 console.error("Error cargando ticket completo:", error);
                 this.ticket.comentarios = [];
             }
         },
 
-        iniciarPolling() {
-            this.polling = setInterval(() => {
-                if (this.ticket && this.ticket.id) {
-                    this.cargarComentariosSeparado();
-                }
-            }, 30000); //Actualiza cada 30 segundos.
-        },
-
-        detenerPolling() {
-            if (this.polling) {
-                clearInterval(this.polling);
-            }
-        },
-
-        async cargarTicket() {
+        async cargarComentariosSeparado() {
             try {
-                const ticketId = this.$route.params.id;
+                const response = await api.get(`/tickets/${this.ticket.id}/comentarios`);
+                this.ticket.comentarios = Array.isArray(response.data)
+                    ? response.data
+                    : [];
 
-                //obtener informacion básica del ticket
-                const ticketResponse = await api.get(`/tickets/${ticketId}`);
-
-                //obtener comentarios por separado
-                const comentariosResponse = await api.get('/tickets/${ticketId}/comentarios');
-
-                this.ticket = {
-                    ...ticketResponse.data,
-                    comentarios: Array.isArray(comentariosResponse.data)
-                        ? comentariosResponse.data
-                        : []
-                };
-
-                this.ticket.comentarios.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
-
+                this.ordenarComentarios();
             } catch (error) {
-                console.error("Error cargando ticket: ", error);
-                alert("Error al cargar el ticket");
-                this.ticket.comentarios = [];
-                this.$router.push('/tickets');
+                console.error("Error cargando comentarios:", error);
             }
+        },
+
+        ordenarComentarios() {
+            this.ticket.comentarios.sort((a, b) => {
+                const dateA = new Date(a.fechaCreacion);
+                const dateB = new Date(b.fechaCreacion);
+                return dateB - dateA; // Más reciente primero
+            });
         },
 
         formatDate(dateString) {
-            if (!dateString) return `[Fecha no disponible]`;
+            if (!dateString) return '[Fecha no disponible]';
 
             try {
-                const date = new Date(dateString);
+                let date = new Date(dateString);
+
+                if (isNaN(date.getTime())) {
+                    // Intentar diferentes formatos
+                    if (dateString.includes('T') && dateString.includes('+')) {
+                        date = new Date(dateString.replace('+', '.000+'));
+                    } else if (dateString.includes('-')) {
+                        const parts = dateString.split('T');
+                        if (parts.length > 1) {
+                            date = new Date(parts[0] + 'T' + parts[1].split('.')[0]);
+                        } else {
+                            date = new Date(dateString.replace(' ', 'T'));
+                        }
+                    }
+                }
+
+                if (isNaN(date.getTime())) {
+                    console.warn('Fecha no reconocida:', dateString);
+                    return dateString; // Devuelve el string original
+                }
+
                 return date.toLocaleString('es-MX', {
                     day: '2-digit',
-                    month: 'short',
+                    month: 'short', // CORRECCIÓN: 'short' en lugar de 'sort'
                     year: 'numeric',
                     hour: '2-digit',
                     minute: '2-digit',
                     hour12: false
                 }).replace(/\//g, '-').replace(',', '');
-            } catch {
-                return '[Fecha inválida]';
+            } catch (error) {
+                console.error('Error formateando fecha:', error, dateString);
+                return dateString; // Devuelve el string original
             }
+        },
+
+        debugDate(dateString) {
+            console.log('Fecha recibida:', dateString);
+            console.log('Nuevo Date():', new Date(dateString));
+            console.log('Timestamp:', new Date(dateString).getTime());
         },
 
         statusClass(estado) {
@@ -211,13 +241,13 @@ export default {
         async agregarComentario() {
             this.isSubmitting = true;
             try {
-                if (this.ticket.estado !== 'ABIERTO'){
+                if (this.ticket.estado !== 'ABIERTO') {
                     alert("Solo puedes agregar comentarios a tickets ABIERTOS");
                     return;
                 }
 
                 if (!this.nuevoComentario.trim()) {
-                    alert("El nuevo comentario no puede estar vacio");
+                    alert("El comentario no puede estar vacío");
                     return;
                 }
 
@@ -227,58 +257,34 @@ export default {
 
                 console.log("Respuesta al agregar comentario:", response.data);
 
-                //verificar la respuesta correctamente
                 if (response.data && response.data.id) {
+                    // Agregar el nuevo comentario al inicio
                     this.ticket.comentarios.unshift(response.data);
                 } else {
+                    // Recargar comentarios si la respuesta no trae el comentario
                     await this.cargarComentariosSeparado();
                 }
 
                 this.nuevoComentario = '';
 
-                //hacer scroll al nuevo comentario
+                // Scroll al nuevo comentario
                 this.$nextTick(() => {
-                    const comments = document.querySelectorAll('.border-1-2');
+                    const comments = document.querySelectorAll('.border-l-2');
                     if (comments.length > 0) {
                         comments[0].scrollIntoView({ behavior: 'smooth' });
                         comments[0].classList.add('new-comment');
                     }
                 });
+
             } catch (error) {
-                console.error("Error:", error);
+                console.error("Error agregando comentario:", error);
+                alert("Error al agregar comentario: " + (error.response?.data || error.message));
             } finally {
                 this.isSubmitting = false;
             }
-        },
-
-        async cargarComentariosSeparado() {
-            try {
-                const response = await api.get(`/tickets/${this.ticket.id}/comentarios`);
-                this.ticket.comentarios = Array.isArray(response.data)
-                    ? response.data
-                    : [];
-
-                this.ticket.comentarios.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
-            } catch (error) {
-                console.error("Error cargando comentarios:", error);
-                this.ticket.comentarios = [];
-            }
-        },
-
-        formatTerminalDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleString('es-MX', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false
-            }).replace(/\//g, '-').replace(',', '');
         }
     }
 }
-
 </script>
 
 <style scoped>
@@ -300,62 +306,10 @@ export default {
 }
 
 /* Estilos para el historial */
-.terminal-history {
-    display: block !important;
-    max-height: 60vh;
-    overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: #10b981 #000;
-}
 .history-entry {
     margin-bottom: 1rem;
     padding: 0.5rem;
     border-left: 2px solid #10b981;
-}
-.output .content {
-    white-space: pre-wrap;
-    word-break: break-word;
-    color: #10b981;
-    font-family: monospace;
-}
-.terminal-history::-webkit-scrollbar {
-    width: 8px;
-}
-.terminal-history::-webkit-scrollbar-track {
-    background: #000;
-}
-.terminal-history::-webkit-scrollbar-thumb {
-    background-color: #10b981;
-    border-radius: 4px;
-}
-
-.command-line {
-    @apply text-green-400 mb-1;
-}
-
-.prompt {
-    @apply text-green-500;
-}
-
-.command {
-    @apply text-yellow-400;
-}
-
-.metadata {
-    @apply flex justify-between text-gray-500 text-xs mb-1;
-}
-
-.output .content {
-    @apply text-green-300 whitespace-pre-wrap ml-4;
-    font-family: 'Courier New', monospace;
-}
-
-.separator {
-    @apply my-3 text-gray-600;
-}
-
-.last-entry {
-    @apply pb-0;
 }
 
 /* Efecto de scroll automático para el último comentario */
@@ -368,7 +322,7 @@ export default {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/*destacar nuevos comentarios*/
+/* Destacar nuevos comentarios */
 .new-comment {
     animation: pulse 2s ease-in-out;
 }

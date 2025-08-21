@@ -47,12 +47,12 @@
                 <h3 class="text-lg text-green-400 mb-2">> Historial: </h3>
                 <div class="space-y-4">
                     <div v-for="comentario in ticket.comentarios" :key="comentario.id"
-                        class="border-1-2 border-green-500 pl-3 py-2">
+                        class="border-1-2 border-green-500 pl-3 py-2 history-entry">
                         <div class="flex justify-between text-sm text-green-500">
                             <span>> {{ comentario.autor || 'Usuario desconocido' }}</span>
-                            <span> {{ formatDate(comentario.fechaCreacion) }}</span>
+                            <span>{{ formatDate(comentario.fechaCreacion) }}</span>
                         </div>
-                        <pre class="text-green-300 mt-1 font-mono">{{ comentario.contenido }}</pre>
+                        <pre class="text-green-300 mt-1 font-mono whitespace-pre-wrap">{{ comentario.contenido }}</pre>
                     </div>
                 </div>
             </div>
@@ -108,7 +108,7 @@ export default {
     },
 
     created() {
-        this.cargarTicket();
+        this.cargarTicketCompleto();
         this.iniciarPolling();
     },
 
@@ -117,10 +117,33 @@ export default {
     },
 
     methods: {
+        async cargarTicketCompleto() {
+            try {
+                const ticketId = this.$route.params.id;
+
+                const [ticketResponse, comentariosResponse] = await Promise.all([
+                    api.get(`/tickets/${ticketId}`),
+                    api.get(`/tickets/${ticketId}/comentarios`)
+                ]);
+
+                this.ticket = {
+                    ...ticketResponse.data,
+                    comentarios: Array.isArray(comentariosResponse.data)
+                        ? comentariosResponse.data
+                        : []
+                };
+
+                this.ticket.comentarios.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
+            } catch (error) {
+                console.error("Error cargando ticket completo:", error);
+                this.ticket.comentarios = [];
+            }
+        },
+
         iniciarPolling() {
             this.polling = setInterval(() => {
-                this.cargarTicket();
-            }, 600000); //Actualiza cada 1 minuto.
+                this.cargarComentariosSeparado();
+            }, 10000); //Actualiza cada segundos.
         },
 
         detenerPolling() {
@@ -132,20 +155,22 @@ export default {
         async cargarTicket() {
             try {
                 const ticketId = this.$route.params.id;
-                const response = await api.get(`/tickets/${ticketId}`);
+
+                //obtener informacion básica del ticket
+                const ticketResponse = await api.get(`/tickets/${ticketId}`);
+
+                //obtener comentarios por separado
+                const comentariosResponse = await api.get('/tickets/${ticketId}/comentarios');
 
                 this.ticket = {
-                    ...response.data,
-                    comentarios: response.data.comentarios || []
+                    ...ticketResponse.data,
+                    comentarios: Array.isArray(comentariosResponse.data)
+                        ? comentariosResponse.data
+                        : []
                 };
 
-                console.log("Datos completos del ticket: ", this.ticket);
+                this.ticket.comentarios.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
 
-                //this.ticket.comentarios = this.ticket.comentarios?.map(c => ({...c})) || [];
-
-                this.ticket.comentarios.sort((a, b) =>
-                    new Date(b.fechaCreacion) - new Date(a.fechaCreacion)
-                );
             } catch (error) {
                 console.error("Error cargando ticket: ", error);
                 alert("Error al cargar el ticket");
@@ -196,44 +221,45 @@ export default {
 
                 const response = await api.post(`/tickets/${this.ticket.id}/comentarios`, {
                     contenido: this.nuevoComentario
-                }, {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
                 });
 
+                console.log("Respuesta al agregar comentario:", response.data);
+
                 //verificar la respuesta correctamente
-                if (response.data && response.data.comenatarios) {
-                    this.ticket.comentarios = response.data.comentarios;
+                if (response.data && response.data.id) {
+                    this.ticket.comentarios.unshift(response.data);
                 } else {
-                    //si la respuesta no trae los comentarios, recarga el ticket
-                    await this.cargarTicket();
+                    await this.cargarComentariosSeparado();
                 }
 
                 this.nuevoComentario = '';
 
                 //hacer scroll al nuevo comentario
                 this.$nextTick(() => {
-                    const element = document.querySelector('.history-entry:first-child');
-                    if (element) {
-                        element.scrollIntoView({ behavior: 'smooth' });
-                        //animacion
-                        element.classList.add('new-comment');
+                    const comments = document.querySelectorAll('.border-1-2');
+                    if (comments.length > 0) {
+                        comments[0].scrollIntoView({ behavior: 'smooth' });
+                        comments[0].classList.add('new-comment');
                     }
                 });
             } catch (error) {
-                console.error("Error agregando comentario: ", error);
-                let errorMsg = "Error al agregar comentario";
-                if(error.response) {
-                    errorMsg = error.response.data || errorMsg;
-                    if(error.response.status === 401) {
-                        errorMsg = "No Autorizado - por favor inicia sesión nuevamente";
-                        this.$router.push('/login');
-                    }
-                }
-                alert(errorMsg);
+                console.error("Error:", error);
             } finally {
                 this.isSubmitting = false;
+            }
+        },
+
+        async cargarComentariosSeparado() {
+            try {
+                const response = await api.get('/tickets/${this.ticket.id}/comentarios');
+                this.ticket.comentarios = Array.isArray(response.data)
+                    ? response.data
+                    : [];
+
+                this.ticket.comentarios.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
+            } catch (error) {
+                console.error("Error cargando comentarios:", error);
+                this.ticket.comentarios = [];
             }
         },
 

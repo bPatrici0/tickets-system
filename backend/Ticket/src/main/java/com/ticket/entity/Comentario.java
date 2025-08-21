@@ -3,6 +3,7 @@ package com.ticket.entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
@@ -15,7 +16,7 @@ public class Comentario {
     private String autor;
     private LocalDateTime fechaCreacion;
 
-    //@JsonBackReference
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ticket_id")
     private Ticket ticket;

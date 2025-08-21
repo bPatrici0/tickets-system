@@ -184,42 +184,47 @@ export default {
             });
         },
 
-        formatDate(dateString) {
-            if (!dateString) return '[Fecha no disponible]';
+        formatDate(dateStringOrArray) {
+            if (!dateStringOrArray) return '[Fecha no disponible]';
 
             try {
-                let date = new Date(dateString);
+                let date;
 
-                if (isNaN(date.getTime())) {
-                    // Intentar diferentes formatos
-                    if (dateString.includes('T') && dateString.includes('+')) {
-                        date = new Date(dateString.replace('+', '.000+'));
-                    } else if (dateString.includes('-')) {
-                        const parts = dateString.split('T');
-                        if (parts.length > 1) {
-                            date = new Date(parts[0] + 'T' + parts[1].split('.')[0]);
+                if (Array.isArray(dateStringOrArray)) {
+                    const [year, month, day, hours, minutes] = dateStringOrArray;
+
+                    date = new Date(year, month - 1, day, hours, minutes);
+                } else if (typeof dateStringOrArray === 'string') {
+                    date = new Date(dateStringOrArray);
+
+                    if (isNaN(date.getTime())) {
+                        if (dateStringOrArray.includes('T') && dateStringOrArray.includes('+')) {
+                            date = new Date(dateStringOrArray.replace('+', '.000+'));
                         } else {
-                            date = new Date(dateString.replace(' ', 'T'));
+                            date = new Date(dateStringOrArray.replace(' ', 'T'));
                         }
                     }
+                } else {
+                    date = new Date(dateStringOrArray);
                 }
 
                 if (isNaN(date.getTime())) {
-                    console.warn('Fecha no reconocida:', dateString);
-                    return dateString; // Devuelve el string original
+                    console.warn('Fecha no reconocida:', dateStringOrArray);
+                    return '[Fecha inválida]'; // Devuelve el string original
                 }
 
                 return date.toLocaleString('es-MX', {
                     day: '2-digit',
-                    month: 'short', // CORRECCIÓN: 'short' en lugar de 'sort'
+                    month: 'short',
                     year: 'numeric',
                     hour: '2-digit',
                     minute: '2-digit',
                     hour12: false
                 }).replace(/\//g, '-').replace(',', '');
+
             } catch (error) {
-                console.error('Error formateando fecha:', error, dateString);
-                return dateString; // Devuelve el string original
+                console.error('Error formateando fecha:', error, dateStringOrArray);
+                return '[Error de fecha]';
             }
         },
 

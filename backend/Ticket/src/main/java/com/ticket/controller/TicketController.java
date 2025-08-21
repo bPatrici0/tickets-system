@@ -38,18 +38,13 @@ public class TicketController {
         log.info("intentando agregar comentario al ticket {} por usuario {}", id, authentication.getName());
 
         try {
-            log.info("Intento de agregar comentario. Tciket ID: {}, Usuario: {}, Contenido: {}",
-                    id, authentication.getName(), comentarioDTO.getContenido());
-            //String contenido = request.get("contenido");
             if (comentarioDTO.getContenido() == null || comentarioDTO.getContenido().trim().isEmpty()) {
                 return ResponseEntity.badRequest().body("El contenido no puede estar vacio");
             }
 
-            Ticket ticket = ticketService.agregarComentario(id, comentarioDTO, authentication.getName());
+            ComentarioDTO comentarioCreado = ticketService.agregarComentario(id, comentarioDTO, authentication.getName());
 
-            //agregar comentario
-            //Ticket ticketActualizado = ticketService.agregarComentario(id, comentarioDTO, authentication.getName());
-            return ResponseEntity.ok(ticket);
+            return ResponseEntity.ok(comentarioCreado);
         } catch (BadRequestException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (NotFoundException e) {

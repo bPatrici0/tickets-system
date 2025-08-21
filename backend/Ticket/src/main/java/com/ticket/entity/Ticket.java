@@ -18,16 +18,15 @@ public class Ticket {
     @Enumerated(EnumType.STRING)
     private EstadoTicket estado = EstadoTicket.ABIERTO; //valor por defecto
 
-    @ManyToOne
-    @JoinColumn(name = "usuario_id")
-    @JsonBackReference
-    private Usuario creadoPor; //relacion con usuario
-
-
     private LocalDateTime fechaCreacion = LocalDateTime.now();
 
+    @ManyToOne
+    @JoinColumn(name = "usuario_id")
+    //@JsonBackReference
+    private Usuario creadoPor; //relacion con usuario
+
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonBackReference
-    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comentario> comentarios = new ArrayList<>();
 
     public Long getId() {

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.List;
+import com.ticket.repository.ComentarioRepository;
 
 @Service
 @Transactional
@@ -35,6 +36,9 @@ public class TicketService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private ComentarioRepository comentarioRepository;
 
     public Ticket crearTicket(TicketDTO ticketDTO) {
         if (ticketDTO.getTitulo() == null || ticketDTO.getTitulo().isEmpty()) {
@@ -137,7 +141,7 @@ public class TicketService {
     }
 
     @Transactional
-    public Ticket agregarComentario(Long ticketId, ComentarioDTO comentarioDTO, String autor) {
+    public ComentarioDTO agregarComentario(Long ticketId, ComentarioDTO comentarioDTO, String autor) {
         logger.info("datos recibidos - ticketId: {}, autor: {}, contenido: {}", ticketId, autor, comentarioDTO.getContenido());
 
         Ticket ticket = ticketRepository.findById(ticketId)
@@ -154,13 +158,16 @@ public class TicketService {
         //comentario.setFechaCreacion(LocalDateTime.now());
         comentario.setTicket(ticket);
 
+        Comentario comentarioGuardado = comentarioRepository.save(comentario);
+
         if (ticket.getComentarios() == null) {
             ticket.setComentarios(new ArrayList<>());
         }
+        ticket.getComentarios().add(comentarioGuardado);
 
-        ticket.getComentarios().add(comentario);
+        ticketRepository.save(ticket);
 
-        return ticketRepository.save(ticket);
+        return convertComentarioToDTO(comentarioGuardado);
     }
 
     public Ticket cambiarEstado(Long ticketId, String estado){
@@ -174,10 +181,14 @@ public class TicketService {
     }
 
     public List<ComentarioDTO> obtenerComentariosPorTicket(Long ticketId) {
-        Ticket ticket = ticketRepository.findById(ticketId)
-                .orElseThrow(() -> new NotFoundException("Ticket no encontrado"));
+        if (!ticketRepository.existsById(ticketId)) {
+            throw new NotFoundException("Ticket no encontrado");
+        }
 
-        return ticket.getComentarios().stream()
+        //obtener los comentarios directamente del repositorio
+        List<Comentario> comentarios = comentarioRepository.findByTicketId(ticketId);
+
+        return comentarios.stream()
                 .map(this::convertComentarioToDTO)
                 .collect(Collectors.toList());
     }

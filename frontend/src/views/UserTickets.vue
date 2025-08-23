@@ -88,45 +88,6 @@
 
                 <!--tabla de tickets-->
                 <div class="space-y-3 max-h-[calc(100vh-200px)] overflow-y-auto pr-2">
-                    <table class="w-full border-green-500">
-                        <thead>
-                            <tr class="bg-black text-green-500 border-b border-green-500">
-                                <th class="p-2 text-left">> ID</th>
-                                <th class="p-2 text-left">> Asunto</th>
-                                <th class="p-2 text-left">> Estado</th>
-                                <th class="p-2 text-left">> Fecha</th>
-                                <th class="p-2 text-left">> Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr
-                                v-for="ticket in sortedTickets"
-                                :key="ticket.id"
-                                class="border-b border-green-500 hover:bg-green-900/10"
-                            >
-                                <td class="p-2 text-green-400"># {{ ticket.id }}</td>
-                                <td class="p-2 text-green-300">{{ ticket.titulo }}</td>
-                                <td class="p-2">
-                                    <span class="px-2 py-1 rounded text-xs"
-                                        :class="statusClass(ticket.estado)">
-                                        {{ ticket.estado }}
-                                    </span>
-                                </td>
-                                <td class="p-2 text-green-400 text-sm">
-                                    {{ formatDate(ticket.fechaCreacion) }}
-                                </td>
-                                <td class="p-2">
-                                    <button
-                                        @click="verTicket(ticket.id)"
-                                        class="text-green-400 hover:text-green-300 text-sm"
-                                    >
-                                        > Ver
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-
                     <div
                         v-for="ticket in sortedTickets"
                         :key="ticket.id"
@@ -138,11 +99,7 @@
                                 <p class="text-green-300 text-sm mt-1">{{ ticket.descripcion }}</p>
                             </div>
                             <span class="text-xs px-2 py-1 rounded"
-                                :class="{
-                                    'bg-yellow-500/20 text-yellow-400': ticket.estado === 'ABIERTO',
-                                    'bg-blue-500/20 text-blue-400': ticket.estado === 'EN_PROGRESO',
-                                    'bg-green-500/20 text-green-400': ticket.estado === 'RESUELTO'
-                                }">
+                                :class="statusClass(ticket.estado)">
                                 {{ ticket.estado }}
                             </span>
                         </div>
@@ -155,6 +112,11 @@
                                 > Ver detalles
                             </button>
                         </div>
+                    </div>
+
+                    <!-- Mensaje cuando no hay tickets -->
+                    <div v-if="tickets.length === 0" class="text-center text-gray-500 py-8">
+                        > No hay tickets creados
                     </div>
                 </div>
             </div>
@@ -180,8 +142,19 @@ export default {
     },
     computed: {
         sortedTickets() {
-            return [...this.tickets].sort((a, b) =>
-                new Date(b.fechaCreacion) - new Date(a.fechaCreacion))
+            return [...this.tickets].sort((a, b) => {
+                const getTimestamp = (fecha) => {
+                    if (Array.isArray(fecha)) {
+                        const [year, month, day, hours, minutes] = fecha;
+                        return new Date(year, month - 1, day, hours, minutes).getTime();
+                    } else if (typeof fecha === 'string') {
+                        return new Date(fecha).getTime();
+                    }
+                    return 0;
+                };
+
+                return getTimestamp(b.fechaCreacion) - getTimestamp(a.fechaCreacion);
+            });
         }
     },
     created() {
@@ -229,44 +202,67 @@ export default {
                 this.isSubmitting = false;
             }
         },
-        handleError(error) {
-            console.error("Error al crear ticket: ", error);
-            const message = error.response?.data?.message || "Error al crear ticket";
-            alert(message);
-
-            if (error.response?.status === 401) {
-                this.handleLogout();
-            }
-        },
         async fetchTickets() {
             try {
                 const email = localStorage.getItem('userEmail');
                 console.log('Email obtenido: ', email);
 
-                const response = await api.get(`/tickets/usuario/${email}`);
+                const response = await api.get(`/tickets/usuario/${encodeURIComponent(email)}`);
                 console.log('Respuesta completa: ', response);
 
-                this.tickets = response.data;
+                this.tickets = response.data || [];
                 console.log('Tickets recibidos: ', this.tickets);
+
+                // Debug: ver formato de fechas
+                this.tickets.forEach(ticket => {
+                    console.log(`Ticket ${ticket.id} fecha:`, ticket.fechaCreacion);
+                });
             } catch (error) {
                 console.error("Error obteniendo tickets: ", {
                     error: error.message,
                     response: error.response?.data
                 });
                 console.error("Error response: ", error.response);
+                this.tickets = [];
             }
         },
 
-        formatDate(dateString) {
-            const options = {
-                day: '2-digit',
-                month: 'short',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            };
-            return new Date(dateString).toLocaleDateString('es-MX', options);
+        formatDate(dateData) {
+            if (!dateData) return '[Fecha no disponible]';
+
+            try {
+                let date;
+
+                if (Array.isArray(dateData)) {
+                    // Formato array: [año, mes, día, hora, minuto, ...]
+                    const [year, month, day, hours, minutes] = dateData;
+                    date = new Date(year, month - 1, day, hours, minutes);
+                } else if (typeof dateData === 'string') {
+                    // Formato string
+                    date = new Date(dateData);
+                } else {
+                    return '[Formato inválido]';
+                }
+
+                if (isNaN(date.getTime())) {
+                    return '[Fecha inválida]';
+                }
+
+                return date.toLocaleString('es-MX', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                }).replace(/,/g, '');
+
+            } catch (error) {
+                console.error('Error formateando fecha:', error, dateData);
+                return '[Error fecha]';
+            }
         },
+
         statusClass(estado) {
             const statusMap = {
                 'ABIERTO': 'bg-yellow-500/20 text-yellow-400',
@@ -275,6 +271,7 @@ export default {
             };
             return statusMap[estado] || 'bg-gray-500/20 text-gray-400';
         },
+
         verTicket(id) {
             console.log('Ver ticket con ID: ', id);
             this.$router.push(`/tickets/${id}`);
@@ -294,8 +291,22 @@ export default {
 button:hover {
     transition: color 0.2s ease;
 }
+
+/* ANIMACIÓN DEL CURSOR - ESTO FALTABA */
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
 .cursor-blink {
     animation: blink 1s step-end infinite;
 }
 
+.btn-matrix {
+    @apply bg-green-500/20 text-green-400 border border-green-500 px-4 py-2 hover:bg-green-500/30 transition-colors;
+}
+
+.terminal-box {
+    @apply border border-green-500 p-4;
+}
 </style>

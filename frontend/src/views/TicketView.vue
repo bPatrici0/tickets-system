@@ -140,9 +140,11 @@ export default {
                     api.get(`/tickets/${ticketId}/comentarios`)
                 ]);
 
-                console.log('Fecha creación ticket:', ticketResponse.data.fechaCreacion);
+                console.log('Fecha ticket (raw):', ticketResponse.data.fechaCreacion);
+                this.debugDate(ticketResponse.data.fechaCreacion);
+
                 if (comentariosResponse.data && comentariosResponse.data.length > 0) {
-                    console.log('Fecha primer comentario:', comentariosResponse.data[0].fechaCreacion);
+                    console.log('Fecha primer comentario (raw):', comentariosResponse.data[0].fechaCreacion);
                     this.debugDate(comentariosResponse.data[0].fechaCreacion);
                 }
 
@@ -156,7 +158,6 @@ export default {
                 // Ordenar comentarios (más recientes primero)
                 this.ordenarComentarios();
 
-                console.log('Comentarios ordenados:', this.ticket.comentarios);
             } catch (error) {
                 console.error("Error cargando ticket completo:", error);
                 this.ticket.comentarios = [];
@@ -177,11 +178,20 @@ export default {
         },
 
         ordenarComentarios() {
+            console.log('Antes de ordenar:', this.ticket.comentarios.map(c => c.fechaCreacion));
+
             this.ticket.comentarios.sort((a, b) => {
-                const dateA = new Date(a.fechaCreacion);
-                const dateB = new Date(b.fechaCreacion);
-                return dateB - dateA; // Más reciente primero
+                const dateA = new Date(a.fechaCreacion[0], a.fechaCreacion[1] - 1, a.fechaCreacion[2],
+                    a.fechaCreacion[3], a.fechaCreacion[4]);
+                const dateB = new Date(b.fechaCreacion[0], b.fechaCreacion[1] - 1, b.fechaCreacion[2],
+                    b.fechaCreacion[3], b.fechaCreacion[4]);
+
+                console.log('Comparando:', dateA, 'vs', dateB, 'resultado:', dateB - dateA);
+
+                return dateB - dateA;
             });
+
+            console.log('Despues de ordenar:', this.ticket.comentarios.map(c => c.fechaCreacion));
         },
 
         formatDate(dateStringOrArray) {
@@ -263,10 +273,9 @@ export default {
                 console.log("Respuesta al agregar comentario:", response.data);
 
                 if (response.data && response.data.id) {
-                    // Agregar el nuevo comentario al inicio
                     this.ticket.comentarios.unshift(response.data);
+                    this.ordenarComentarios();
                 } else {
-                    // Recargar comentarios si la respuesta no trae el comentario
                     await this.cargarComentariosSeparado();
                 }
 

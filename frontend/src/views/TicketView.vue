@@ -178,20 +178,22 @@ export default {
         },
 
         ordenarComentarios() {
-            console.log('Antes de ordenar:', this.ticket.comentarios.map(c => c.fechaCreacion));
+            if (!this.ticket.comentarios || this.ticket.comentarios.length === 0) return;
 
             this.ticket.comentarios.sort((a, b) => {
-                const dateA = new Date(a.fechaCreacion[0], a.fechaCreacion[1] - 1, a.fechaCreacion[2],
-                    a.fechaCreacion[3], a.fechaCreacion[4]);
-                const dateB = new Date(b.fechaCreacion[0], b.fechaCreacion[1] - 1, b.fechaCreacion[2],
-                    b.fechaCreacion[3], b.fechaCreacion[4]);
+                const getTimestamp = (fechaArray) => {
+                    if (!Array.isArray(fechaArray)) return 0;
+                    const [year, month, day, hours, minutes] = fechaArray;
+                    return new Date(year, month - 1, day, hours, minutes).getTime();
+                };
 
-                console.log('Comparando:', dateA, 'vs', dateB, 'resultado:', dateB - dateA);
+                const timestampA = getTimestamp(a.fechaCreacion);
+                const timestampB = getTimestamp(b.fechaCreacion);
 
-                return dateB - dateA;
+                return timestampB - timestampA;
             });
 
-            console.log('Despues de ordenar:', this.ticket.comentarios.map(c => c.fechaCreacion));
+            this.$forceUpdate();
         },
 
         formatDate(dateStringOrArray) {

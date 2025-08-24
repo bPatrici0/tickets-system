@@ -168,7 +168,7 @@ export default {
     async fetchUsers() {
       this.loadingUsers = true;
       try {
-        const response = await api.get('/api/admin/users');
+        const response = await api.get('/admin/users');
         this.users = response.data;
         console.log('Usuarios cargados:', this.users);
       } catch (error) {
@@ -182,7 +182,7 @@ export default {
     async fetchTickets() {
       this.loadingTickets = true;
       try {
-        const response = await api.get('/api/tickets');
+        const response = await api.get('/tickets');
         this.tickets = response.data;
         console.log('Tickets cargados:', this.tickets);
       } catch (error) {
@@ -198,7 +198,7 @@ export default {
       try {
         const newRole = user.rol === 'ROLE_ADMIN' ? 'ROLE_USER' : 'ROLE_ADMIN';
 
-        await api.put(`/api/admin/users/${user.id}/role`, {
+        await api.put(`/admin/users/${user.id}/role`, {
           role: newRole
         });
 

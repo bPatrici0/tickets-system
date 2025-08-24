@@ -36,7 +36,7 @@ public class AuthController {
         Usuario usuario = new Usuario();
         usuario.setEmail(registroDTO.getEmail());
         usuario.setPassword(passwordEncoder.encode(registroDTO.getPassword()));
-        usuario.setRol(Rol.ROLE_USER);
+        usuario.setRol("ROLE_USER");
 
         usuarioRepository.save(usuario);
         return ResponseEntity.ok("Usuario registrado exitosamente");
@@ -60,7 +60,7 @@ public class AuthController {
             //respuesta con datos necesarios
             return ResponseEntity.ok(new LoginResponseDTO(
                 usuario.getEmail(),
-                usuario.getRol().name()
+                usuario.getRol()
             ));
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");

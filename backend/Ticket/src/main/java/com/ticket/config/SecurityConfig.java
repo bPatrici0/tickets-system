@@ -49,7 +49,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/tickets/*").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/tickets/*/estado").authenticated()
 
-                        //Solo el admin puede eliminar tickets
+                        //Solo el admin puede
                         .requestMatchers(HttpMethod.GET, "/api/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/admin/**").hasRole("ADMIN")

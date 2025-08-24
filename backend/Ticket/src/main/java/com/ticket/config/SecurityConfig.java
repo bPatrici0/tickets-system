@@ -50,8 +50,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/tickets/*/estado").authenticated()
 
                         //Solo el admin puede eliminar tickets
-                        .requestMatchers(HttpMethod.DELETE, "/api/tickets/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/tickets/*").hasRole("ADMIN")
 
                         //caulqueir otra peticion requeire autenticacion
                         .anyRequest().authenticated()

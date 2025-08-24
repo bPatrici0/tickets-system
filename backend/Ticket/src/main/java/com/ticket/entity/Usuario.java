@@ -25,12 +25,12 @@ public class Usuario implements UserDetails {
     @JsonIgnore
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    private Rol rol;
+    @Column(nullable = false)
+    private String rol = "ROLE_USER";
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(rol.name()));
+        return List.of(new SimpleGrantedAuthority(rol));
     }
 
     @Override
@@ -82,11 +82,11 @@ public class Usuario implements UserDetails {
         this.password = password;
     }
 
-    public Rol getRol() {
+    public String getRol() {
         return rol;
     }
 
-    public void setRol(Rol rol) {
+    public void setRol(String rol) {
         this.rol = rol;
     }
 }

@@ -38,7 +38,17 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 py-4">
       <!-- Sección Usuarios -->
       <div class="terminal-box p-4">
-        <h2 class="text-xl mb-4">> Usuarios <span class="text-green-400">({{ users.length }})</span><span class="cursor-blink">|</span></h2>
+        <h2 class="text-xl mb-4">> Usuarios <span class="text-green-400">({{ filteredUsers.length }})/({{ users.length }})</span><span class="cursor-blink">|</span></h2>
+
+        <!--filtro por rol-->
+        <div class="flex items-center space-x-2">
+            <label class="text-green-400 text-sm">Filtrar: </label>
+            <select v-model="filtroRol" class="bg-black border border-green-500 text-green-400 px-2 py-1 rounded text-sm">
+                <option value="TODOS">Todos</option>
+                <option value="ROLE_ADMIN">Administradores</option>
+                <option value="ROLE_USER">Usuarios</option>
+            </select>
+        </div>
 
         <!-- estado de carga -->
         <div v-if="loadingUsers" class="text-green-500 text-center py-4">
@@ -46,28 +56,28 @@
         </div>
 
         <!-- estado -->
-        <div v-else-if="users.length === 0" class="text-gray-500 text-center py-4">
-          > No hay usuarios registrados
+        <div v-else-if="filteredUsers.length === 0" class="text-gray-500 text-center py-4">
+          > No hay usuarios {{ filtroMensaje }}
         </div>
 
         <!-- Lista de usuarios -->
         <div v-else class="space-y-3 max-h-96 overflow-y-auto">
-          <div v-for="user in users" :key="user.id" class="p-3 border border-green-500 rounded">
+          <div v-for="user in filteredUsers" :key="user.id" class="p-3 border border-green-500 rounded">
             <div class="flex justify-between items-center mb-2">
-              <span class="text-green-300 font-mono">{{ user.email }}</span>
-              <label class="switch">
-                <input
-                  type="checkbox"
-                  :checked="user.rol === 'ROLE_ADMIN'"
-                  @change="toggleRole(user)"
-                  :disabled="updatingUser === user.id"
-                >
-                <span class="slider round"></span>
-              </label>
+                <div>
+                    <span class="text-green-300 font-mono">{{ user.email }}</span>
+                    <span class="text-xs text-green-500">ID: {{ user.id }}</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" :checked="user.rol === 'ROLE_ADMIN'" @change="toggleRole(user)" :disabled="updatingUser === user.id">
+                    <span class="slider round"></span>
+                </label>
             </div>
-            <div class="flex justify-between items-center text-xs text-green-500">
-              <span>Rol: {{ user.rol }}</span>
-              <span>ID: {{ user.id }}</span>
+            <div class="flex justify-between items-center text-xs">
+                <span class="text-green-500">Rol: {{ user.rol }}</span>
+                <span :class="user.rol === 'ROLE_ADMIN' ? 'text-yellow-400' : 'text-blue-400'">
+                    {{ user.rol === 'ROLE_ADMIN' ? 'Administrador' : 'Usuario' }}
+                </span>
             </div>
             <div v-if="updatingUser === user.id" class="text-green-400 text-xs mt-2">
               > Actualizando...
@@ -75,13 +85,24 @@
           </div>
         </div>
 
-        <button
-          @click="fetchUsers"
-          class="btn-matrix mt-4 text-sm"
-          :disabled="loadingUsers"
-        >
+        <button @click="fetchUsers" class="btn-matrix mt-4 text-sm" :disabled="loadingUsers">
           > Actualizar lista
         </button>
+
+        <!--estadisticas de usuarios-->
+        <div class="mt-4 p-3 border border-green-500 rounded text-xs text-xs text-green-400">
+            <div>> Estadísticas de usuarios: </div>
+            <div class="grid grid-cols-2 gap-2 mt-2">
+                <div class="text-center p-2 bg-green-500/20 rounded">
+                    <div class="text-green-400 font-bold">{{ usuariosCount }}</div>
+                    <div>Usuarios</div>
+                </div>
+                <div class="text-center p-2 bg-yellow-500/20 rounded">
+                    <div class="text-yellow-400 font-bold">{{ administradoresCount }}</div>
+                    <div>Administradores</div>
+                </div>
+            </div>
+        </div>
       </div>
 
       <!-- Sección Tickets -->
@@ -138,11 +159,35 @@ export default {
       tickets: [],
       loadingUsers: false,
       loadingTickets: false,
-      updatingUser: null
+      updatingUser: null,
+      filtroRol: 'TODOS'
     }
   },
 
   computed: {
+    filteredUsers() {
+        if (this.filtroRol === 'TODOS') {
+            return this.users;
+        }
+        return this.users.filter(user => user.rol === this.filtroRol);
+    },
+
+    filtroMensaje() {
+        switch (this.filtroRol) {
+            case 'ROLE_ADMIN': return 'administradores';
+            case 'ROLE_USER': return 'usuarios';
+            default: return '';
+        }
+    },
+
+    usuariosCount() {
+        return this.users.filter(user => user.rol === 'ROLE_USER').length;
+    },
+
+    administradoresCount() {
+        return this.users.filter(user => user.rol === 'ROLE_ADMIN').length;
+    },
+
     ticketsAbiertos() {
       return this.tickets.filter(t => t.estado === 'ABIERTO').length;
     },
@@ -227,9 +272,12 @@ export default {
           role: newRole
         });
 
-        // Actualizar localmente
         user.rol = newRole;
-        alert(`Rol actualizado a: ${newRole}`);
+
+        const mensaje = newRole === 'ROLE_ADMIN'
+            ? 'Usuario modificado a Administrador'
+            : 'Usuario modificado a Usuario normal';
+        alert(mensaje);
 
       } catch (error) {
         console.error("Error updating role: ", error);
@@ -294,6 +342,37 @@ export default {
 </script>
 
 <style scoped>
+
+/*estilo para el filtro*/
+select {
+    background-color: #000;
+    border: 1px solid #00FF41;
+    color: #00FF41;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25;
+    outline: none;
+}
+select:focus {
+    border-color: #00FF41;
+    box-shadow: 0 0 0 2px rgba(0, 255, 65, 0.2);
+}
+/*Estilos para las card de usuario*/
+.border-green-500 {
+    border-color: #00FF41;
+}
+.bg-green-900\/20 {
+    background-color: rgba(0, 255, 65, 0.1);
+}
+.bg-yellow-500\/20 {
+    background-color: rgba(255, 193, 7, 0.1);
+}
+/*efecto hover para las cards*/
+.space-y-3 > div:hover {
+    background-color: rgba(0, 255, 65, 0.05);
+    transform: translateX(2px);
+    transition: all 0.2s ease;
+}
+
 .terminal-box {
   @apply border border-green-500 rounded-lg p-4;
 }

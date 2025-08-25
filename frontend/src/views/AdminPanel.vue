@@ -156,10 +156,15 @@ export default {
 
   created() {
     const userRole = localStorage.getItem('userRole');
+    console.log('Rol del usuario:', userRole);
+
     if (userRole !== 'ROLE_ADMIN') {
+      console.log('Acceso denegado, redirigiendo a /tickets');
       this.$router.push('/tickets');
       return;
     }
+
+    console.log('Acceso permitido, cargando datos...');
     this.fetchUsers();
     this.fetchTickets();
   },
@@ -168,12 +173,32 @@ export default {
     async fetchUsers() {
       this.loadingUsers = true;
       try {
-        const response = await api.get('/admin/users');
-        this.users = response.data;
-        console.log('Usuarios cargados:', this.users);
+        console.log('Intentando cargar usuarios...');
+
+        const response = await api.get('/admin/usuarios');
+
+        console.log('Respuesta recibida:', response);
+        this.users = response.data || [];
+        console.log('Usuarios cargados:', this.users.length);
+
       } catch (error) {
         console.error("Error fetching users: ", error);
-        alert("Error al cargar usuarios");
+
+        if (error.response) {
+            console.error('Status error:', error.response.status);
+            console.error('Data error:', error.response.data);
+
+            if (error.response.status === 403) {
+                alert('No tienes permisos de administrador');
+            } else if (error.response.status === 401) {
+                alert('Sesión expirada. Por favor inicia sesión nuevamente.');
+                this.handleLogout();
+            } else if (error.response.status === 404) {
+                alert('Endpoint no encontrado. Verifica la configuración del backend!...');
+            }
+        }
+
+        this.users = [];
       } finally {
         this.loadingUsers = false;
       }
@@ -184,7 +209,7 @@ export default {
       try {
         const response = await api.get('/tickets');
         this.tickets = response.data;
-        console.log('Tickets cargados:', this.tickets);
+        console.log('Tickets cargados:', this.tickets.length);
       } catch (error) {
         console.error("Error fetching tickets: ", error);
         alert("Error al cargar tickets");
@@ -198,7 +223,7 @@ export default {
       try {
         const newRole = user.rol === 'ROLE_ADMIN' ? 'ROLE_USER' : 'ROLE_ADMIN';
 
-        await api.put(`/admin/users/${user.id}/role`, {
+        await api.put(`/admin/usuarios/${user.id}/role`, {
           role: newRole
         });
 
@@ -208,7 +233,7 @@ export default {
 
       } catch (error) {
         console.error("Error updating role: ", error);
-        alert("Error al cambiar rol");
+        alert("Error al cambiar rol: " + (error.response?.data?.message || error.message));
       } finally {
         this.updatingUser = null;
       }

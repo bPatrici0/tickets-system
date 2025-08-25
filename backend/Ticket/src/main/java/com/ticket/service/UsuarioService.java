@@ -14,7 +14,10 @@ public class UsuarioService {
     private UsuarioRepository usuarioRepository;
 
     public List<Usuario> obtenerTodosLosUsuarios() {
-        return usuarioRepository.findAll();
+        System.out.println("UsuarioService.obtenerTodosLosUsuarios() llamado");
+        List<Usuario> usuarios = usuarioRepository.findAll();
+        System.out.println("Usuarios en BD: " + usuarios.size());
+        return usuarios;
     }
 
     public Usuario cambiarRolUsuario(Long id, String nuevoRol) {

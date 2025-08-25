@@ -368,8 +368,8 @@ select:focus {
 }
 /*efecto hover para las cards*/
 .space-y-3 > div:hover {
-    background-color: rgba(0, 255, 65, 0.05);
-    transform: translateX(2px);
+    background-color: rgba(0, 255, 255, 0.05);
+    /*transform: translateX(2px);*/
     transition: all 0.2s ease;
 }
 

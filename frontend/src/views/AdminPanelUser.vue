@@ -30,6 +30,10 @@
                     <div class="text-2xl text-yellow-400">{{ administradoresCount }}</div>
                     <div class="text-xs text-green-500">Administradores</div>
                 </div>
+                <div class="text-center p-3 border border-green-500 rounded">
+                    <div class="text-2xl text-purple-400">{{ usuariosActivos}}</div>
+                    <div class="text-xs text-green-500">Usuarios Activos</div>
+                </div>
             </div>
         </div>
     </div>

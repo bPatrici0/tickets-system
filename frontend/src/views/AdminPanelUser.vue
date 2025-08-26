@@ -17,6 +17,12 @@
         <!--estadisticas-->
         <div class="terminal-box p-4 mb-6">
             <h2 class="text-xl mb-4">> Estadisticas de Usuarios<span class="cursor-blink">|</span></h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="text-center p-3 border border-green-500 rounded">
+                    <div class="text-2xl text-green-400">{{ users.length }}</div>
+                    <div class="text-xs text-green-500">Total Usuarios</div>
+                </div>
+            </div>
         </div>
     </div>
 </template>

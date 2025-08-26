@@ -26,6 +26,10 @@
                     <div class="text-2xl text-blue-400">{{ usuariosCount }}</div>
                     <div class="text-xs text-green-500">Usuarios Normales</div>
                 </div>
+                <div class="text-center p-3 border border-green-500 rounded">
+                    <div class="text-2xl text-yellow-400">{{ administradoresCount }}</div>
+                    <div class="text-xs text-green-500">Administradores</div>
+                </div>
             </div>
         </div>
     </div>

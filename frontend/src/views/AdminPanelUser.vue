@@ -7,11 +7,16 @@
                     <button @click="$router.push('/admin')" class="btn-matrix text-sm mr-2">
                         > Volver al panel
                     </button>
-                    <button>
+                    <button @click="handleLogout" class="btn-matrix text-sm">
                         > Cerrar Sesión
                     </button>
                 </div>
             </div>
         </header>
+
+        <!--estadisticas-->
+        <div class="terminal-box p-4 mb-6">
+            <h2 class="text-xl mb-4">> Estadisticas de Usuarios<span class="cursor-blink">|</span></h2>
+        </div>
     </div>
 </template>

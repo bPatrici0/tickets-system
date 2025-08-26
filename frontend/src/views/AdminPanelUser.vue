@@ -36,5 +36,22 @@
                 </div>
             </div>
         </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <!--formulario de registro-->
+            <div="terminal-box mb-4">
+                <h2 class="text-xl mb-4">> Registrar Nuevo Usuario<span>|</span></h2>
+                <form @submit.prevent="registerUser" class="space-y-4">
+                    <div>
+                        <label class="block text-green-400 text-sm mb-1">Nombre Completo</label>
+                        <input v-model="newUser.nombre" type="text" required class="w-full bg-black border border-green-500 text-green-400 px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-green-500" placeholder="Ej: Erik Rodriguez">
+                    </div>
+
+                    <div>
+                        <label class="block text-green-400 text-sm mb-1">Email</label>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </template>

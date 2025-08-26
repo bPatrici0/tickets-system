@@ -22,6 +22,10 @@
                     <div class="text-2xl text-green-400">{{ users.length }}</div>
                     <div class="text-xs text-green-500">Total Usuarios</div>
                 </div>
+                <div class="text-center p-3 border-green-500 rounded">
+                    <div class="text-2xl text-blue-400">{{ usuariosCount }}</div>
+                    <div class="text-xs text-green-500">Usuarios Normales</div>
+                </div>
             </div>
         </div>
     </div>

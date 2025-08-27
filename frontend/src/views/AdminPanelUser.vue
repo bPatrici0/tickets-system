@@ -130,6 +130,18 @@
                                 <th class="text-left py-2 text-green-400"></th>
                             </tr>
                         </thead>
+                        <tbody>
+                            <tr v-for="user in filteredUsers" :key="user.id" class="border-b border-green-500/30 hover:bg-green-900/10">
+                                <td class="py-2 text-green-300 font-mono">{{ user.id }}</td>
+                                <td class="py-2">{{ user.nombre || 'Sin nombre' }}</td>
+                                <td class="py-2 text-green-300"> {{ user.email }}</td>
+                                <td class="py-2">
+                                    <span :class="user.rol === 'ROLE_ADMIN' ? 'text-yellow-400' : 'text-blue-400'">
+                                        {{ user.rol === 'ROLE_ADMIN' ? 'Admin' : 'Usuario' }}
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
                     </table
                 </div>
             </div>

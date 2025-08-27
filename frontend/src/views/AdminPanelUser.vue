@@ -69,7 +69,41 @@
                             <option value="ROLE_ADMIN">Administrador</option>
                         </select>
                     </div>
+
+                    <div v-if="passwordMismatch" class="text-red-400 text-sm">
+                        > Las contraselas no coinciden
+                    </div>
+
+                    <button type="submit" :disabled="registering" class="btn-matrix w-full py-2 flex justify-center items-center">
+                        <span v-if="!registering">> crear Usuario</span>
+                        <span v-else="> Procesando..."></span>
+                    </button>
+
+                    <div v-if="registerError" class="text-red-400 text-sm mt-2">
+                        > Error: {{ registerError }}
+                    </div>
                 </form>
+            </div>
+
+            <!-- lista de usuarios-->
+            <div class="terminal-box p-4">
+                <h2 class="text-xl mb-4">> Usuarios del Sistema<span class="text-green-400">({{ filteredUsers.length }}/{{ users.length }})</span><span class="cursor-blink">|</span></h2>
+
+                <!--filtros y busqueda-->
+                <div class="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-4 mb-4">
+                    <div class="flex items-center space-x-2">
+                        <label class="text-green-400 text-sm">Filtrar: </label>
+                        <select v-model="filtroRol" class="bg-black border border-green-500 text-green-400 px-2 py-1 rounded text-sm">
+                            <option value="TODOS">Todos</option>
+                            <option value="ROLE_ADMIN">Administradores</option>
+                            <option value="ROLE_USER">Usuarios</option>
+                        </select>
+                    </div>
+
+                    <div class="flex items-center space-x-2 flex-grow">
+                        <label class="text-green-400 text-sm">Buscar: </label>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

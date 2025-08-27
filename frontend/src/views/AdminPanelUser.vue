@@ -49,6 +49,25 @@
 
                     <div>
                         <label class="block text-green-400 text-sm mb-1">Email</label>
+                        <input v-model="newUser.email" type="email" required class="w-full bg-black border border-green-500 text-green-400 px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-green-500" placeholder="Ej: usuario@devops.com">
+                    </div>
+
+                    <div>
+                        <label class="block text-green-400 text-sm mb-1">Password</label>
+                        <input v-model="newUser.password" type="password" required class="w-full bg-black border border-green-500 text-green-400 px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-green-500" placeholder="*****">
+                    </div>
+
+                    <div>
+                        <label class="block text-green-400 text-sm mb-1">Confirmar Password</label>
+                        <input v-model="newUser.confirmPassword" type="password" required class="w-full bg-black border border-green-500 text-green-400 px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-green-500" placeholder="Repite el password">
+                    </div>
+
+                    <div>
+                        <label class="block text-green-400 text-sm mb-1">Rol</label>
+                        <select v-model="newUser.rol" class="w-full bg-black border border-green-500 text-green-400 px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-green-500">
+                            <option value="ROLE_USER">Usuario</option>
+                            <option value="ROLE_ADMIN">Administrador</option>
+                        </select>
                     </div>
                 </form>
             </div>

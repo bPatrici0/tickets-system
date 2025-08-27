@@ -102,7 +102,35 @@
 
                     <div class="flex items-center space-x-2 flex-grow">
                         <label class="text-green-400 text-sm">Buscar: </label>
+                        <input v-model="searchTerm" type="text" class="bg-black border border-green-500 text-green-400 px-2 py-1 rounded text-sm flex-grow" placeholder="Por nombre o email">
                     </div>
+                </div>
+
+                <!--estado de carga-->
+                <div v-if="loadingUsers" class="text-green-500 text-center py-4">
+                    > Cargando usuarios...
+                </div>
+
+                <!-- estado sin resultados-->
+                <div v-else-if="filteredUsers.length === 0" class="text-gray-500 text-center py-4">
+                    > No hay usuarios {{ filtroMensaje }}
+                </div>
+
+                <!--tabla de usuarios-->
+                <div v-else class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b border-green-500">
+                                <th class="text-left py-2 text-green-400">ID</th>
+                                <th class="text-left py-2 text-green-400">Nombre</th>
+                                <th class="text-left py-2 text-green-400">Email</th>
+                                <th class="text-left py-2 text-green-400">Rol</th>
+                                <th class="text-left py-2 text-green-400">Estado</th>
+                                <th class="text-left py-2 text-green-400">Acciones</th>
+                                <th class="text-left py-2 text-green-400"></th>
+                            </tr>
+                        </thead>
+                    </table
                 </div>
             </div>
         </div>

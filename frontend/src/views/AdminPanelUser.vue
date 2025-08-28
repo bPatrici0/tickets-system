@@ -224,6 +224,14 @@ export default {
             case 'ROLE_USER': return 'usuarios';
             default: return this.searchTerm ? 'que coincidan con la búsqueda' : '';
         }
+    },
+
+    usuariosCount() {
+        return this.users.filter(user => user.rol === 'ROLE_USER').length;
+    },
+
+    administradoresCount() {
+        return this.users.filter(user => user.rol === 'ROLE_ADMIN').length;
     }
 }
 </script>

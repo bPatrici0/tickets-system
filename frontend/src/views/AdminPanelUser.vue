@@ -232,6 +232,15 @@ export default {
 
     administradoresCount() {
         return this.users.filter(user => user.rol === 'ROLE_ADMIN').length;
+    },
+
+    usuariosActivos() {
+        return this.users.filter(user => user.activo).length;
+    },
+
+    passwordMismatch() {
+        return this.newUser.password !== this.newUser.confirmPassword &&
+            this.newUser.confirmPassword !== '';
     }
 }
 </script>

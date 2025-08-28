@@ -140,6 +140,20 @@
                                         {{ user.rol === 'ROLE_ADMIN' ? 'Admin' : 'Usuario' }}
                                     </span>
                                 </td>
+                                <td class="py-2">
+                                    <span :class="user.activo ? 'text-green-400' : 'text-red-400'">
+                                        {{ user.activo ? 'Activo' : 'Inactivo' }}
+                                    </span>
+                                </td>
+                                <td class="py-2">
+                                    <div class="flex space-x-2">
+                                        <button @click="toggleUserStatus(user)" :disabled="updatingUser === user.id"
+                                            class="text-xs px-2 py-1 rounded"
+                                            :class="user.activo ? 'bg-red-500/20 text-red-400 border border-red-500' : 'bg-green-500/20 text-green-400 border border-green-500'">
+                                            {{ user.activo ? 'Desactivar' : 'Activar' }}
+                                        </button>
+                                    </div>
+                                </td>
                             </tr>
                         </tbody>
                     </table

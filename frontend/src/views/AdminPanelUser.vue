@@ -216,6 +216,14 @@ export default {
         }
 
         return filtered;
+    },
+
+    filtroMensaje() {
+        switch (this.filtroRol) {
+            case 'ROLE_ADMIN': return 'administradores';
+            case 'ROLE_USER': return 'usuarios';
+            default: return this.searchTerm ? 'que coincidan con la búsqueda' : '';
+        }
     }
 }
 </script>

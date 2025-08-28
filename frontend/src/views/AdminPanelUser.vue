@@ -39,7 +39,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <!--formulario de registro-->
-            <div="terminal-box mb-4">
+            <div class="terminal-box mb-4">
                 <h2 class="text-xl mb-4">> Registrar Nuevo Usuario<span>|</span></h2>
                 <form @submit.prevent="registerUser" class="space-y-4">
                     <div>
@@ -76,7 +76,7 @@
 
                     <button type="submit" :disabled="registering" class="btn-matrix w-full py-2 flex justify-center items-center">
                         <span v-if="!registering">> crear Usuario</span>
-                        <span v-else="> Procesando..."></span>
+                        <span v-else="">> Procesando...</span>
                     </button>
 
                     <div v-if="registerError" class="text-red-400 text-sm mt-2">
@@ -199,23 +199,25 @@ export default {
     },
 
     computed: {
-        let filtered = this.users:
+        filteredUsers() {
+            let filtered = this.users;
 
-        //filtrar por rol
-        if (this.filtroRol !== 'TODOS') {
-            filtered = filtered.filter(user.rol === this.filtroRol);
-        }
+            //filtrar por rol
+            if (this.filtroRol !== 'TODOS') {
+                filtered = filtered.filter(user.rol === this.filtroRol);
+            }
 
-        //filtrar por termino de busqueda
-        if (this.searchTerm) {
-            const term = this.searchTerm.toLowerCase();
-            filtered = filtered.filter(user =>
+            //filtrar por termino de busqueda
+            if (this.searchTerm) {
+                const term = this.searchTerm.toLowerCase();
+                filtered = filtered.filter(user =>
                 (user.nombre && user.nombre.toLowerCase().includes(term)) ||
-                user.email.toLoweCase().includes(term)
-            );
-        }
+                    user.email.toLoweCase().includes(term)
+                );
+            }
 
-        return filtered;
+            return filtered;
+        }
     },
 
     filtroMensaje() {
@@ -241,68 +243,177 @@ export default {
     passwordMismatch() {
         return this.newUser.password !== this.newUser.confirmPassword &&
             this.newUser.confirmPassword !== '';
-    }
-},
-
-created() {
-    const userRole = localStorage.getItem('userRole');
-    if (userRole !== 'ROLE_ADMIN') {
-        this.$router.push('/tickets');
-        return;
-    }
-    this.fetchUsers();
-},
-
-methods: {
-    async fetchUsers() {
-        this.loadingUsers = true;
-        try {
-            const response = await api.get('/admin/usuarios');
-            this.users = response.data || [];
-        } catch (error) {
-            console.error("Error fetching users: ", error);
-            if (error.response?.status === 403) {
-                alert('No tienes permisos de administrador');
-            } else if (error.response?.status === 401) {
-                alert('Sesion expirada. Por favor inicia sesión nuevamente!...');
-                this.handleLogout();
-            }
-            this.users = [];
-        } finally {
-            this.loadingUsers = false;
-        }
     },
 
-    async registerUser() {
-        if (this.passwordMismatch) {
-            this.registerError = 'Las contraseñas no coinciden';
+    created() {
+        const userRole = localStorage.getItem('userRole');
+        if (userRole !== 'ROLE_ADMIN') {
+            this.$router.push('/tickets');
             return;
         }
+        this.fetchUsers();
+    },
 
-        this.registering = true;
-        this.registerError = '';
-        this.registerSuccess = false;
+    methods: {
+        async fetchUsers() {
+            this.loadingUsers = true;
+            try {
+                const response = await api.get('/admin/usuarios');
+                this.users = response.data || [];
+            } catch (error) {
+                console.error("Error fetching users: ", error);
+                if (error.response?.status === 403) {
+                    alert('No tienes permisos de administrador');
+                } else if (error.response?.status === 401) {
+                    alert('Sesion expirada. Por favor inicia sesión nuevamente!...');
+                    this.handleLogout();
+                }
+                this.users = [];
+            } finally {
+                this.loadingUsers = false;
+            }
+        },
 
-        try {
-            await api.post('/admin/usuarios', {
-                nombre: this.newUser.nombre,
-                email: this.newUser.email,
-                password: this.newUser.password,
-                rol: this.newUser.rol
-            });
+        async registerUser() {
+            if (this.passwordMismatch) {
+                this.registerError = 'Las contraseñas no coinciden';
+                return;
+            }
 
-            this.registerSuccess = true;
-            this.newUser = {
-                nombre: '',
-                email: '',
-                password: '',
-                confirmPassword: '',
-                rol: 'ROLE_USER'
-            };
+            this.registering = true;
+            this.registerError = '';
+            this.registerSuccess = false;
 
-            //Recargar la lista de usuarios
-            this.fetchUsers();
+            try {
+                await api.post('/admin/usuarios', {
+                    nombre: this.newUser.nombre,
+                    email: this.newUser.email,
+                    password: this.newUser.password,
+                    rol: this.newUser.rol
+                });
+
+                this.registerSuccess = true;
+                this.newUser = {
+                    nombre: '',
+                    email: '',
+                    password: '',
+                    confirmPassword: '',
+                    rol: 'ROLE_USER'
+                };
+
+                //Recargar la lista de usuarios
+                this.fetchUsers();
+
+            } catch (error) {
+                console.error("Error registering user: ", error);
+                this.registerError = error.response?.data?.message || 'Error al crear el usuario';
+            }  finally {
+                this.registering = false;
+            }
+        },
+
+        async toggleUserRole(user) {
+            this.updatingUser = user.id;
+            try {
+                const newRole = user.rol === 'ROLE_ADMIN' ? 'ROLE_USER' : 'ROLE_ADMIN';
+                await api.put(`/admin/usuarios/${user.id}/role`, { role: newRole });
+                user.rol = newRole;
+            } catch (error) {
+                console.error("Error updating role: ", error);
+                alert("Error al cambiar rol: " + (error.response?.data?.message || error.message));
+            } finally {
+                this.updatingUser = null;
+            }
+        },
+
+        async toggleUserStatus(user) {
+            this.updatingUser = user.id;
+            try {
+                const newStatus = !user.activo;
+                await api.put(`/admin/usuarios/${user.id}/status`, { activo: newStatus });
+                user.activo = newStatus;
+            } catch (error) {
+                console.error("Error updating status: ", error);
+                alert("Error al cambiar estado: " + (error.response?.data?.message || error.message));
+            } finally {
+                this.updatingUser = null;
+            }
+        },
+
+        handleLogout() {
+            localStorage.clear();
+            this.$router.push('/login');
         }
     }
 }
 </script>
+
+<style scoped>
+/* Estilos consistentes con el tema terminal */
+.terminal-box {
+  border: 1px solid #00FF41;
+  border-radius: 0.25rem;
+}
+
+.btn-matrix {
+  background-color: rgba(0, 255, 65, 0.2);
+  color: #00FF41;
+  border: 1px solid #00FF41;
+  padding: 0.5rem 1rem;
+  transition: all 0.2s ease;
+}
+
+.btn-matrix:hover:not(:disabled) {
+  background-color: rgba(0, 255, 65, 0.3);
+}
+
+.btn-matrix:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+input, select {
+  background-color: #000;
+  border: 1px solid #00FF41;
+  color: #00FF41;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+}
+
+input:focus, select:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 255, 65, 0.2);
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.cursor-blink {
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+/* Scrollbar personalizado */
+.overflow-x-auto::-webkit-scrollbar {
+  height: 6px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-track {
+  background: #000;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  background-color: #00FF41;
+  border-radius: 3px;
+}
+</style>

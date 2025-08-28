@@ -4,6 +4,7 @@ import RegisterView from '../views/RegisterView.vue';
 import AdminPanel from '../views/AdminPanel.vue';
 import UserTickets from '../views/UserTickets.vue';
 import TicketView from '../views/TicketView.vue';
+import AdminPanelUser from '../views/AdminPanelUser.vue';
 
 const routes = [
     {
@@ -58,6 +59,15 @@ const routes = [
             requiredRole: 'ROLE_USER'
         }
     },
+    {
+        path: '/admin/AdminPanelUser',
+        name: 'AdminUser',
+        component: AdminPanelUser,
+        meta: {
+            requiresAuth: true,
+            requiresAdmin: true
+        }
+    }
 ];
 
 const router = createRouter({

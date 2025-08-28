@@ -38,7 +38,10 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 py-4">
       <!-- Sección Usuarios -->
       <div class="terminal-box p-4">
-        <h2 class="text-xl mb-4">> Usuarios <span class="text-green-400">({{ filteredUsers.length }})/({{ users.length }})</span><span class="cursor-blink">|</span></h2>
+        <h2 class="text-xl mb-4 cursor-pointer hover:text-green-300"
+            @click="$router.push('/admin/AdminPanelUser')">
+            > Usuarios <span class="text-green-400">({{ filteredUsers.length }})/({{ users.length }})</span><span class="cursor-blink">|</span>
+        </h2>
 
         <!--filtro por rol-->
         <div class="flex items-center space-x-2">

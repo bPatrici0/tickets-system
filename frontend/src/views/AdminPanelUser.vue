@@ -152,6 +152,13 @@
                                             :class="user.activo ? 'bg-red-500/20 text-red-400 border border-red-500' : 'bg-green-500/20 text-green-400 border border-green-500'">
                                             {{ user.activo ? 'Desactivar' : 'Activar' }}
                                         </button>
+                                        <button @click="toggleUserRole(user)" :disabled="updatingUser === user.id"
+                                            class="text-xs px-2 py-1 bg-blue-500/20 text-blue-400 border border-blue-500 rounded">
+                                            Cambiar Rol
+                                        </button>
+                                    </div>
+                                    <div v-if="updatingUser === user.id" class="text-green-400 text-xs mt-1">
+                                        > Actualizando...
                                     </div>
                                 </td>
                             </tr>

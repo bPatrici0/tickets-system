@@ -173,3 +173,49 @@
         </div>
     </div>
 </template>
+
+<script>
+import api from '@/services/api'
+
+export default {
+    data() {
+        return {
+            users: [],
+            loadingUsers: false,
+            updatingUser: null,
+            filtroRol: 'TODOS',
+            searchTerm: '',
+            newUser: {
+                nombre: '',
+                email: '',
+                password: '',
+                confirmPassword: '',
+                rol: 'ROLE_USER'
+            },
+            registering: false,
+            registerSuccess: false,
+            registerError: ''
+        }
+    },
+
+    computed: {
+        let filtered = this.users:
+
+        //filtrar por rol
+        if (this.filtroRol !== 'TODOS') {
+            filtered = filtered.filter(user.rol === this.filtroRol);
+        }
+
+        //filtrar por termino de busqueda
+        if (this.searchTerm) {
+            const term = this.searchTerm.toLowerCase();
+            filtered = filtered.filter(user =>
+                (user.nombre && user.nombre.toLowerCase().includes(term)) ||
+                user.email.toLoweCase().includes(term)
+            );
+        }
+
+        return filtered;
+    }
+}
+</script>

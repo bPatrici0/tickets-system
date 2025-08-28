@@ -242,5 +242,67 @@ export default {
         return this.newUser.password !== this.newUser.confirmPassword &&
             this.newUser.confirmPassword !== '';
     }
+},
+
+created() {
+    const userRole = localStorage.getItem('userRole');
+    if (userRole !== 'ROLE_ADMIN') {
+        this.$router.push('/tickets');
+        return;
+    }
+    this.fetchUsers();
+},
+
+methods: {
+    async fetchUsers() {
+        this.loadingUsers = true;
+        try {
+            const response = await api.get('/admin/usuarios');
+            this.users = response.data || [];
+        } catch (error) {
+            console.error("Error fetching users: ", error);
+            if (error.response?.status === 403) {
+                alert('No tienes permisos de administrador');
+            } else if (error.response?.status === 401) {
+                alert('Sesion expirada. Por favor inicia sesión nuevamente!...');
+                this.handleLogout();
+            }
+            this.users = [];
+        } finally {
+            this.loadingUsers = false;
+        }
+    },
+
+    async registerUser() {
+        if (this.passwordMismatch) {
+            this.registerError = 'Las contraseñas no coinciden';
+            return;
+        }
+
+        this.registering = true;
+        this.registerError = '';
+        this.registerSuccess = false;
+
+        try {
+            await api.post('/admin/usuarios', {
+                nombre: this.newUser.nombre,
+                email: this.newUser.email,
+                password: this.newUser.password,
+                rol: this.newUser.rol
+            });
+
+            this.registerSuccess = true;
+            this.newUser = {
+                nombre: '',
+                email: '',
+                password: '',
+                confirmPassword: '',
+                rol: 'ROLE_USER'
+            };
+
+            //Recargar la lista de usuarios
+            this.fetchUsers();
+        }
+    }
 }
 </script>

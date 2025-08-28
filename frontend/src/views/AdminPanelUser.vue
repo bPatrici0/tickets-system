@@ -22,7 +22,7 @@
                     <div class="text-2xl text-green-400">{{ users.length }}</div>
                     <div class="text-xs text-green-500">Total Usuarios</div>
                 </div>
-                <div class="text-center p-3 border-green-500 rounded">
+                <div class="text-center p-3 border border-green-500 rounded">
                     <div class="text-2xl text-blue-400">{{ usuariosCount }}</div>
                     <div class="text-xs text-green-500">Usuarios Normales</div>
                 </div>
@@ -39,7 +39,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             <!--formulario de registro-->
-            <div class="terminal-box mb-4">
+            <div class="terminal-box p-4">
                 <h2 class="text-xl mb-4">> Registrar Nuevo Usuario<span>|</span></h2>
                 <form @submit.prevent="registerUser" class="space-y-4">
                     <div>
@@ -76,7 +76,7 @@
 
                     <button type="submit" :disabled="registering" class="btn-matrix w-full py-2 flex justify-center items-center">
                         <span v-if="!registering">> crear Usuario</span>
-                        <span v-else="">> Procesando...</span>
+                        <span v-else>> Procesando...</span>
                     </button>
 
                     <div v-if="registerError" class="text-red-400 text-sm mt-2">
@@ -127,7 +127,6 @@
                                 <th class="text-left py-2 text-green-400">Rol</th>
                                 <th class="text-left py-2 text-green-400">Estado</th>
                                 <th class="text-left py-2 text-green-400">Acciones</th>
-                                <th class="text-left py-2 text-green-400"></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -163,10 +162,10 @@
                                 </td>
                             </tr>
                         </tbody>
-                    </table
+                    </table>
                 </div>
 
-                <button @click="fetchUsers" class="btn-matrix mt-4 text-sm" :disable="loadingUsers">
+                <button @click="fetchUsers" class="btn-matrix mt-4 text-sm" :disabled="loadingUsers">
                     > Actualizar lista
                 </button>
             </div>
@@ -204,45 +203,45 @@ export default {
 
             //filtrar por rol
             if (this.filtroRol !== 'TODOS') {
-                filtered = filtered.filter(user.rol === this.filtroRol);
+                filtered = filtered.filter(user => user.rol === this.filtroRol);
             }
 
             //filtrar por termino de busqueda
             if (this.searchTerm) {
                 const term = this.searchTerm.toLowerCase();
                 filtered = filtered.filter(user =>
-                (user.nombre && user.nombre.toLowerCase().includes(term)) ||
-                    user.email.toLoweCase().includes(term)
+                    (user.nombre && user.nombre.toLowerCase().includes(term)) ||
+                    user.email.toLowerCase().includes(term)
                 );
             }
 
             return filtered;
+        },
+
+        filtroMensaje() {
+            switch (this.filtroRol) {
+                case 'ROLE_ADMIN': return 'administradores';
+                case 'ROLE_USER': return 'usuarios';
+                default: return this.searchTerm ? 'que coincidan con la búsqueda' : '';
+            }
+        },
+
+        usuariosCount() {
+            return this.users.filter(user => user.rol === 'ROLE_USER').length;
+        },
+
+        administradoresCount() {
+            return this.users.filter(user => user.rol === 'ROLE_ADMIN').length;
+        },
+
+        usuariosActivos() {
+            return this.users.filter(user => user.activo).length;
+        },
+
+        passwordMismatch() {
+            return this.newUser.password !== this.newUser.confirmPassword &&
+                this.newUser.confirmPassword !== '';
         }
-    },
-
-    filtroMensaje() {
-        switch (this.filtroRol) {
-            case 'ROLE_ADMIN': return 'administradores';
-            case 'ROLE_USER': return 'usuarios';
-            default: return this.searchTerm ? 'que coincidan con la búsqueda' : '';
-        }
-    },
-
-    usuariosCount() {
-        return this.users.filter(user => user.rol === 'ROLE_USER').length;
-    },
-
-    administradoresCount() {
-        return this.users.filter(user => user.rol === 'ROLE_ADMIN').length;
-    },
-
-    usuariosActivos() {
-        return this.users.filter(user => user.activo).length;
-    },
-
-    passwordMismatch() {
-        return this.newUser.password !== this.newUser.confirmPassword &&
-            this.newUser.confirmPassword !== '';
     },
 
     created() {

@@ -165,6 +165,10 @@
                         </tbody>
                     </table
                 </div>
+
+                <button @click="fetchUsers" class="btn-matrix mt-4 text-sm" :disable="loadingUsers">
+                    > Actualizar lista
+                </button>
             </div>
         </div>
     </div>

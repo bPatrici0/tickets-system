@@ -3,6 +3,7 @@ package com.ticket.dto;
 public class RegistroDTO {
     private String email;
     private String password;
+    private String nombre;
 
     public String getEmail() {
         return email;
@@ -18,5 +19,13 @@ public class RegistroDTO {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 }

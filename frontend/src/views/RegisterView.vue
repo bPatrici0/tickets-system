@@ -64,6 +64,7 @@ export default {
         async handleRegister() {
             try {
                 const response = await api.post('/auth/registro',{
+                    name: this.name.trim(),
                     email: this.email.trim(),
                     password: this.password
                 }, {

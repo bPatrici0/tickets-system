@@ -4,6 +4,7 @@ public class RegistroDTO {
     private String email;
     private String password;
     private String nombre;
+    private String rol = "ROLE_USER";
 
     public String getEmail() {
         return email;
@@ -27,5 +28,13 @@ public class RegistroDTO {
 
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public String getRol() {
+        return rol;
+    }
+
+    public void setRol(String rol) {
+        this.rol = rol;
     }
 }

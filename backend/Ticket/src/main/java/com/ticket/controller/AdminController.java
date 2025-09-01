@@ -44,4 +44,20 @@ public class AdminController {
         System.out.println("AdminController.obtenerUsuarioPorId() llamado - ID: " + id);
         return ResponseEntity.ok(usuarioService.obtenerUsuarioPorId(id));
     }
+
+    @PostMapping("/usuarios")
+    public ResponseEntity<Usuario> crearUsuario(@RequestBody RegistroDTO registroDTO) {
+        System.out.println("AdminController.crearUsuario() llamado");
+        System.out.println("Datos: " + registroDTO.getEmail() + ", " + registroDTO.getNombre() +
+                "rol: " +registroDTO.getRol());
+
+        Usuario usuario = new Usuario();
+        usuario.setEmail(registroDTO.getEmail());
+        usuario.setPassword(passwordEncoder.encode(registroDTO.getPassword()));
+        usuario.setNombre(registroDTO.getNombre());
+        usuario.setRol(registroDTO.getRol());
+
+        usuarioRepository.save(usuario);
+        return ResponseEntity.ok(usuario);
+    }
 }

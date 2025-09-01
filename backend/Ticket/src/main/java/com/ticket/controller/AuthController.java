@@ -36,7 +36,7 @@ public class AuthController {
         Usuario usuario = new Usuario();
         usuario.setEmail(registroDTO.getEmail());
         usuario.setPassword(passwordEncoder.encode(registroDTO.getPassword()));
-        usuario.setRol(registroDTO.getRol() != null ? registroDTO.getRol.getRol() : "ROLE_USER");
+        usuario.setRol(registroDTO.getRol() != null ? registroDTO.getRol() : "ROLE_USER");
         usuario.setNombre(registroDTO.getNombre());
 
         usuarioRepository.save(usuario);

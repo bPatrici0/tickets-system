@@ -366,6 +366,11 @@ export default {
             if (!event.target.closest('.relative')) {
                 this.activeMenu = null;
             }
+        },
+
+        editUser(user) {
+            console.log("Editar usuario:", user);
+            alert('Funcion de edicion para ${user.nombre} - proximamente');
         }
     }
 }

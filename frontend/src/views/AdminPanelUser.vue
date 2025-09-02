@@ -360,6 +360,12 @@ export default {
 
         toggleMenu(userId) {
             this.activeMenu = this.activeMenu === userId ? null : userId;
+        },
+
+        closeMenu(event) {
+            if (!event.target.closest('.relative')) {
+                this.activeMenu = null;
+            }
         }
     }
 }

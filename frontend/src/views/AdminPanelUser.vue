@@ -356,6 +356,10 @@ export default {
         handleLogout() {
             localStorage.clear();
             this.$router.push('/login');
+        },
+
+        toggleMenu(userId) {
+            this.activeMenu = this.activeMenu === userId ? null : userId;
         }
     }
 }

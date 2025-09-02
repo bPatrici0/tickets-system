@@ -371,6 +371,12 @@ export default {
         editUser(user) {
             console.log("Editar usuario:", user);
             alert('Funcion de edicion para ${user.nombre} - proximamente');
+        },
+
+        confirmDelete(user) {
+            if (confirm('Estas seguro de eliminar a ${user.nombre} (${user.email})? Esta acción no se puede deshacer!...')) {
+                this.deleteUser(user);
+            }
         }
     }
 }

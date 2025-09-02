@@ -145,17 +145,29 @@
                                     </span>
                                 </td>
                                 <td class="py-2">
-                                    <div class="flex space-x-2">
-                                        <button @click="toggleUserStatus(user)" :disabled="updatingUser === user.id"
-                                            class="text-xs px-2 py-1 rounded"
-                                            :class="user.activo ? 'bg-red-500/20 text-red-400 border border-red-500' : 'bg-green-500/20 text-green-400 border border-green-500'">
-                                            {{ user.activo ? 'Desactivar' : 'Activar' }}
+                                    <div class="realtive">
+                                        <button @click="toggleMenu(user.id)" class="text-xs px-3 py-1 bg-gray-800 text-green-400 border border-green-500 rounded hover:bg-green-900/20 transition-colors">
+                                            Acciones ▼
                                         </button>
-                                        <button @click="toggleUserRole(user)" :disabled="updatingUser === user.id"
-                                            class="text-xs px-2 py-1 bg-blue-500/20 text-blue-400 border border-blue-500 rounded">
-                                            Cambiar Rol
-                                        </button>
+
+                                        <div v-if="activeMenu === user.id" class="absolute top-full right-0 mt-1 w-48 bg-black border border-green-500 rounded shadow-lg z-10">
+                                            <div class="py-1">
+                                                <button @click="toggleUserStatus(user); activeMenu = null" class="block w-full text-left px-4 py-2 text-sm hover:bg-green-900/30 text-green-400">
+                                                    {{ user.activo ? 'Desactivar': Activar }}
+                                                </button>
+                                                <button @click="toggleUserRole(user); activeMenu = null" class="block w-full text-left px-4 py-2 text-sm hover:bg-green-900/30 text-blue-400">
+                                                    🔄 Cabiar Rol
+                                                </button>
+                                                <button @click="editUser(user); activeMenu = null" class="block w-full text-left px-4 py-2 text-sm hover: bg-green-900/30 text-yellow-400">
+                                                    ✏️ Editar
+                                                </button>
+                                                <button @click="confirmDelete(user); activeMenu = null" class="block w-full text-left px-4 py-2 text-sm hover:bg-green-900-30 text-red-400">
+                                                    🗑️ Eliminar
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
+
                                     <div v-if="updatingUser === user.id" class="text-green-400 text-xs mt-1">
                                         > Actualizando...
                                     </div>
@@ -182,6 +194,7 @@ export default {
             users: [],
             loadingUsers: false,
             updatingUser: null,
+            activeMenu: null,
             filtroRol: 'TODOS',
             searchTerm: '',
             newUser: {
@@ -193,7 +206,8 @@ export default {
             },
             registering: false,
             registerSuccess: false,
-            registerError: ''
+            registerError: '',
+            userToDelete: null
         }
     },
 

@@ -392,6 +392,14 @@ export default {
                 this.updatingUser = null;
             }
         }
+    },
+
+    mounted() {
+        document.addEventListener('click', this.closeMenu);
+    },
+
+    beforeUnmount() {
+        document.removeEventListener('click', this.closeMenu);
     }
 }
 </script>

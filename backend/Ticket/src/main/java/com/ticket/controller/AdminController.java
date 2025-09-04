@@ -11,6 +11,7 @@ import java.util.Map;
 import com.ticket.repository.UsuarioRepository;
 import com.ticket.dto.RegistroDTO;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/api/admin")

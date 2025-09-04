@@ -145,23 +145,23 @@
                                     </span>
                                 </td>
                                 <td class="py-2">
-                                    <div class="realtive">
-                                        <button @click="toggleMenu(user.id)" class="text-xs px-3 py-1 bg-gray-800 text-green-400 border border-green-500 rounded hover:bg-green-900/20 transition-colors">
-                                            Acciones ▼
+                                    <div class="relative">
+                                        <button @click="toggleMenu(user.id)" class="text-sm px-3 py-1 bg-gray-800 text-green-400 border border-green-500 rounded hover:bg-green-900/20 transition-colors">
+                                            ⋮
                                         </button>
 
                                         <div v-if="activeMenu === user.id" class="absolute top-full right-0 mt-1 w-48 bg-black border border-green-500 rounded shadow-lg z-10">
                                             <div class="py-1">
-                                                <button @click="toggleUserStatus(user); activeMenu = null" class="block w-full text-left px-4 py-2 text-sm hover:bg-green-900/30 text-green-400">
-                                                    {{ user.activo ? 'Desactivar': Activar }}
+                                                <button @click="toggleUserStatus(user); activeMenu = null" class="block w-full text-left px-3 py-1 text-xs hover:bg-green-900/30">
+                                                    {{ user.activo ? '⏸️ Desactivar': '▶️ Activar' }}
                                                 </button>
-                                                <button @click="toggleUserRole(user); activeMenu = null" class="block w-full text-left px-4 py-2 text-sm hover:bg-green-900/30 text-blue-400">
+                                                <button @click="toggleUserRole(user); activeMenu = null" class="block w-full text-left px-3 py-1 text-xs hover:bg-green-900/30">
                                                     🔄 Cabiar Rol
                                                 </button>
-                                                <button @click="editUser(user); activeMenu = null" class="block w-full text-left px-4 py-2 text-sm hover: bg-green-900/30 text-yellow-400">
+                                                <button @click="editUser(user); activeMenu = null" class="block w-full text-left px-3 py-1 text-xs hover: bg-green-900/30">
                                                     ✏️ Editar
                                                 </button>
-                                                <button @click="confirmDelete(user); activeMenu = null" class="block w-full text-left px-4 py-2 text-sm hover:bg-green-900-30 text-red-400">
+                                                <button @click="confirmDelete(user); activeMenu = null" class="block w-full text-left px-3 py-1 text-xs hover:bg-green-900-30">
                                                     🗑️ Eliminar
                                                 </button>
                                             </div>

@@ -69,4 +69,17 @@ public class AdminController {
         usuarioRepository.save(usuario);
         return ResponseEntity.ok(usuario);
     }
+
+    @DeleteMapping("/usuarios/{id}")
+    public ResponseEntity<?> eliminarUsuario(@PathVariable Long id) {
+        System.out.println("AdminController.eliminarUsuario() llamado - ID: " + id);
+
+        try {
+            usuarioRepository.deleteById(id);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al eliminar usuario");
+        }
+    }
 }

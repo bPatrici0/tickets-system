@@ -374,7 +374,7 @@ export default {
         },
 
         confirmDelete(user) {
-            if (confirm('Estas seguro de eliminar a ${user.nombre} (${user.email})? Esta acción no se puede deshacer!...')) {
+            if (confirm('Estas seguro de eliminar a ${ user.nombre } (${ user.email })? Esta acción no se puede deshacer!...')) {
                 this.deleteUser(user);
             }
         },

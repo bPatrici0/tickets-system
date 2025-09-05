@@ -191,6 +191,13 @@
                                 <label class="block text-green-400 text-sm mb-1">Email</label>
                                 <input v-model="editingUser.email" type="email" class="w-full bg-black border border-green-500 text-green-400 px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-green-500" placeholder="Email del usuario">
                             </div>
+
+                            <div>
+                                <label class="block text-green-400 text-sm mb-1">Rol</label>
+                                <select v-model="editingUser.rol" class="w-full bg-black border border-green-500 text-green-400 px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-green-500">
+                                    <option value="ROLE_USER">> Usuario</option>
+                                    <option value="ROLE_ADMIN">> Administrador</option>
+                            </div>
                         </form>
                     </div>
                 </div>

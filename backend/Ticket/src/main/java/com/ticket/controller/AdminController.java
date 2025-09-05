@@ -76,9 +76,16 @@ public class AdminController {
         System.out.println("AdminController.eliminarUsuario() llamado - ID: " + id);
 
         try {
+            if (!usuarioRepository.existsById(id)) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("Usuario no encontrado");
+            }
+
             usuarioRepository.deleteById(id);
+            System.out.println("Usuario eliminado existosamente - ID: " + id);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
+            System.out.println("Error al eliminar usuario ID " + id + ": " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al eliminar usuario");
         }

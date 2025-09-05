@@ -177,6 +177,24 @@
                     </table>
                 </div>
 
+                <!--modal edicion-->
+                <div v-if="editingUser" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+                    <div class="terminal-box w-full max-w-md mx-4">
+                        <h2 class="text-xl mb-4">> Editar Usuario<span class="cursor-blink">|</span></h2>
+                        <form @submit.prevent="updateUser" class="space-y-4">
+                            <div>
+                                <label class="block text-green-400 text-sm mb-1">Nombre</label>
+                                <input v-model="editingUser.nombre" type="text" class="w-full bg-black border border-green-500 text-green-400 px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-green-500" placeholder="Nombre del usuario">
+                            </div>
+
+                            <div>
+                                <label class="block text-green-400 text-sm mb-1">Email</label>
+                                <input v-model="editingUser.email" type="email" class="w-full bg-black border border-green-500 text-green-400 px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-green-500" placeholder="Email del usuario">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
                 <button @click="fetchUsers" class="btn-matrix mt-4 text-sm" :disabled="loadingUsers">
                     > Actualizar lista
                 </button>

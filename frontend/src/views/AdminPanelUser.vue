@@ -197,6 +197,29 @@
                                 <select v-model="editingUser.rol" class="w-full bg-black border border-green-500 text-green-400 px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-green-500">
                                     <option value="ROLE_USER">> Usuario</option>
                                     <option value="ROLE_ADMIN">> Administrador</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-green-400 text-sm mb-1">Estado</label>
+                                <select v-model="editingUser.activo" class="w-full bg-black border border-green-500 text-green-400 px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-green-500">
+                                    <option :value="true">Activo</option>
+                                    <option :value="false">Inactivo</option>
+                                </select>
+                            </div>
+
+                            <div class="flex space-x-2">
+                                <button type="submit" :disabled="updating" class="btn-matrix flex-1 py-2">
+                                    <span v-if="!updating">> Guardar</span>
+                                    <span v-else>> Guardando...</span>
+                                </button>
+                                <button type="button" @click="editingUser = null" class="btn-matrix bg-red-500/20 text-red-400 border-red-500 flex-1 py-2">
+                                    > Cancelar
+                                </button>
+                            </div>
+
+                            <div v-if="updateError" class="text-red-400 text-sm mt-2">
+                                > Error: {{ updateError }}
                             </div>
                         </form>
                     </div>

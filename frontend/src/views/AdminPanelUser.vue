@@ -382,9 +382,9 @@ export default {
         async deleteUser(user) {
             this.updatingUser = user.id;
             try {
-                await api.delete('/admin/usuarios/${user.id}');
+                await api.delete(`/admin/usuarios/${user.id}`);
                 this.fetchUsers();
-                alert('Usuario ${user.nombre} eliminado exitosamente');
+                alert(`Usuario ${user.nombre} eliminado exitosamente`);
             } catch (error) {
                 console.error("Error deleting user: ", error);
                 alert("Error al eliminar usuario: " + (error.response?.data?.message || error.message));

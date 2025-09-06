@@ -90,4 +90,28 @@ public class AdminController {
                     .body("Error al eliminar usuario");
         }
     }
+
+    @PutMapping("/usuarios/{id}")
+    public ResponseEntity<Usuario> actualizarUsuario(@PathVariable Long id, @RequestBody UsuarioUpdateDTO updateDTO) {
+        System.out.println("AdminController.actualizarUsuario() llamado - ID: " + id);
+
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
+
+        if (updateDTO.getNombre() != null) {
+            usuario.setNombre(updateDTO.getNombre());
+        }
+        if (updateDTO.getEmail() != null) {
+            usuario.setEmail(updateDTO.getEmail());
+        }
+        if (updateDTO.getRol() != null) {
+            usuario.setRol(updateDTO.getRol());
+        }
+        if (updateDTO.getActivo() != null) {
+            usuario.setActivo(updateDTO.getActivo());
+        }
+
+        return ResponseEntity.ok(usuarioRepository.save(usuario));
+
+    }
 }

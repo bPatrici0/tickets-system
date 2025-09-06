@@ -442,6 +442,12 @@ export default {
             } finally {
                 this.updatingUser = null;
             }
+        },
+
+        editUser(user) {
+            this.editingUser = { ...user};
+            this.updateError = '';
+            this.activeMenu = null;
         }
     },
 

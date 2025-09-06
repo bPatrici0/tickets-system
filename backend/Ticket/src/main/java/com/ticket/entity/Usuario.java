@@ -31,6 +31,9 @@ public class Usuario implements UserDetails {
     @Column(nullable = false)
     private String rol = "ROLE_USER";
 
+    @Column(nullable = false)
+    private Boolean activo = true;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(rol));
@@ -99,5 +102,13 @@ public class Usuario implements UserDetails {
 
     public void setRol(String rol) {
         this.rol = rol;
+    }
+
+    public Boolean getActivo() {
+        return activo;
+    }
+
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
     }
 }

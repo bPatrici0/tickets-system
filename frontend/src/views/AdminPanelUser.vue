@@ -448,6 +448,33 @@ export default {
             this.editingUser = { ...user};
             this.updateError = '';
             this.activeMenu = null;
+        },
+
+        async updateUser() {
+            this.updating = true;
+            this.updateError = '';
+
+            try {
+                await api.put(`/admin/usuarios/${this.editingUser.id}`, {
+                    nombre: this.editingUser.nombre,
+                    email: this.editingUser.email,
+                    rol: this.editingUser.rol,
+                    activo: this.editingUser.activo
+                });
+
+                const index = this.users.findIndex(u => u.id === this.editingUser.id);
+                if (index !== -1) {
+                    this.users[index] = { ...this.editingUser };
+                }
+
+                this.editingUser = null;
+                alert('Usuario actualizado exitosamente');
+            } catch (error) {
+                console.error("Error updating user: ", error);
+                this.updateError = error.response?.data?.message || 'Error al actualizar usuario';
+            } finally {
+                this.updating = false;
+            }
         }
     },
 

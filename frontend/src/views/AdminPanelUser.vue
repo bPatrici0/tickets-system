@@ -243,6 +243,9 @@ export default {
             loadingUsers: false,
             updatingUser: null,
             activeMenu: null,
+            editingUser: null,
+            updating: false,
+            updateError: '',
             filtroRol: 'TODOS',
             searchTerm: '',
             newUser: {

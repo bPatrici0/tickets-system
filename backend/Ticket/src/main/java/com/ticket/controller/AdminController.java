@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import com.ticket.repository.UsuarioRepository;
 import com.ticket.dto.RegistroDTO;
+import com.ticket.dto.UsuarioUpdateDTO;
+import com.ticket.exception.NotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.http.HttpStatus;
 
@@ -93,7 +95,7 @@ public class AdminController {
 
     @PutMapping("/usuarios/{id}")
     public ResponseEntity<Usuario> actualizarUsuario(@PathVariable Long id, @RequestBody UsuarioUpdateDTO updateDTO) {
-        System.out.println("AdminController.actualizarUsuario() llamado - ID: " + id);
+        System.out.println("Actualizando usuario ID: " + id);
 
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
@@ -112,6 +114,13 @@ public class AdminController {
         }
 
         return ResponseEntity.ok(usuarioRepository.save(usuario));
+    }
 
+    @PutMapping("/usuarios/{id}/status")
+    public ResponseEntity<Usuario> cambiarEstadoUsuario(@PathVariable Long id, @RequestBody Map<String, Boolean> request) {
+        Boolean activo = request.get("Activo");
+        Usuario usuario = usuarioService.obtenerUsuarioPorId(id);
+        usuario.setActivo(activo);
+        return ResponseEntity.ok(usuarioRepository.save(usuario));
     }
 }

@@ -48,6 +48,14 @@
                         </div>
                     </div>
                 </div>
+
+                <!--descripcion del problema-->
+                <div class="mb-6">
+                    <h3 class="text-lg text-green-400 mb-2">> Descripción:</h3>
+                    <div class="bg-black border-green-500 p-4 text-green-300 whitespace-pre-wrap">
+                        {{ ticket.descripcion }}
+                    </div>
+                </div>
             </div>
         </div>
     </div>

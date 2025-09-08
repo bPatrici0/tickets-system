@@ -117,10 +117,38 @@ public class AdminController {
     }
 
     @PutMapping("/usuarios/{id}/status")
-    public ResponseEntity<Usuario> cambiarEstadoUsuario(@PathVariable Long id, @RequestBody Map<String, Boolean> request) {
-        Boolean activo = request.get("Activo");
-        Usuario usuario = usuarioService.obtenerUsuarioPorId(id);
-        usuario.setActivo(activo);
-        return ResponseEntity.ok(usuarioRepository.save(usuario));
+    public ResponseEntity<?> cambiarEstadoUsuario(@PathVariable Long id, @RequestBody Map<String, Boolean> request) {
+        System.out.println("Cambiando estado usuario ID: " + id);
+        System.out.println("Request body: " + request);
+
+        Boolean activo = request.get("activo");
+        System.out.println("Valor de 'activo': " + activo);
+
+        if (activo == null) {
+            System.out.println("Error: campo 'activo' no encontrado en request");
+            return ResponseEntity.badRequest().body("El campo 'activo' es requerido");
+        }
+
+        try {
+            Usuario usuario = usuarioService.obtenerUsuarioPorId(id);
+            System.out.println("Usuario encontrado: " + usuario.getEmail());
+            System.out.println("Estado actual: " + usuario.getActivo());
+            System.out.println("Nuevo estado: " + activo);
+
+            usuario.setActivo(activo);
+            Usuario usuarioActualizado = usuarioRepository.save(usuario);
+
+            System.out.println("Usuario actualizado exitosamente");
+            return ResponseEntity.ok(usuarioActualizado);
+
+        } catch (NotFoundException e) {
+            System.out.println("Usuario no encontrado ID: " + id);
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            System.out.println("Error al cambiar estado: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al cambiar estado");
+        }
     }
 }

@@ -29,6 +29,8 @@ import org.slf4j.LoggerFactory;
 @Slf4j
 public class TicketController {
 
+    private static final Logger log = LoggerFactory.getLogger(TicketController.class);
+
     @Autowired
     private TicketService ticketService;
 

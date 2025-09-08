@@ -28,6 +28,25 @@
                             {{ ticket.estado }}
                         </span>
                     </div>
+
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <span class="text-green-500">> Creado por: </span>
+                            <span class="ml-2">{{ ticket.usuario?.nombre || 'Usuario' }}</span>
+                        </div>
+                        <div>
+                            <span class="text-green-500">> Email: </span>
+                            <span class="ml-2">{{ ticket.usuario?.email || 'N/A' }}</span>
+                        </div>
+                        <div>
+                            <span class="text-green-500">> Fecha creacion: </span>
+                            <span class="ml-2">{{ formatDate(ticket.fechaActualizacion) }}</span>
+                        </div>
+                        <div>
+                            <span class="text-green-500">> Última Aactualización: </span>
+                            <span class="ml-2">{{ formatDate(ticket.fechaActualizacion) }}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

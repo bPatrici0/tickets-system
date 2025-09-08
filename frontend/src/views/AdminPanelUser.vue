@@ -420,8 +420,9 @@ export default {
         },
 
         editUser(user) {
-            console.log("Editar usuario:", user);
-            alert('Funcion de edicion para ${user.nombre} - proximamente');
+                    this.editingUser = { ...user};
+                    this.updateError = '';
+                    this.activeMenu = null;
         },
 
         confirmDelete(user) {
@@ -442,12 +443,6 @@ export default {
             } finally {
                 this.updatingUser = null;
             }
-        },
-
-        editUser(user) {
-            this.editingUser = { ...user};
-            this.updateError = '';
-            this.activeMenu = null;
         },
 
         async updateUser() {

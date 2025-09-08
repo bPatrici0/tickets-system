@@ -54,15 +54,17 @@
 
                     <div class="relative">
                         <label class="block text-green-400 text-sm mb-1">Password</label>
-                        <input v-model="newUser.password"
+                        <input
                             :type="showPassword ? 'text' : 'password'"
+                            v-model="newUser.password"
+                            class="w-full bg-black border border-green-500 p-2 text-green-500 focus:outline-none pr-10"
                             required
-                            class="w-full bg-black border border-green-500 text-green-400 px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-green-500"
                             placeholder="*****"
                         />
 
-                        <button type="button"
-                            class="absolute right-3 top-9 transform -translate-y-1/2 text-green-500 hover:text-green-300 focus:outline-none"
+                        <button
+                            type="button"
+                            class="absolute right-3 top-12 transform -translate-y-1/2 text-green-500 hover:text-green-300 focus:outline-none"
                             @click="showPassword = !showPassword"
                             aria-label="Mostrar/ocultar password"
                         >

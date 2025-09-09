@@ -156,3 +156,7 @@
         </div>
     </div>
 </template>
+
+<script>
+import api from '@/services/api';
+</script>

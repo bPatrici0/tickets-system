@@ -128,6 +128,11 @@
                         </button>
                     </form>
                 </div>
+
+                <!--informacion de estado-->
+                <div v-else class="bg-red-500/10 border border-red-500 p-3 text-red-400">
+                    <p class="text-sm">> Este ticket está RESUELTO. No se pueden agregar mas comentarios.</p>
+                </div>
             </div>
         </div>
     </div>

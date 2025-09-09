@@ -159,4 +159,24 @@
 
 <script>
 import api from '@/services/api';
+
+export default {
+    data() {
+        return {
+            ticket: {
+                id: null,
+                titulo: '',
+                descripcion: '',
+                estado: '',
+                fechaCreacion: '',
+                fechaActualizacion: '',
+                usuario: null,
+                comentarios: []
+            },
+            nuevoComentario: '',
+            isSubmitting: false,
+            loading: false
+        }
+    }
+}
 </script>

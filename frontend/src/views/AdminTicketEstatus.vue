@@ -177,6 +177,11 @@ export default {
             isSubmitting: false,
             loading: false
         }
+    },
+
+    created() {
+        this.verificarPermisos();
+        this.cargarTicketCompleto();
     }
 }
 </script>

@@ -106,6 +106,28 @@
                         </button>
                     </div>
                 </div>
+
+                <!--agregar comentario solo si no esta resuelto-->
+                <div v-if="ticket.estado !== 'RESUELTO'" class="mb-6">
+                    <h3 class="text-lg mb-2">> Agregar Comentario:</h3>
+                    <form @submit.prevent="agregarComentario">
+                        <textarea
+                            v-model="nuevoComentario"
+                            rows="4"
+                            class="w-full bg-black border border-green-500 p-3 text-green-400 focus:outline-none focus:ring-1 focus:ring-green-500 mb-3"
+                            required
+                            placeholder="Escribe tu comentario como administrador..."
+                        ></textarea>
+                        <button
+                            type="submit"
+                            class="btn-matrix w-full"
+                            :disabled="isSubmitting"
+                        >
+                            <span v-if="!isSubmitting">> Agregar Comentario</span>
+                            <span v-else>> Agregando...</span>
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

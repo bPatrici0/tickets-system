@@ -5,6 +5,7 @@ import AdminPanel from '../views/AdminPanel.vue';
 import UserTickets from '../views/UserTickets.vue';
 import TicketView from '../views/TicketView.vue';
 import AdminPanelUser from '../views/AdminPanelUser.vue';
+import AdminTicketEstatus from '../views/AdminTicketEstatus.vue';
 
 const routes = [
     {
@@ -66,6 +67,14 @@ const routes = [
         meta: {
             requiresAuth: true,
             requiresAdmin: true
+        }
+    },
+    {
+        path: '/admin/tickets/:id',
+        name: '/AdminTicketEstatus',
+        meta: {
+            requiresAuth: true,
+            requiredAdmin: true
         }
     }
 ];

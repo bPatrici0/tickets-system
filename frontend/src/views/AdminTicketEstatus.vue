@@ -56,6 +56,24 @@
                         {{ ticket.descripcion }}
                     </div>
                 </div>
+
+                <!--historial de comentarios-->
+                <div class="mb-6" v-if="ticket.comentarios && ticket.comentarios.length > 0">
+                    <h3 class="text-lg text-green-400 mb-4">> Historial: </h3>
+                    <div class="space-y-4">
+                        <div v-for="comentario in ticket.comentarios" :key="comentario.id"
+                            class="border-1-2 border-green-500 pl-4 py-3">
+                            <div class="flex justify-between items-center text-sm text-green-500 mb-2">
+                                <div>
+                                    <span class="font-bold">{{ comentario.autor?.nombre || 'Usuario }}</span>
+                                    <span class="text-gray-400 ml-2">({{ comentario.autor?.rol === 'ROLE_ADMIN' ? 'Admin' : 'Usuario' }})</span>
+                                    <span>{{ formatDate(comentario.fechaCreacion) }}</span>
+                                </div>
+                                <pre class="text-green-300 whitespace-pre-wrap">{{ comentario.contenido }}</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -73,6 +73,11 @@
                             </div>
                         </div>
                     </div>
+
+                    <!--mensaje cuando no hay comentarios-->
+                    <div v-else class="text-gray-500 italic">
+                        > No hay comentarios para este ticket...
+                    </div>
                 </div>
             </div>
         </div>

@@ -79,6 +79,33 @@
                         > No hay comentarios para este ticket...
                     </div>
                 </div>
+
+                <!--Panel derecho-->
+                <div class="terminal-box">
+                    <h2 class="text-xl text-green-400 mb-4">> Acciones de administrador<span class="cursor-blink">|</span></h2>
+                </div>
+
+                <!--cambiar estado del ticket-->
+                <div class="mb-6">
+                    <h3 class="text-lg mb-2">> Cambiar Estado:</h3>
+                    <div class="grid grid-cols-1 gap-2">
+                        <button @click="cambiarEstado('ABIERTO')"
+                            :disabled="ticket.estado === 'ABIERTO' || ticket.estado === 'RESUELTO'"
+                            class="btn-status bg-yellow-500/20 text-yellow-400 border-yellow-500">
+                            > Marcar como ABIERTO
+                        </button>
+                        <button @click="cambiarEstado('EN_PROGRESO' || ticket.estado === 'RESUELTO')"
+                            :disabled="ticket.estado === 'EN_PROGRESO' || ticket.estado === 'RESUELTO'"
+                            class="btn-estatus bg-blue-500/20 text-blue-400 border-blue-500">
+                            > Marcar como EN PROGRESO
+                        </button>
+                        <button @click="cambiarEstado('RESUELTO')"
+                            :disabled="ticket.estado === 'RESUELTO'"
+                            class="btn-status bg-green-500/20 text-green-400 border-green-500">
+                            > Marcar como RESUELTO
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

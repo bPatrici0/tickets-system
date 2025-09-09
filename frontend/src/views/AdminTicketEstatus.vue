@@ -133,6 +133,25 @@
                 <div v-else class="bg-red-500/10 border border-red-500 p-3 text-red-400">
                     <p class="text-sm">> Este ticket está RESUELTO. No se pueden agregar mas comentarios.</p>
                 </div>
+
+                <!--estadisticas-->
+                <div class="mt-6 pt-4 border-t border-green-500">
+                    <h3 class="text-lg text-green-400 mb-2">> Estadisticas:</h3>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-green-500">> Total comentarios:</span>
+                            <span class="text-green-300">{{ ticket.comentarios?.length || 0 }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="">> Estado Acutal:</span>
+                            <span :class="statusTextClass(ticket.estado)">{{ ticket.estado }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-green-500">> Tiempo activo:</span>
+                            <span class="text-green-300">{{ calcularTiempoActivo() }}</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

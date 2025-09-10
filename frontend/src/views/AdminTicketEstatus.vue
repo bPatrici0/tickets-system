@@ -258,7 +258,7 @@ export default {
         },
 
         statusClass(estado) {
-            cosnt statusMap = {
+            const statusMap = {
                 'ABIERTO': 'bg-yellow-500/20 text-yellow-400',
                 'EN_PROGRESO': 'bg-blue-500/20 text-blue-400',
                 'RESUELTO': 'bg-green-500/20 text-green-400'
@@ -317,6 +317,18 @@ export default {
             } finally {
                 this.isSubmitting = false;
             }
+        },
+
+        calcularTiempoActivo() {
+            if (!this.ticket.fechaCreacion) return 'N/A';
+
+            const creacion = this.parseDate(this.ticket.fechaCreacion);
+            const ahora = new Date();
+            const diffMs = ahora - creacion;
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+
+            return `${diffDays}d ${diffHours}h`;
         }
     },
 }

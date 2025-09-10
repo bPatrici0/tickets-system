@@ -72,6 +72,7 @@ const routes = [
     {
         path: '/admin/tickets/:id',
         name: '/AdminTicketEstatus',
+        component: AdminTicketEstatus,
         meta: {
             requiresAuth: true,
             requiredAdmin: true

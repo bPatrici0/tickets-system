@@ -234,7 +234,46 @@ export default {
                 const dateB = this.parseDate(b.fechaCreacion);
                 return dateB - dateA;
             });
-        }
+        },
+
+        parseDate(dateData) {
+            if (Array.isArray(dateData)) {
+                const [year, month, day, hour, minutes] = dateData;
+                return new Date(year, month -1, day, hours, minutes);
+            }
+            return new Date(dateData);
+        },
+
+        formatDate(dateData) {
+            if (!dateData) return 'N/A';
+
+            const date = this.parseDate(dateData);
+            return date.toLocaleDateString('es-MX', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        },
+
+        statusClass(estado) {
+            cosnt statusMap = {
+                'ABIERTO': 'bg-yellow-500/20 text-yellow-400',
+                'EN_PROGRESO': 'bg-blue-500/20 text-blue-400',
+                'RESUELTO': 'bg-green-500/20 text-green-400'
+            };
+            return statusMap[estado] || 'bg-gray-500/20 text-gray-400';
+        },
+
+        statusTextClass(estado) {
+            const statusMap = {
+                'ABIERTO': 'text-yellow-400',
+                'EN_PROGRESO': 'text-blue-400',
+                'RESUELTO': 'text-green-400'
+            };
+            return statusMap[estado] || 'text-gray-400';
+        },
     },
 }
 </script>

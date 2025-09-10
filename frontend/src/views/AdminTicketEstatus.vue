@@ -182,6 +182,59 @@ export default {
     created() {
         this.verificarPermisos();
         this.cargarTicketCompleto();
-    }
+    },
+
+    methods: {
+        verificarPermisos() {
+            const userRole = localStorage.getItem('userRole');
+            if (userRole !== 'ROLE_ADMIN') {
+                alert('No tienes permisos de administrador');
+                this.$router.push('/tickets');
+                return;
+            }
+        },
+
+        async cargarTicketCompleto() {
+            this.loading = true;
+            try {
+                const ticketId = this.$route.params.id;
+                const [ticketResponse, comentariosResponse] = await Promise.all([
+                    api.get(`/admin/tickets/${ticketId}`),
+                    api.get(`/tickets/${ticketId}/comentarios`)
+                ]);
+
+                this.ticket = {
+                    ...ticketResponse.data,
+                    comentarios: Array.isArray(comentariosResponse.data)
+                        ? comentariosResponse.data
+                        : []
+                };
+
+                this.ordenarComentarios();
+
+            } catch (error) {
+                console.error("Error cargando ticket:", error);
+                if (error.response?.status === 403) {
+                    alert('No tienes permisos para ver este ticket');
+                    this.$router.push('/admin/tickets');
+                } else if (error.response?.status === 404) {
+                    alert('Ticket no encontrado');
+                    this.$router.push('/admin/tickets');
+                }
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        ordenarComentarios() {
+            if (!this.ticket.comentarios || this.ticket.comentarios.length === 0) return;
+
+            this.ticket.comentarios.sort((a, b) => {
+                const dateA = this.parseDate(a.fechaCreacion);
+                const dateB = this.parseDate(b.fechaCreacion);
+                return dateB - dateA;
+            });
+        }
+    },
 }
 </script>

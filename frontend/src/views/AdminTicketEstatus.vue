@@ -274,6 +274,50 @@ export default {
             };
             return statusMap[estado] || 'text-gray-400';
         },
+
+        async cambiarEstado(nuevoEstado) {
+            if (!confirm(`Cambiar estado a ${nuevoEstado}?`)) return;
+
+            try {
+                const response = await api.put(`/admin/tickets/${this.ticket.id}/estado`, {
+                    estado: nuevoEstado
+                });
+
+                this.ticket.estado = nuevoEstado;
+                this.ticket.fechaActualizacion = new Date().toISOString();
+
+                alert(`Estado cambiado a ${nuevoEstado}`);
+            } catch (error) {
+                console.error("Error cambiando estado:", error);
+                alert("Error al cambiar estado: " + (error.response?.data?.message || error.message));
+            }
+        },
+
+        async agregarComentario() {
+            if (this.ticket.estado === 'RESUELTO') {
+                alert("No se pueden agregar comentarios a tickets resueltos");
+                return;
+            }
+
+            this.isSubmitting = true;
+            try {
+                const response = await api.post(`/tickets/${this.ticket.id}/comentarios`, {
+                    contenido: this.nuevoComentario
+                });
+
+                //agregar nuevo comentario a la lista
+                this.ticket.comentarios.unshift(response.data);
+                this.ordenarComentarios();
+                this.nuevoComentario = '';
+
+                alert("Comentario agregado exitosamente");
+            } catch (error) {
+                console.error("Error agregando comentario:", error);
+                alert("Error al agregar comentario: " + (error.response?.data?.message || error.message));
+            } finally {
+                this.isSubmitting = false;
+            }
+        }
     },
 }
 </script>

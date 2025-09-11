@@ -151,4 +151,11 @@ public class AdminController {
                     .body("Error al cambiar estado");
         }
     }
+
+    @PutMapping("/tickets/{id}/estado")
+    public ResponseEntity<Ticket> cambiarEstadoTicket(@PathVariable Long id, @RequestBody Map<String, String> request) {
+        String nuevoEstado = request.get("estado");
+        Ticket ticket = ticketService.cambiarEstadoTicket(id, nuevoEstado);
+        return ResponseEntity.ok(ticket);
+    }
 }

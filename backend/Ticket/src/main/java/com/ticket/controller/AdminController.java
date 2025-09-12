@@ -1,7 +1,9 @@
 package com.ticket.controller;
 
 import com.ticket.entity.Usuario;
+import com.ticket.entity.Ticket;
 import com.ticket.service.UsuarioService;
+import com.ticket.service.TicketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,6 +30,9 @@ public class AdminController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private TicketService ticketService;
 
     @GetMapping("/usuarios")
     public ResponseEntity<List<Usuario>> obtenerTodosLosUsuarios() {

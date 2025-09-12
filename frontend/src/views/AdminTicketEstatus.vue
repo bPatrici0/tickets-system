@@ -280,7 +280,8 @@ export default {
             if (!confirm(`¿Cambiar estado a ${nuevoEstado}?`)) return;
 
             try {
-                const response = await api.put(`/admin/tickets/${this.ticket.id}/estado`, {
+                await api.put(`/admin/tickets/${this.ticket.id}/estado`, {
+
                     estado: nuevoEstado
                 });
 

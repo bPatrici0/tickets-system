@@ -24,6 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.List;
 import com.ticket.repository.ComentarioRepository;
+import java.util.Date;
+import java.util.Arrays;
 
 @Service
 @Transactional
@@ -170,13 +172,17 @@ public class TicketService {
         return convertComentarioToDTO(comentarioGuardado);
     }
 
-    public Ticket cambiarEstado(Long ticketId, String estado){
-        Ticket ticket = obtenerTicketPorId(ticketId);
-        try {
-            ticket.setEstado(EstadoTicket.valueOf(estado));
-        } catch (IllegalArgumentException e) {
-            throw new BadRequestException("Estado de ticket inválido!...");
+    public Ticket cambiarEstadoTicket(Long Id, String nuevoEstado){
+        Ticket ticket = ticketRepository.findById(Id)
+                .orElseThrow(() -> new NotFoundException("Ticket no encontrado"));
+        List<String> estadosPermitidos = Arrays.asList("ABIERTO", "EN_PROGRESO", "RESUELTO");
+        if (!estadosPermitidos.contains(nuevoEstado)) {
+            throw new IllegalArgumentException("Estado no válido: " + nuevoEstado);
         }
+
+        ticket.setEstado(EstadoTicket.valueOf(nuevoEstado));
+        ticket.setFechaActualizacion(new Date());
+
         return ticketRepository.save(ticket);
     }
 
@@ -191,5 +197,12 @@ public class TicketService {
         return comentarios.stream()
                 .map(this::convertComentarioToDTO)
                 .collect(Collectors.toList());
+    }
+
+    public void cambiarEstado(Long ticketId, String nuevoEstado) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new RuntimeException("Ticket no encontrado"));
+        ticket.setEstado(EstadoTicket.valueOf(nuevoEstado));
+        ticketRepository.save(ticket);
     }
 }

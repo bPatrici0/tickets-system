@@ -6,6 +6,7 @@ import UserTickets from '../views/UserTickets.vue';
 import TicketView from '../views/TicketView.vue';
 import AdminPanelUser from '../views/AdminPanelUser.vue';
 import AdminTicketEstatus from '../views/AdminTicketEstatus.vue';
+import AdminTicketsView from '../views/AdminTicketsView.vue';
 
 const routes = [
     {
@@ -70,9 +71,18 @@ const routes = [
         }
     },
     {
-        path: '/admin/tickets/:id',
-        name: '/AdminTicketEstatus',
+        path: '/admin/AdminTicketEstatus',
+        name: 'AdminTicketEstatus',
         component: AdminTicketEstatus,
+        meta: {
+            requiresAuth: true,
+            requiredAdmin: true
+        }
+    },
+    {
+        path: '/admin/AdminTicketsView',
+        name: 'AdminTicketsView',
+        component: AdminTicketsView,
         meta: {
             requiresAuth: true,
             requiredAdmin: true

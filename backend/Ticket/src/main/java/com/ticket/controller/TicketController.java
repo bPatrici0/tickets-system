@@ -92,7 +92,7 @@ public class TicketController {
     @PutMapping("/{id}/estado")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Ticket> cambiarEstado(@PathVariable Long id, @RequestBody EstadoDTO estadoDTO) {
-        return ResponseEntity.ok(ticketService.cambiarEstado(id, estadoDTO.getEstado()));
+        return ResponseEntity.ok(ticketService.cambiarEstadoTicket(id, nuevoEstado));
     }
 
     @DeleteMapping("/{id}")

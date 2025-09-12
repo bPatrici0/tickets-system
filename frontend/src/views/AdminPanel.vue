@@ -14,7 +14,7 @@
 
     <!-- Estadísticas -->
     <div class="terminal-box p-4">
-        <h2 class="text-xl mb-4">> Estadísticas<span class="cursor-blink">|</span></h2>
+        <h2 class="text-xl mb-4">> Estadísticas<span class="cursor-blink"></span></h2>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div class="text-center p-3 border border-green-500 rounded">
                 <div class="text-2xl text-green-400">{{ users.length }}</div>
@@ -38,9 +38,8 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6 py-4">
       <!-- Sección Usuarios -->
       <div class="terminal-box p-4">
-        <h2 class="text-xl mb-4 cursor-pointer hover:text-green-300"
-            @click="$router.push('/admin/AdminPanelUser')">
-            > Usuarios <span class="text-green-400">({{ filteredUsers.length }})/({{ users.length }})</span><span class="cursor-blink">|</span>
+        <h2 class="text-xl mb-4 cursor-pointer hover:text-green-300" @click="$router.push('/admin/AdminPanelUser')">
+            > Usuarios <span class="text-green-400">({{ filteredUsers.length }})/({{ users.length }})</span><span class="cursor-blink"></span>
         </h2>
 
         <!--filtro por rol-->
@@ -110,7 +109,9 @@
 
       <!-- Sección Tickets -->
       <div class="terminal-box p-4">
-        <h2 class="text-xl mb-4">> Tickets <span class="text-green-400">({{ tickets.length }})</span><span class="cursor-blink">|</span></h2>
+        <h2 class="text-xl mb-4 cursor-pointer hover:text-green-300" @click="$router.push('/admin/tickets')">
+            > Tickets <span class="text-green-400">({{ tickets.length }})</span><span class="cursor-blink"></span>
+        </h2>
 
         <!-- estado de carga -->
         <div v-if="loadingTickets" class="text-green-500 text-center py-4">
@@ -291,7 +292,7 @@ export default {
     },
 
     verTicket(ticketId) {
-      this.$router.push(`/ticket/${ticketId}`);
+      this.$router.push(`/admin/tickets/${ticketId}`);
     },
 
     formatDate(dateData) {

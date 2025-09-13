@@ -42,6 +42,14 @@ public class AdminController {
         return ResponseEntity.ok(usuarios);
     }
 
+    @GetMapping("/tickets")
+    public ResponseEntity<List<Ticket>> obtenerTodosLosTickets() {
+        System.out.println("AdminController.obtnerTodosLosTickets() llamando");
+        List<Ticket> tickets = ticketService.obtenerTodosLosTickets();
+        System.out.println("Tickets encontrados: " + tickets.size());
+        return ResponseEntity.ok(tickets);
+    }
+
     @PutMapping("/usuarios/{id}/role")
     public ResponseEntity<Usuario> cambiarRolUsuario(@PathVariable Long id, @RequestBody Map<String, String> request) {
         System.out.println("AdminController.cambiarRolUsuario() llamado - ID: " + id);

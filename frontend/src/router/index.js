@@ -38,7 +38,7 @@ const routes = [
         meta: {
             title: '>Admin Panel',
             requiresAuth: true,
-            requiredRole: true
+            requiredAdmin: true
         }
     },
     {
@@ -56,8 +56,7 @@ const routes = [
         component: TicketView,
         meta: {
             title: '> Detalle ticket',
-            requiresAuth: true,
-            requiredRole: 'ROLE_USER'
+            requiresAuth: true
         }
     },
     {
@@ -73,21 +72,21 @@ const routes = [
     {
         path: '/admin/tickets',
         name: 'AdminTickets',
-        component: AdminTicketEstatus,
+        component: AdminTicketsView,
         meta: {
             title: '> Admin - Tickets',
             requiresAuth: true,
-            requiredAdmin: true
+            requiresAdmin: true
         }
     },
     {
         path: '/admin/tickets/:id',
-        name: 'AdminTicketsView',
-        component: AdminTicketsEstatus,
+        name: 'AdminTicketEstatus',
+        component: AdminTicketEstatus,
         meta: {
             title: '> Admin - Detalle Ticket',
             requiresAuth: true,
-            requiredAdmin: true
+            requiresAdmin: true
         }
     }
 ];

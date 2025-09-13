@@ -91,8 +91,18 @@ public class TicketController {
 
     @PutMapping("/{id}/estado")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Ticket> cambiarEstado(@PathVariable Long id, @RequestBody EstadoDTO estadoDTO) {
-        return ResponseEntity.ok(ticketService.cambiarEstadoTicket(id, nuevoEstado));
+    public ResponseEntity<?> cambiarEstado(@PathVariable Long id, @RequestBody EstadoDTO estadoDTO) {
+        try {
+            if (estadoDTO.getEstado() == null || estadoDTO.getEstado().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("El campo 'estado' es requerido");
+            }
+
+            Ticket ticketActualizado = ticketService.cambiarEstadoTicket(id, estadoDTO.getEstado());
+            return ResponseEntity.ok(ticketActualizado);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+
     }
 
     @DeleteMapping("/{id}")

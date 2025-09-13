@@ -69,7 +69,10 @@ public class TicketService {
 
     @Transactional(readOnly = true)
     public List<Ticket> obtenerTodosLosTickets() {
-        return ticketRepository.findAll();
+        System.out.println("TicketService.obtenerTodosLosTickets() llamado");
+        List<Ticket> tickets = ticketRepository.findAll();
+
+        return tickets;
     }
 
     @Transactional(readOnly = true)

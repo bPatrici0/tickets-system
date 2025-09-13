@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.util.ArrayList;
+import java.util.Date;
 
 @Entity
 public class Ticket {
@@ -28,6 +29,9 @@ public class Ticket {
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonBackReference
     private List<Comentario> comentarios = new ArrayList<>();
+
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date fechaActualizacion;
 
     public Long getId() {
         return id;
@@ -88,5 +92,13 @@ public class Ticket {
     public void agregarComentario(Comentario comentario) {
         comentarios.add(comentario);
         comentario.setTicket(this);
+    }
+
+    public Date getFechaActualizacion() {
+        return fechaActualizacion;
+    }
+
+    public void setFechaActualizacion(Date fechaActualizacion) {
+        this.fechaActualizacion = fechaActualizacion;
     }
 }

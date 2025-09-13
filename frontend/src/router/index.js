@@ -38,7 +38,7 @@ const routes = [
         meta: {
             title: '>Admin Panel',
             requiresAuth: true,
-            requiredRole: 'ROLE_ADMIN'
+            requiredRole: true
         }
     },
     {
@@ -47,43 +47,45 @@ const routes = [
         component: UserTickets,
         meta: {
             title: '> Tickets',
-            requiresAuth: true,
-            requiredRole: 'ROLE_USER'
+            requiresAuth: true
         }
     },
     {
-        path: '/tickets/:id',
+        path: '/ticket/:id',
         name: 'TicketView',
         component: TicketView,
         meta: {
-            title: '> Detalle tickets',
+            title: '> Detalle ticket',
             requiresAuth: true,
             requiredRole: 'ROLE_USER'
         }
     },
     {
-        path: '/admin/AdminPanelUser',
+        path: '/admin/user',
         name: 'AdminUser',
         component: AdminPanelUser,
         meta: {
+            title: '> Admin - Usuarios',
             requiresAuth: true,
             requiresAdmin: true
         }
     },
     {
-        path: '/admin/AdminTicketEstatus',
-        name: 'AdminTicketEstatus',
+        path: '/admin/tickets',
+        name: 'AdminTickets',
         component: AdminTicketEstatus,
         meta: {
+            title: '> Admin - Tickets',
             requiresAuth: true,
             requiredAdmin: true
         }
     },
     {
-        path: '/admin/AdminTicketsView',
+        path: '/admin/tickets/:id',
         name: 'AdminTicketsView',
-        component: AdminTicketsView,
+        component: AdminTicketsEstatus,
         meta: {
+            title: '> Admin - Detalle Ticket',
             requiresAuth: true,
             requiredAdmin: true
         }
@@ -99,13 +101,14 @@ router.beforeEach ((to, from, next) => {
     const isAuthenticated = localStorage.getItem('userEmail');
     const userRole = localStorage.getItem('userRole');
 
-    /*if(to.meta.public) {
+    if(to.meta.public) {
         return next();
-    }*/
+    }
+
     if (to.meta.requiresAuth && !isAuthenticated) {
         next('/login');
     } else if (isAuthenticated && (to.name === 'login' || to.name === 'register')) {
-        next(userRole === 'ROLE_ADMIN' ? '/admin' : '/tickets'); //redirige al panel admin
+        next(userRole === 'ROLE_ADMIN' ? '/admin' : '/tickets');
     } else if (to.meta.requiredRole && userRole !== to.meta.requiredRole) {
         next(userRole === 'ROLE_ADMIN' ? 'admin' : '/tickets');
     } else {

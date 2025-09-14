@@ -50,6 +50,12 @@ public class AdminController {
         return ResponseEntity.ok(tickets);
     }
 
+    @GetMapping("/tickets/{id}")
+    public ResponseEntity<Ticket> obtenerTicketPorId(Long id) {
+        System.out.println("TicketService.obtenerTicketPorId() llamado -ID: " + id);
+        Optional<Ticket>
+    }
+
     @PutMapping("/usuarios/{id}/role")
     public ResponseEntity<Usuario> cambiarRolUsuario(@PathVariable Long id, @RequestBody Map<String, String> request) {
         System.out.println("AdminController.cambiarRolUsuario() llamado - ID: " + id);

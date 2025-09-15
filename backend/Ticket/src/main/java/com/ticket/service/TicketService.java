@@ -26,6 +26,7 @@ import java.util.List;
 import com.ticket.repository.ComentarioRepository;
 import java.util.Date;
 import java.util.Arrays;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -75,10 +76,19 @@ public class TicketService {
         return tickets;
     }
 
-    @Transactional(readOnly = true)
+    //@Transactional(readOnly = true)
     public Ticket obtenerTicketPorId(Long id) {
-        return ticketRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Ticket no encontrado con id: " + id));
+        System.out.println("TicketService.obtenerTicketPorId() llamado - ID: " + id);
+        Optional<Ticket> ticketOpt = ticketRepository.findById(id);
+
+        if (ticketOpt.isPresent()) {
+            Ticket ticket = ticketOpt.get();
+            System.out.println("Ticket encontrado: " + ticket.getTitulo());
+            return ticket;
+        } else {
+            System.out.println("Ticket no encontrado - ID: " + id);
+            throw new NotFoundException("Ticket no encontrado con ID: " + id);
+        }
     }
 
     @Transactional(readOnly = true)

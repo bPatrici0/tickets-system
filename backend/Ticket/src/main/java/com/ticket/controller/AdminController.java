@@ -54,7 +54,7 @@ public class AdminController {
     public ResponseEntity<Ticket> obtenerTicketPorId(@PathVariable Long id) {
         System.out.println("AdminController.obtenerTicketPorId() llamado -ID: " + id);
          try {
-             Ticket ticket = ticketService.obtenerTicketPorId();
+             Ticket ticket = ticketService.obtenerTicketPorId(id);
 
              if (ticket == null) {
                  System.out.println("Ticket no encontrado - ID: " + id);

@@ -51,9 +51,26 @@ public class AdminController {
     }
 
     @GetMapping("/tickets/{id}")
-    public ResponseEntity<Ticket> obtenerTicketPorId(Long id) {
-        System.out.println("TicketService.obtenerTicketPorId() llamado -ID: " + id);
-        Optional<Ticket>
+    public ResponseEntity<Ticket> obtenerTicketPorId(@PathVariable Long id) {
+        System.out.println("AdminController.obtenerTicketPorId() llamado -ID: " + id);
+         try {
+             Ticket ticket = ticketService.obtenerTicketPorId();
+
+             if (ticket == null) {
+                 System.out.println("Ticket no encontrado - ID: " + id);
+                 return ResponseEntity.notFound().build();
+             }
+
+             System.out.println("Ticket encontrado: " + ticket.getTitulo());
+             return ResponseEntity.ok(ticket);
+         } catch (NotFoundException e) {
+             System.out.println("Ticket no encontrado - ID: " + id);
+             return ResponseEntity.notFound().build();
+         } catch (Exception e) {
+             System.out.println("Error obteniendo ticket ID " + id + "; " + e.getMessage());
+             e.printStackTrace();
+             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+         }
     }
 
     @PutMapping("/usuarios/{id}/role")

@@ -51,7 +51,7 @@ const routes = [
         }
     },
     {
-        path: '/ticket/:id',
+        path: '/tickets/:id',
         name: 'TicketView',
         component: TicketView,
         meta: {

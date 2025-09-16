@@ -76,7 +76,7 @@ public class TicketService {
         return tickets;
     }
 
-    //@Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     public Ticket obtenerTicketPorId(Long id) {
         System.out.println("TicketService.obtenerTicketPorId() llamado - ID: " + id);
         Optional<Ticket> ticketOpt = ticketRepository.findById(id);

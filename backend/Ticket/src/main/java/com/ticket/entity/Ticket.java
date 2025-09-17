@@ -17,6 +17,7 @@ public class Ticket {
     private String descripcion;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private EstadoTicket estado = EstadoTicket.ABIERTO; //valor por defecto
 
     private LocalDateTime fechaCreacion = LocalDateTime.now();

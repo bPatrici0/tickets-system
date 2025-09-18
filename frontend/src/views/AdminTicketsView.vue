@@ -219,6 +219,19 @@ export default {
                 ticket.descripcion.toLowerCase().includes(searchTerm)
         };
     }
+
+    switch (this.orden) {
+        case 'fechaReciente':
+            filtered.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
+            break;
+        case 'fechaAntigua':
+            filtered.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
+            break;
+        case 'estado':
+            const ordenEstados = ['ABIERTO', 'EN_PROGRESO', 'RESUELTO'];
+            filtered.sort((a, b) => ordenEstados.indexOf(a.estado) - ordenEstados.indexOf(b.estado));
+            break;
+    }
   },
 
   created() {

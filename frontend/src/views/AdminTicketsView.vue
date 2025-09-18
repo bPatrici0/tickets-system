@@ -136,8 +136,16 @@ export default {
       loading: false,
       filtroEstado: 'TODOS',
       busquedaTitulo: '',
-      orden: 'fechaReciente'
+      orden: 'fechaReciente',
+      ticketsFiltrados: []
     }
+  },
+
+  watch: {
+    filtroEstado: 'aplicarFiltrosYOrden',
+    busquedaTitulo: 'aplicarFiltrosYOrden',
+    orden; 'aplicarFiltrosYOrden',
+    tickets: 'aplicarFiltrosYOrden'
   },
 
   computed: {
@@ -195,6 +203,21 @@ export default {
         return 'que coincidan con la búsqueda';
       }
       return '';
+    },
+
+    aplicarFiltroYOrden() {
+        let filtered = [...this.tickets];
+
+        if (this.filtroEstado !== 'TODOS') {
+            filtered = filtered.filter(ticket => ticket.estado === this.filtroEstado);
+        }
+
+        if (this.busquedaTitulo) {
+            const searchTerm = this.busquedaTitulo.toLowerCase();
+            filtered = filtered.filter(ticket =>
+                ticket.titulo.toLowerCase().includes(searchTerm) ||
+                ticket.descripcion.toLowerCase().includes(searchTerm)
+        };
     }
   },
 

@@ -199,10 +199,10 @@ export default {
 
       switch (this.orden) {
         case 'fechaReciente':
-          filtered.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
+          filtered.sort((a, b) => b.fechaCreacionTimestamp - a.fechaCreacionTimestamp);
           break;
         case 'fechaAntigua':
-          filtered.sort((a, b) => new Date(a.fechaCreacion) - new Date(b.fechaCreacion));
+          filtered.sort((a, b) => a.fechaCreacionTimestamp - b.fechaCreacionTimestamp);
           break;
         case 'estado':
           filtered.sort((a, b) => ordenEstados.indexOf(a.estado) - ordenEstados.indexOf(b.estado));

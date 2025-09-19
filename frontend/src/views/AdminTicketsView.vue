@@ -179,37 +179,38 @@ export default {
 
   methods: {
     aplicarFiltrosYOrden() {
-      let filtered = [...this.tickets];
+        console.log('Orden seleccionado:', this.orden);
+        let filtered = [...this.tickets];
 
-      // Filtrar por estado
-      if (this.filtroEstado !== 'TODOS') {
-        filtered = filtered.filter(ticket => ticket.estado === this.filtroEstado);
-      }
+        // Filtrar por estado
+        if (this.filtroEstado !== 'TODOS') {
+            filtered = filtered.filter(ticket => ticket.estado === this.filtroEstado);
+        }
 
-      // Filtrar por búsqueda
-      if (this.busquedaTitulo) {
-        const searchTerm = this.busquedaTitulo.toLowerCase();
-        filtered = filtered.filter(ticket =>
-          ticket.titulo.toLowerCase().includes(searchTerm) ||
-          ticket.descripcion.toLowerCase().includes(searchTerm)
-        );
-      }
+        // Filtrar por búsqueda
+        if (this.busquedaTitulo) {
+            const searchTerm = this.busquedaTitulo.toLowerCase();
+            filtered = filtered.filter(ticket =>
+            ticket.titulo.toLowerCase().includes(searchTerm) ||
+            ticket.descripcion.toLowerCase().includes(searchTerm)
+            );
+        }
 
-      const ordenEstados = ['ABIERTO', 'EN_PROGRESO', 'RESUELTO'];
+        const ordenEstados = ['ABIERTO', 'EN_PROGRESO', 'RESUELTO'];
 
-      switch (this.orden) {
-        case 'fechaReciente':
-          filtered.sort((a, b) => b.fechaCreacionTimestamp - a.fechaCreacionTimestamp);
-          break;
-        case 'fechaAntigua':
-          filtered.sort((a, b) => a.fechaCreacionTimestamp - b.fechaCreacionTimestamp);
-          break;
-        case 'estado':
-          filtered.sort((a, b) => ordenEstados.indexOf(a.estado) - ordenEstados.indexOf(b.estado));
-          break;
-        default:
-            filtered.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
-      }
+        switch (this.orden) {
+            case 'fechaReciente':
+                filtered.sort((a, b) => b.fechaCreacionTimestamp - a.fechaCreacionTimestamp);
+                break;
+            case 'fechaAntigua':
+                filtered.sort((a, b) => a.fechaCreacionTimestamp - b.fechaCreacionTimestamp);
+                break;
+            case 'estado':
+                filtered.sort((a, b) => ordenEstados.indexOf(a.estado) - ordenEstados.indexOf(b.estado));
+                break;
+            default:
+                filtered.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
+        }
 
       this.ticketsFiltrados = filtered;
     },

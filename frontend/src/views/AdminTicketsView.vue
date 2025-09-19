@@ -200,10 +200,10 @@ export default {
 
         switch (this.orden) {
             case 'fechaReciente':
-                filtered.sort((a, b) => b.fechaCreacionTimestamp - a.fechaCreacionTimestamp);
+                filtered.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
                 break;
             case 'fechaAntigua':
-                filtered.sort((a, b) => a.fechaCreacionTimestamp - b.fechaCreacionTimestamp);
+                filtered.sort((a, b) => new Date(a.fechaCreacion) - new Date(b.fechaCreacion));
                 break;
             case 'estado':
                 filtered.sort((a, b) => ordenEstados.indexOf(a.estado) - ordenEstados.indexOf(b.estado));
@@ -211,6 +211,8 @@ export default {
             default:
                 filtered.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
         }
+
+        console.log('Tickets ordenados:', filtered.map(t => ({id: t.id, fecha: t.fechaCreacion, estado: t.estado})));
 
       this.ticketsFiltrados = filtered;
     },

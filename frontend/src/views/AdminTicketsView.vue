@@ -149,40 +149,6 @@ export default {
   },
 
   computed: {
-    ticketsFiltrados() {
-      let filtered = this.tickets;
-
-      // Filtrar por estado
-      if (this.filtroEstado !== 'TODOS') {
-        filtered = filtered.filter(ticket => ticket.estado === this.filtroEstado);
-      }
-
-      // Filtrar por búsqueda
-      if (this.busquedaTitulo) {
-        const searchTerm = this.busquedaTitulo.toLowerCase();
-        filtered = filtered.filter(ticket =>
-          ticket.titulo.toLowerCase().includes(searchTerm) ||
-          ticket.descripcion.toLowerCase().includes(searchTerm)
-        );
-      }
-
-      // Ordenar
-      switch (this.orden) {
-        case 'fechaReciente':
-          filtered.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
-          break;
-        case 'fechaAntigua':
-          filtered.sort((a, b) => new Date(a.fechaCreacion) - new Date(b.fechaCreacion));
-          break;
-        case 'estado':{
-          const ordenEstados = ['ABIERTO', 'EN_PROGRESO', 'RESUELTO'];
-          filtered.sort((a, b) => ordenEstados.indexOf(a.estado) - ordenEstados.indexOf(b.estado));
-          break;}
-      }
-
-      return filtered;
-    },
-
     ticketsAbiertos() {
       return this.tickets.filter(t => t.estado === 'ABIERTO').length;
     },
@@ -203,37 +169,6 @@ export default {
         return 'que coincidan con la búsqueda';
       }
       return '';
-    },
-
-    aplicarFiltroYOrden() {
-        let filtered = [...this.tickets];
-
-        if (this.filtroEstado !== 'TODOS') {
-            filtered = filtered.filter(ticket => ticket.estado === this.filtroEstado);
-        }
-
-        if (this.busquedaTitulo) {
-            const searchTerm = this.busquedaTitulo.toLowerCase();
-            filtered = filtered.filter(ticket =>
-                ticket.titulo.toLowerCase().includes(searchTerm) ||
-                ticket.descripcion.toLowerCase().includes(searchTerm)
-            );
-        }
-
-        switch (this.orden) {
-            case 'fechaReciente':
-                filtered.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
-                break;
-            case 'fechaAntigua':
-                filtered.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
-                break;
-            case 'estado':
-                const ordenEstados = ['ABIERTO', 'EN_PROGRESO', 'RESUELTO'];
-                filtered.sort((a, b) => ordenEstados.indexOf(a.estado) - ordenEstados.indexOf(b.estado));
-                break;
-        }
-
-        this.ticketsFiltrados = filtered;
     }
   },
 
@@ -243,6 +178,40 @@ export default {
   },
 
   methods: {
+    aplicarFiltrosYOrden() {
+      let filtered = [...this.tickets];
+
+      // Filtrar por estado
+      if (this.filtroEstado !== 'TODOS') {
+        filtered = filtered.filter(ticket => ticket.estado === this.filtroEstado);
+      }
+
+      // Filtrar por búsqueda
+      if (this.busquedaTitulo) {
+        const searchTerm = this.busquedaTitulo.toLowerCase();
+        filtered = filtered.filter(ticket =>
+          ticket.titulo.toLowerCase().includes(searchTerm) ||
+          ticket.descripcion.toLowerCase().includes(searchTerm)
+        );
+      }
+
+      const ordenEstados = ['ABIERTO', 'EN_PROGRESO', 'RESUELTO'];
+
+      switch (this.orden) {
+        case 'fechaReciente':
+          filtered.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
+          break;
+        case 'fechaAntigua':
+          filtered.sort((a, b) => new Date(a.fechaCreacion) - new Date(b.fechaCreacion));
+          break;
+        case 'estado':
+          filtered.sort((a, b) => ordenEstados.indexOf(a.estado) - ordenEstados.indexOf(b.estado));
+          break;
+      }
+
+      this.ticketsFiltrados = filtered;
+    },
+
     verificarPermisos() {
       const userRole = localStorage.getItem('userRole');
       if (userRole !== 'ROLE_ADMIN') {

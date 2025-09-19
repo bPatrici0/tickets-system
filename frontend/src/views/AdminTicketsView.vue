@@ -207,6 +207,8 @@ export default {
         case 'estado':
           filtered.sort((a, b) => ordenEstados.indexOf(a.estado) - ordenEstados.indexOf(b.estado));
           break;
+        default:
+            filtered.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
       }
 
       this.ticketsFiltrados = filtered;
@@ -224,7 +226,14 @@ export default {
       this.loading = true;
       try {
         const response = await api.get('/admin/tickets');
-        this.tickets = response.data || [];
+        this.tickets = (response.data || []).map(ticket => ({
+            ...ticket,
+            fechaCreacionTimestamp: new Date(ticket.fechaCreacion).getTime(),
+            fechaActualizacionTimestamp: new Date(ticket.fechaActualizacion).getTime()
+        }));
+        this.tickets.forEach(ticket => {
+            console.log('Fecha creacion:', ticket.fechaCreacion, 'Date object:', new Date(ticket.fechaCreacion));
+        });
         this.aplicarFiltrosYOrden();
       } catch (error) {
         console.error("Error fetching tickets:", error);

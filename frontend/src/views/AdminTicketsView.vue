@@ -142,10 +142,22 @@ export default {
   },
 
   watch: {
-    filtroEstado: 'aplicarFiltrosYOrden',
-    busquedaTitulo: 'aplicarFiltrosYOrden',
-    orden: 'aplicarFiltrosYOrden',
-    tickets: 'aplicarFiltrosYOrden'
+    filtroEstado() {
+      console.log('filtroEstado cambió:', this.filtroEstado);
+      this.aplicarFiltrosYOrden();
+    },
+    busquedaTitulo() {
+      console.log('busquedaTitulo cambió:', this.busquedaTitulo);
+      this.aplicarFiltrosYOrden();
+    },
+    orden() {
+      console.log('orden cambió:', this.orden);
+      this.aplicarFiltrosYOrden();
+    },
+    tickets() {
+      console.log('tickets cambió');
+      this.aplicarFiltrosYOrden();
+    }
   },
 
   computed: {
@@ -178,41 +190,65 @@ export default {
   },
 
   methods: {
+    parseCustomDate(dateString) {
+      if (!dateString) return new Date();
+
+      // Formato: "2025,8,1,15,57,41,55506000"
+      if (typeof dateString === 'string' && dateString.includes(',')) {
+        const parts = dateString.split(',');
+        if (parts.length >= 6) {
+          // Ajustar mes (JavaScript months are 0-based)
+          const year = parseInt(parts[0]);
+          const month = parseInt(parts[1]) - 1;
+          const day = parseInt(parts[2]);
+          const hour = parseInt(parts[3]);
+          const minute = parseInt(parts[4]);
+          const second = parseInt(parts[5]);
+
+          return new Date(year, month, day, hour, minute, second);
+        }
+      }
+
+      // Si el formato no coincide, intentar con Date normal
+      return new Date(dateString);
+    },
+
     aplicarFiltrosYOrden() {
-        console.log('Orden seleccionado:', this.orden);
-        let filtered = [...this.tickets];
+      console.log('Orden seleccionado:', this.orden);
+      let filtered = [...this.tickets];
 
-        // Filtrar por estado
-        if (this.filtroEstado !== 'TODOS') {
-            filtered = filtered.filter(ticket => ticket.estado === this.filtroEstado);
-        }
+      if (this.filtroEstado !== 'TODOS') {
+        filtered = filtered.filter(ticket => ticket.estado === this.filtroEstado);
+      }
 
-        // Filtrar por búsqueda
-        if (this.busquedaTitulo) {
-            const searchTerm = this.busquedaTitulo.toLowerCase();
-            filtered = filtered.filter(ticket =>
-            ticket.titulo.toLowerCase().includes(searchTerm) ||
-            ticket.descripcion.toLowerCase().includes(searchTerm)
-            );
-        }
+      if (this.busquedaTitulo) {
+        const searchTerm = this.busquedaTitulo.toLowerCase();
+        filtered = filtered.filter(ticket =>
+          ticket.titulo.toLowerCase().includes(searchTerm) ||
+          ticket.descripcion.toLowerCase().includes(searchTerm)
+        );
+      }
 
-        const ordenEstados = ['ABIERTO', 'EN_PROGRESO', 'RESUELTO'];
+      const ordenEstados = ['ABIERTO', 'EN_PROGRESO', 'RESUELTO'];
 
-        switch (this.orden) {
-            case 'fechaReciente':
-                filtered.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
-                break;
-            case 'fechaAntigua':
-                filtered.sort((a, b) => new Date(a.fechaCreacion) - new Date(b.fechaCreacion));
-                break;
-            case 'estado':
-                filtered.sort((a, b) => ordenEstados.indexOf(a.estado) - ordenEstados.indexOf(b.estado));
-                break;
-            default:
-                filtered.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
-        }
+      switch (this.orden) {
+        case 'fechaReciente':
+          filtered.sort((a, b) => this.parseCustomDate(b.fechaCreacion) - this.parseCustomDate(a.fechaCreacion));
+          break;
+        case 'fechaAntigua':
+          filtered.sort((a, b) => this.parseCustomDate(a.fechaCreacion) - this.parseCustomDate(b.fechaCreacion));
+          break;
+        case 'estado':
+          filtered.sort((a, b) => ordenEstados.indexOf(a.estado) - ordenEstados.indexOf(b.estado));
+          break;
+        default:
+          filtered.sort((a, b) => this.parseCustomDate(b.fechaCreacion) - this.parseCustomDate(a.fechaCreacion));
+      }
 
-        console.log('Tickets ordenados:', filtered.map(t => ({id: t.id, fecha: t.fechaCreacion, estado: t.estado})));
+      console.log('Tickets ordenados por:', this.orden);
+      filtered.forEach((ticket, index) => {
+        console.log(`#${index + 1}: ID ${ticket.id} - Fecha: ${ticket.fechaCreacion} - Estado: ${ticket.estado}`);
+      });
 
       this.ticketsFiltrados = filtered;
     },
@@ -229,14 +265,19 @@ export default {
       this.loading = true;
       try {
         const response = await api.get('/admin/tickets');
-        this.tickets = (response.data || []).map(ticket => ({
-            ...ticket,
-            fechaCreacionTimestamp: new Date(ticket.fechaCreacion).getTime(),
-            fechaActualizacionTimestamp: new Date(ticket.fechaActualizacion).getTime()
-        }));
+        console.log('Datos crudos de la API:', response.data);
+
+        this.tickets = response.data || [];
+
         this.tickets.forEach(ticket => {
-            console.log('Fecha creacion:', ticket.fechaCreacion, 'Date object:', new Date(ticket.fechaCreacion));
+          console.log(`Ticket ${ticket.id}:`, {
+            fechaCreacion: ticket.fechaCreacion,
+            tipo: typeof ticket.fechaCreacion,
+            dateObject: this.parseCustomDate(ticket.fechaCreacion),
+            timestamp: this.parseCustomDate(ticket.fechaCreacion).getTime()
+          });
         });
+
         this.aplicarFiltrosYOrden();
       } catch (error) {
         console.error("Error fetching tickets:", error);
@@ -254,13 +295,16 @@ export default {
       if (!dateData) return 'N/A';
 
       try {
-        const date = new Date(dateData);
+        const date = this.parseCustomDate(dateData);
         return date.toLocaleDateString('es-MX', {
           day: '2-digit',
           month: 'short',
-          year: 'numeric'
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
         });
       } catch (error) {
+        console.error('Error formateando fecha:', dateData, error);
         return 'N/A';
       }
     },

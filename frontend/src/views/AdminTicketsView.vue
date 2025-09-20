@@ -74,6 +74,25 @@
         > No hay tickets {{ mensajeFiltro }}
       </div>
 
+      <div v-else>
+        <!--tickets paginados-->
+        <div class="space-y-3">
+            <div v-for="ticket in ticketsPaginados" :key="ticket.id"
+                class="p-4 border border-green-500 rounded hover:bg-green-900/10 cursor-pointer transition-colors"
+                @click="verTicket(ticket.id)">
+                <div class="flex justify-between items-start mb-3">
+                    <div>
+                        <h3 class="text-lg text-green-300 font-mono">#{{ ticket.id }} - {{ ticket.titulo }}</h3>
+                        <p class="text-sm text-green-500 mt-1">Por: {{ ticket.usuario?.email || 'Usuario desconocido' }}</p>
+                    </div>
+                    <span class="px-3 py-1 rounded text-sm font-medium" :class="statusClass(ticket.estado)">
+                        {{ ticket.estado }}
+                    </span>
+                </div>
+            </div>
+        </div>
+      </div>
+
       <div v-else class="space-y-3">
         <div v-for="ticket in ticketsFiltrados" :key="ticket.id"
              class="p-4 border border-green-500 rounded hover:bg-green-900/10 cursor-pointer transition-colors"

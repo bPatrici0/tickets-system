@@ -70,11 +70,13 @@
         > Cargando tickets...
       </div>
 
-      <div v-else-if="ticketsFiltrados.length === 0" class="text-gray-500 text-center py-8">
-        > No hay tickets {{ mensajeFiltro }}
-      </div>
+      <template v-else-if="ticketsFiltrados.length === 0">
+        <div class="text-gray-500 text-center py-8">
+            > No hay tickets {{ mensajeFiltro }}
+        </div>
+      </template>
 
-      <div v-else>
+      <template v-else>
         <!--tickets paginados-->
         <div class="space-y-3">
             <div v-for="ticket in ticketsPaginados" :key="ticket.id"
@@ -89,9 +91,20 @@
                         {{ ticket.estado }}
                     </span>
                 </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs text-xs text-green-500">
+                    <div>
+                        <span class="block">Creado:</span>
+                        <span class="text-green-300">{{ formatDate(ticket.fechaCreacion) }}</span>
+                    </div>
+                    <div>
+                        <span class="block">Actualizado:</span>
+                        <span class="text-green-300">{{ formatDate(ticket.fechaActualizacion) }}</span>
+                    </div>
+                </div>
             </div>
         </div>
-      </div>
+      </template>
 
       <div v-else class="space-y-3">
         <div v-for="ticket in ticketsFiltrados" :key="ticket.id"

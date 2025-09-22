@@ -101,6 +101,10 @@
                         <span class="block">Actualizado:</span>
                         <span class="text-green-300">{{ formatDate(ticket.fechaActualizacion) }}</span>
                     </div>
+                    <div>
+                        <span class="block">Comentarios:</span>
+                        <span class="text-green-300">{{ ticket.cantidadComentarios || 0 }}</span>
+                    </div>
                 </div>
             </div>
         </div>

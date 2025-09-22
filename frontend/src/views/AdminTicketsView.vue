@@ -116,6 +116,13 @@
                 </div>
             </div>
         </div>
+
+        <!--paginacion-->
+        <div class="mt-6 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+            <span class="text-green-500 text-sm">
+                Mostrando {{ inicoPagina + 1 }}-{{ finPagina }} de {{ ticketsFiltrados.length }} tickets
+            </span>
+        </div>
       </template>
 
       <div v-else class="space-y-3">

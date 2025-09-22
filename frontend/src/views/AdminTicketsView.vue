@@ -110,6 +110,10 @@
                         <span class="text-green-300">{{ ticket.prioridad || 'Media' }}</span>
                     </div>
                 </div>
+
+                <div class="mt-3 pt-3 border-t border-green-500/30">
+                    <p class="text-sm text-green-400 line-clamp-2">{{ ticket.descripcion }}</p>
+                </div>
             </div>
         </div>
       </template>

@@ -105,6 +105,10 @@
                         <span class="block">Comentarios:</span>
                         <span class="text-green-300">{{ ticket.cantidadComentarios || 0 }}</span>
                     </div>
+                    <div>
+                        <span class="block">Prioridad:</span>
+                        <span class="text-green-300">{{ ticket.prioridad || 'Media' }}</span>
+                    </div>
                 </div>
             </div>
         </div>

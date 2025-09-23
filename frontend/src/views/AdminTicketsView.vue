@@ -122,6 +122,12 @@
             <span class="text-green-500 text-sm">
                 Mostrando {{ inicoPagina + 1 }}-{{ finPagina }} de {{ ticketsFiltrados.length }} tickets
             </span>
+
+            <div class="flex items-center space-x-2">
+                <button @click="paginaAterior" class="btn-matrix text-sm" :disabled="paginaActual === 1">
+                    ← Anterior
+                </button>
+            </div>
         </div>
       </template>
 

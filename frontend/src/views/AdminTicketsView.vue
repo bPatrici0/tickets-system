@@ -136,6 +136,16 @@
                     Siguiente →
                 </button>
             </div>
+
+            <div class="flex items-center space-x-2">
+                <span class="text-green-400 text-sm">Tickets por página: </span>
+                <select v-model="ticketsPorPagina" class="bg-black border border-green-500 text-green-400 px-2 py-1 rounded text-sm">
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                </select>
+            </div>
         </div>
       </template>
 

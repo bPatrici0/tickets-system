@@ -124,8 +124,16 @@
             </span>
 
             <div class="flex items-center space-x-2">
-                <button @click="paginaAterior" class="btn-matrix text-sm" :disabled="paginaActual === 1">
+                <button @click="paginaAnterior" class="btn-matrix text-sm" :disabled="paginaActual === 1">
                     ← Anterior
+                </button>
+
+                <span class="text-green-400 text-sm">
+                    Página {{ paginaActual }} de {{ totalPaginas }}
+                </span>
+
+                <button @click="paginaSiguiente" class="btn-matrix text-sm" :disabled="paginaActual === totalPaginas">
+                    Siguiente →
                 </button>
             </div>
         </div>

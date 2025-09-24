@@ -149,6 +149,12 @@
         </div>
       </template>
 
+      <div class="mt-4 flex justify-between items-center">
+        <button @click="fetchTickets" class="btn-matrix text-sm" :disabled="loading">
+            > Actualizar lista
+        </button>
+      </div>
+
       <div v-else class="space-y-3">
         <div v-for="ticket in ticketsFiltrados" :key="ticket.id"
              class="p-4 border border-green-500 rounded hover:bg-green-900/10 cursor-pointer transition-colors"

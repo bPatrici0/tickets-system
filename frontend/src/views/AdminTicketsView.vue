@@ -275,7 +275,7 @@ export default {
 
     ticketsPaginados() {
         return this.ticketsFiltrados.slice(this.inicioPagina, this.finPagina);
-    }
+    },
 
     mensajeFiltro() {
       if (this.filtroEstado !== 'TODOS') {
@@ -305,7 +305,6 @@ export default {
                 const day = parseInt(parts[2]);
                 const hour = parseInt(parts[3]);
                 const minute = parseInt(parts[4]);
-                const second = parseInt(parts[5]);
 
                 return new Date(year, month, day, hour, minute);
             }

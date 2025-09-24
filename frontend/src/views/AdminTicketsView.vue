@@ -218,26 +218,27 @@ export default {
       filtroEstado: 'TODOS',
       busquedaTitulo: '',
       orden: 'fechaReciente',
-      ticketsFiltrados: []
+      ticketsFiltrados: [],
+      paginaActual: 1,
+      ticketsPorPagina: 10
     }
   },
 
   watch: {
     filtroEstado() {
-      console.log('filtroEstado cambió:', this.filtroEstado);
-      this.aplicarFiltrosYOrden();
+        this.aplicarFiltrosYOrden();
     },
     busquedaTitulo() {
-      console.log('busquedaTitulo cambió:', this.busquedaTitulo);
-      this.aplicarFiltrosYOrden();
+        this.aplicarFiltrosYOrden();
     },
     orden() {
-      console.log('orden cambió:', this.orden);
-      this.aplicarFiltrosYOrden();
+        this.aplicarFiltrosYOrden();
     },
     tickets() {
-      console.log('tickets cambió');
-      this.aplicarFiltrosYOrden();
+        this.aplicarFiltrosYOrden();
+    },
+    ticketsPorPagina() {
+        this.paginaActual = 1;
     }
   },
 
@@ -251,8 +252,30 @@ export default {
     },
 
     ticketsResueltos() {
-      return this.tickets.filter(t => t.estado === 'RESUELTO').length;
+        if (this.filtroEstado !== 'TODOS') {
+            return `con estado ${this.filtroEstado.toLoweCase()}`;
+        }
+        if (this.busquedaTitulo) {
+            return `que coincidadn con la búsqueda`;
+        }
+        return '';
     },
+
+    totalPaginas() {
+        return Math.ceil(this.ticketsFiltrados.length / this.ticketsPorPagina);
+    },
+
+    inicioPagina() {
+        return (this.paginaActual -1) * this.ticketsPorPagina;
+    },
+
+    finPagina() {
+        return Math.min(this.inicioPagina + this.ticketsPorPagina, this.ticketsFiltrados.length);
+    },
+
+    ticketsPaginados() {
+        return this.ticketsFiltrados.slice(this.inicioPagina, this.finPagina);
+    }
 
     mensajeFiltro() {
       if (this.filtroEstado !== 'TODOS') {
@@ -272,43 +295,39 @@ export default {
 
   methods: {
     parseCustomDate(dateString) {
-      if (!dateString) return new Date();
+        if (!dateString) return new Date();
 
-      // Formato: "2025,8,1,15,57,41,55506000"
-      if (typeof dateString === 'string' && dateString.includes(',')) {
-        const parts = dateString.split(',');
-        if (parts.length >= 6) {
-          // Ajustar mes (JavaScript months are 0-based)
-          const year = parseInt(parts[0]);
-          const month = parseInt(parts[1]) - 1;
-          const day = parseInt(parts[2]);
-          const hour = parseInt(parts[3]);
-          const minute = parseInt(parts[4]);
-          const second = parseInt(parts[5]);
+        if (typeof dateString === 'string' && dateString.includes(',')) {
+            const parts = dateString.split(',');
+            if (parts.length >= 6) {
+                const year = parseInt(parts[0]);
+                const month = parseInt(parts[1]) - 1;
+                const day = parseInt(parts[2]);
+                const hour = parseInt(parts[3]);
+                const minute = parseInt(parts[4]);
+                const second = parseInt(parts[5]);
 
-          return new Date(year, month, day, hour, minute, second);
+                return new Date(year, month, day, hour, minute);
+            }
         }
-      }
 
-      // Si el formato no coincide, intentar con Date normal
-      return new Date(dateString);
+        return new Date(dateString);
     },
 
     aplicarFiltrosYOrden() {
-      console.log('Orden seleccionado:', this.orden);
-      let filtered = [...this.tickets];
+        let filtered = [...this.tickets];
 
-      if (this.filtroEstado !== 'TODOS') {
-        filtered = filtered.filter(ticket => ticket.estado === this.filtroEstado);
-      }
+        if (this.filtroEstado !== 'TODOS') {
+            filtered = filtered.filter(ticket => ticket.estado === this.filtroEstado);
+        }
 
-      if (this.busquedaTitulo) {
-        const searchTerm = this.busquedaTitulo.toLowerCase();
-        filtered = filtered.filter(ticket =>
-          ticket.titulo.toLowerCase().includes(searchTerm) ||
-          ticket.descripcion.toLowerCase().includes(searchTerm)
-        );
-      }
+        if (this.busquedaTitulo) {
+            const searchTerm = this.busquedaTitulo.toLowerCase();
+            filtered = filtered.filter(ticket =>
+            ticket.titulo.toLowerCase().includes(searchTerm) ||
+            ticket.descripcion.toLowerCase().includes(searchTerm)
+            );
+        }
 
       const ordenEstados = ['ABIERTO', 'EN_PROGRESO', 'RESUELTO'];
 

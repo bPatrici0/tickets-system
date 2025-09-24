@@ -323,33 +323,29 @@ export default {
         if (this.busquedaTitulo) {
             const searchTerm = this.busquedaTitulo.toLowerCase();
             filtered = filtered.filter(ticket =>
-            ticket.titulo.toLowerCase().includes(searchTerm) ||
-            ticket.descripcion.toLowerCase().includes(searchTerm)
+                ticket.titulo.toLowerCase().includes(searchTerm) ||
+                ticket.descripcion.toLowerCase().includes(searchTerm)
             );
         }
 
-      const ordenEstados = ['ABIERTO', 'EN_PROGRESO', 'RESUELTO'];
+        const ordenEstados = ['ABIERTO', 'EN_PROGRESO', 'RESUELTO'];
 
-      switch (this.orden) {
-        case 'fechaReciente':
-          filtered.sort((a, b) => this.parseCustomDate(b.fechaCreacion) - this.parseCustomDate(a.fechaCreacion));
-          break;
-        case 'fechaAntigua':
-          filtered.sort((a, b) => this.parseCustomDate(a.fechaCreacion) - this.parseCustomDate(b.fechaCreacion));
-          break;
-        case 'estado':
-          filtered.sort((a, b) => ordenEstados.indexOf(a.estado) - ordenEstados.indexOf(b.estado));
-          break;
-        default:
-          filtered.sort((a, b) => this.parseCustomDate(b.fechaCreacion) - this.parseCustomDate(a.fechaCreacion));
-      }
+        switch (this.orden) {
+            case 'fechaReciente':
+                filtered.sort((a, b) => this.parseCustomDate(b.fechaCreacion) - this.parseCustomDate(a.fechaCreacion));
+                break;
+            case 'fechaAntigua':
+                filtered.sort((a, b) => this.parseCustomDate(a.fechaCreacion) - this.parseCustomDate(b.fechaCreacion));
+                break;
+            case 'estado':
+                filtered.sort((a, b) => ordenEstados.indexOf(a.estado) - ordenEstados.indexOf(b.estado));
+                break;
+            default:
+                filtered.sort((a, b) => this.parseCustomDate(b.fechaCreacion) - this.parseCustomDate(a.fechaCreacion));
+        }
 
-      console.log('Tickets ordenados por:', this.orden);
-      filtered.forEach((ticket, index) => {
-        console.log(`#${index + 1}: ID ${ticket.id} - Fecha: ${ticket.fechaCreacion} - Estado: ${ticket.estado}`);
-      });
-
-      this.ticketsFiltrados = filtered;
+        this.ticketsFiltrados = filtered;
+        this.paginaActual = 1;
     },
 
     verificarPermisos() {

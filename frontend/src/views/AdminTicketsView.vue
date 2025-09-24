@@ -70,139 +70,91 @@
         > Cargando tickets...
       </div>
 
-      <template v-else-if="ticketsFiltrados.length === 0">
-        <div class="text-gray-500 text-center py-8">
-            > No hay tickets {{ mensajeFiltro }}
-        </div>
-      </template>
-
       <template v-else>
-        <!--tickets paginados-->
-        <div class="space-y-3">
-            <div v-for="ticket in ticketsPaginados" :key="ticket.id"
-                class="p-4 border border-green-500 rounded hover:bg-green-900/10 cursor-pointer transition-colors"
-                @click="verTicket(ticket.id)">
-                <div class="flex justify-between items-start mb-3">
-                    <div>
-                        <h3 class="text-lg text-green-300 font-mono">#{{ ticket.id }} - {{ ticket.titulo }}</h3>
-                        <p class="text-sm text-green-500 mt-1">Por: {{ ticket.usuario?.email || 'Usuario desconocido' }}</p>
-                    </div>
-                    <span class="px-3 py-1 rounded text-sm font-medium" :class="statusClass(ticket.estado)">
-                        {{ ticket.estado }}
-                    </span>
-                </div>
-
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs text-xs text-green-500">
-                    <div>
-                        <span class="block">Creado:</span>
-                        <span class="text-green-300">{{ formatDate(ticket.fechaCreacion) }}</span>
-                    </div>
-                    <div>
-                        <span class="block">Actualizado:</span>
-                        <span class="text-green-300">{{ formatDate(ticket.fechaActualizacion) }}</span>
-                    </div>
-                    <div>
-                        <span class="block">Comentarios:</span>
-                        <span class="text-green-300">{{ ticket.cantidadComentarios || 0 }}</span>
-                    </div>
-                    <div>
-                        <span class="block">Prioridad:</span>
-                        <span class="text-green-300">{{ ticket.prioridad || 'Media' }}</span>
-                    </div>
-                </div>
-
-                <div class="mt-3 pt-3 border-t border-green-500/30">
-                    <p class="text-sm text-green-400 line-clamp-2">{{ ticket.descripcion }}</p>
-                </div>
-            </div>
+        <div v-if="ticketsFiltrados.length === 0" class="text-gray-500 text-center py-8">
+          > No hay tickets {{ mensajeFiltro }}
         </div>
 
-        <!--paginacion-->
-        <div class="mt-6 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+        <div v-else>
+          <!-- Tickets paginados -->
+          <div class="space-y-3">
+            <div v-for="ticket in ticketsPaginados" :key="ticket.id"
+                 class="p-4 border border-green-500 rounded hover:bg-green-900/10 cursor-pointer transition-colors"
+                 @click="verTicket(ticket.id)">
+
+              <div class="flex justify-between items-start mb-3">
+                <div>
+                  <h3 class="text-lg text-green-300 font-mono">#{{ ticket.id }} - {{ ticket.titulo }}</h3>
+                  <p class="text-sm text-green-500 mt-1">Por: {{ ticket.usuario?.email || 'Usuario desconocido' }}</p>
+                </div>
+                <span class="px-3 py-1 rounded text-sm font-medium" :class="statusClass(ticket.estado)">
+                  {{ ticket.estado }}
+                </span>
+              </div>
+
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs text-green-500">
+                <div>
+                  <span class="block">Creado:</span>
+                  <span class="text-green-300">{{ formatDate(ticket.fechaCreacion) }}</span>
+                </div>
+                <div>
+                  <span class="block">Actualizado:</span>
+                  <span class="text-green-300">{{ formatDate(ticket.fechaActualizacion) }}</span>
+                </div>
+                <div>
+                  <span class="block">Comentarios:</span>
+                  <span class="text-green-300">{{ ticket.cantidadComentarios || 0 }}</span>
+                </div>
+                <div>
+                  <span class="block">Prioridad:</span>
+                  <span class="text-green-300">{{ ticket.prioridad || 'Media' }}</span>
+                </div>
+              </div>
+
+              <div class="mt-3 pt-3 border-t border-green-500/30">
+                <p class="text-sm text-green-400 line-clamp-2">{{ ticket.descripcion }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Paginación -->
+          <div class="mt-6 flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
             <span class="text-green-500 text-sm">
-                Mostrando {{ inicoPagina + 1 }}-{{ finPagina }} de {{ ticketsFiltrados.length }} tickets
+              Mostrando {{ inicioPagina + 1 }}-{{ finPagina }} de {{ ticketsFiltrados.length }} tickets
             </span>
 
             <div class="flex items-center space-x-2">
-                <button @click="paginaAnterior" class="btn-matrix text-sm" :disabled="paginaActual === 1">
-                    ← Anterior
-                </button>
+              <button @click="paginaAnterior" class="btn-matrix text-sm" :disabled="paginaActual === 1">
+                ← Anterior
+              </button>
 
-                <span class="text-green-400 text-sm">
-                    Página {{ paginaActual }} de {{ totalPaginas }}
-                </span>
+              <span class="text-green-400 text-sm">
+                Página {{ paginaActual }} de {{ totalPaginas }}
+              </span>
 
-                <button @click="paginaSiguiente" class="btn-matrix text-sm" :disabled="paginaActual === totalPaginas">
-                    Siguiente →
-                </button>
+              <button @click="paginaSiguiente" class="btn-matrix text-sm" :disabled="paginaActual === totalPaginas">
+                Siguiente →
+              </button>
             </div>
 
             <div class="flex items-center space-x-2">
-                <span class="text-green-400 text-sm">Tickets por página: </span>
-                <select v-model="ticketsPorPagina" class="bg-black border border-green-500 text-green-400 px-2 py-1 rounded text-sm">
-                    <option value="5">5</option>
-                    <option value="10">10</option>
-                    <option value="20">20</option>
-                    <option value="50">50</option>
-                </select>
+              <span class="text-green-400 text-sm">Tickets por página:</span>
+              <select v-model="ticketsPorPagina" class="bg-black border border-green-500 text-green-400 px-2 py-1 rounded text-sm">
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="20">20</option>
+                <option value="50">50</option>
+              </select>
             </div>
+          </div>
+        </div>
+
+        <div class="mt-4 flex justify-between items-center">
+          <button @click="fetchTickets" class="btn-matrix text-sm" :disabled="loading">
+            > Actualizar lista
+          </button>
         </div>
       </template>
-
-      <div class="mt-4 flex justify-between items-center">
-        <button @click="fetchTickets" class="btn-matrix text-sm" :disabled="loading">
-            > Actualizar lista
-        </button>
-      </div>
-
-      <div v-else class="space-y-3">
-        <div v-for="ticket in ticketsFiltrados" :key="ticket.id"
-             class="p-4 border border-green-500 rounded hover:bg-green-900/10 cursor-pointer transition-colors"
-             @click="verTicket(ticket.id)">
-
-          <div class="flex justify-between items-start mb-3">
-            <div>
-              <h3 class="text-lg text-green-300 font-mono">#{{ ticket.id }} - {{ ticket.titulo }}</h3>
-              <p class="text-sm text-green-500 mt-1">Por: {{ ticket.usuario?.email || 'Usuario desconocido' }}</p>
-            </div>
-            <span class="px-3 py-1 rounded text-sm font-medium" :class="statusClass(ticket.estado)">
-              {{ ticket.estado }}
-            </span>
-          </div>
-
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs text-green-500">
-            <div>
-              <span class="block">Creado:</span>
-              <span class="text-green-300">{{ formatDate(ticket.fechaCreacion) }}</span>
-            </div>
-            <div>
-              <span class="block">Actualizado:</span>
-              <span class="text-green-300">{{ formatDate(ticket.fechaActualizacion) }}</span>
-            </div>
-            <div>
-              <span class="block">Comentarios:</span>
-              <span class="text-green-300">{{ ticket.cantidadComentarios || 0 }}</span>
-            </div>
-            <div>
-              <span class="block">Prioridad:</span>
-              <span class="text-green-300">{{ ticket.prioridad || 'Media' }}</span>
-            </div>
-          </div>
-
-          <div class="mt-3 pt-3 border-t border-green-500/30">
-            <p class="text-sm text-green-400 line-clamp-2">{{ ticket.descripcion }}</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="mt-4 flex justify-between items-center">
-        <span class="text-green-500 text-sm">
-          Mostrando {{ ticketsFiltrados.length }} de {{ tickets.length }} tickets
-        </span>
-        <button @click="fetchTickets" class="btn-matrix text-sm" :disabled="loading">
-          > Actualizar lista
-        </button>
-      </div>
     </div>
   </div>
 </template>
@@ -226,19 +178,19 @@ export default {
 
   watch: {
     filtroEstado() {
-        this.aplicarFiltrosYOrden();
+      this.aplicarFiltrosYOrden();
     },
     busquedaTitulo() {
-        this.aplicarFiltrosYOrden();
+      this.aplicarFiltrosYOrden();
     },
     orden() {
-        this.aplicarFiltrosYOrden();
+      this.aplicarFiltrosYOrden();
     },
     tickets() {
-        this.aplicarFiltrosYOrden();
+      this.aplicarFiltrosYOrden();
     },
     ticketsPorPagina() {
-        this.paginaActual = 1;
+      this.paginaActual = 1;
     }
   },
 
@@ -252,29 +204,7 @@ export default {
     },
 
     ticketsResueltos() {
-        if (this.filtroEstado !== 'TODOS') {
-            return `con estado ${this.filtroEstado.toLoweCase()}`;
-        }
-        if (this.busquedaTitulo) {
-            return `que coincidadn con la búsqueda`;
-        }
-        return '';
-    },
-
-    totalPaginas() {
-        return Math.ceil(this.ticketsFiltrados.length / this.ticketsPorPagina);
-    },
-
-    inicioPagina() {
-        return (this.paginaActual -1) * this.ticketsPorPagina;
-    },
-
-    finPagina() {
-        return Math.min(this.inicioPagina + this.ticketsPorPagina, this.ticketsFiltrados.length);
-    },
-
-    ticketsPaginados() {
-        return this.ticketsFiltrados.slice(this.inicioPagina, this.finPagina);
+      return this.tickets.filter(t => t.estado === 'RESUELTO').length;
     },
 
     mensajeFiltro() {
@@ -285,6 +215,22 @@ export default {
         return 'que coincidan con la búsqueda';
       }
       return '';
+    },
+
+    totalPaginas() {
+      return Math.ceil(this.ticketsFiltrados.length / this.ticketsPorPagina);
+    },
+
+    inicioPagina() {
+      return (this.paginaActual - 1) * this.ticketsPorPagina;
+    },
+
+    finPagina() {
+      return Math.min(this.inicioPagina + this.ticketsPorPagina, this.ticketsFiltrados.length);
+    },
+
+    ticketsPaginados() {
+      return this.ticketsFiltrados.slice(this.inicioPagina, this.finPagina);
     }
   },
 
@@ -295,70 +241,71 @@ export default {
 
   methods: {
     parseCustomDate(dateString) {
-        if (!dateString) return new Date();
+      if (!dateString) return new Date();
 
-        if (typeof dateString === 'string' && dateString.includes(',')) {
-            const parts = dateString.split(',');
-            if (parts.length >= 6) {
-                const year = parseInt(parts[0]);
-                const month = parseInt(parts[1]) - 1;
-                const day = parseInt(parts[2]);
-                const hour = parseInt(parts[3]);
-                const minute = parseInt(parts[4]);
+      if (typeof dateString === 'string' && dateString.includes(',')) {
+        const parts = dateString.split(',');
+        if (parts.length >= 6) {
+          const year = parseInt(parts[0]);
+          const month = parseInt(parts[1]) - 1;
+          const day = parseInt(parts[2]);
+          const hour = parseInt(parts[3]);
+          const minute = parseInt(parts[4]);
+          const second = parseInt(parts[5]);
 
-                return new Date(year, month, day, hour, minute);
-            }
+          return new Date(year, month, day, hour, minute, second);
         }
+      }
 
-        return new Date(dateString);
+      return new Date(dateString);
     },
 
     aplicarFiltrosYOrden() {
-        let filtered = [...this.tickets];
+      let filtered = [...this.tickets];
 
-        if (this.filtroEstado !== 'TODOS') {
-            filtered = filtered.filter(ticket => ticket.estado === this.filtroEstado);
-        }
+      if (this.filtroEstado !== 'TODOS') {
+        filtered = filtered.filter(ticket => ticket.estado === this.filtroEstado);
+      }
 
-        if (this.busquedaTitulo) {
-            const searchTerm = this.busquedaTitulo.toLowerCase();
-            filtered = filtered.filter(ticket =>
-                ticket.titulo.toLowerCase().includes(searchTerm) ||
-                ticket.descripcion.toLowerCase().includes(searchTerm)
-            );
-        }
+      if (this.busquedaTitulo) {
+        const searchTerm = this.busquedaTitulo.toLowerCase();
+        filtered = filtered.filter(ticket =>
+          ticket.titulo.toLowerCase().includes(searchTerm) ||
+          ticket.descripcion.toLowerCase().includes(searchTerm)
+        );
+      }
 
-        const ordenEstados = ['ABIERTO', 'EN_PROGRESO', 'RESUELTO'];
+      const ordenEstados = ['ABIERTO', 'EN_PROGRESO', 'RESUELTO'];
 
-        switch (this.orden) {
-            case 'fechaReciente':
-                filtered.sort((a, b) => this.parseCustomDate(b.fechaCreacion) - this.parseCustomDate(a.fechaCreacion));
-                break;
-            case 'fechaAntigua':
-                filtered.sort((a, b) => this.parseCustomDate(a.fechaCreacion) - this.parseCustomDate(b.fechaCreacion));
-                break;
-            case 'estado':
-                filtered.sort((a, b) => ordenEstados.indexOf(a.estado) - ordenEstados.indexOf(b.estado));
-                break;
-            default:
-                filtered.sort((a, b) => this.parseCustomDate(b.fechaCreacion) - this.parseCustomDate(a.fechaCreacion));
-        }
+      switch (this.orden) {
+        case 'fechaReciente':
+          filtered.sort((a, b) => this.parseCustomDate(b.fechaCreacion) - this.parseCustomDate(a.fechaCreacion));
+          break;
+        case 'fechaAntigua':
+          filtered.sort((a, b) => this.parseCustomDate(a.fechaCreacion) - this.parseCustomDate(b.fechaCreacion));
+          break;
+        case 'estado':
+          filtered.sort((a, b) => ordenEstados.indexOf(a.estado) - ordenEstados.indexOf(b.estado));
+          break;
+        default:
+          filtered.sort((a, b) => this.parseCustomDate(b.fechaCreacion) - this.parseCustomDate(a.fechaCreacion));
+      }
 
-        this.ticketsFiltrados = filtered;
-        this.paginaActual = 1;
+      this.ticketsFiltrados = filtered;
+      this.paginaActual = 1;
     },
 
     paginaAnterior() {
-        if (this.paginaActual > 1) {
-            this.paginaActual--;
-        }
+      if (this.paginaActual > 1) {
+        this.paginaActual--;
+      }
     },
 
     paginaSiguiente() {
-        if (this.paginaActual < this.totalPaginas) {
-            this.paginaActual++;
-        }
-    }
+      if (this.paginaActual < this.totalPaginas) {
+        this.paginaActual++;
+      }
+    },
 
     verificarPermisos() {
       const userRole = localStorage.getItem('userRole');
@@ -372,19 +319,7 @@ export default {
       this.loading = true;
       try {
         const response = await api.get('/admin/tickets');
-        console.log('Datos crudos de la API:', response.data);
-
         this.tickets = response.data || [];
-
-        this.tickets.forEach(ticket => {
-          console.log(`Ticket ${ticket.id}:`, {
-            fechaCreacion: ticket.fechaCreacion,
-            tipo: typeof ticket.fechaCreacion,
-            dateObject: this.parseCustomDate(ticket.fechaCreacion),
-            timestamp: this.parseCustomDate(ticket.fechaCreacion).getTime()
-          });
-        });
-
         this.aplicarFiltrosYOrden();
       } catch (error) {
         console.error("Error fetching tickets:", error);
@@ -411,7 +346,6 @@ export default {
           minute: '2-digit'
         });
       } catch (error) {
-        console.error('Error formateando fecha:', dateData, error);
         return 'N/A';
       }
     },

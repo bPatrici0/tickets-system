@@ -348,6 +348,18 @@ export default {
         this.paginaActual = 1;
     },
 
+    paginaAnterior() {
+        if (this.paginaActual > 1) {
+            this.paginaActual--;
+        }
+    },
+
+    paginaSiguiente() {
+        if (this.paginaActual < this.totalPaginas) {
+            this.paginaActual++;
+        }
+    }
+
     verificarPermisos() {
       const userRole = localStorage.getItem('userRole');
       if (userRole !== 'ROLE_ADMIN') {

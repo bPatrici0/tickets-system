@@ -1,8 +1,8 @@
 <template>
   <div class="min-h-screen bg-black p-4">
-    <header class="terminal-box mb-6">
+    <header class="terminal-box mb-4">
       <div class="flex justify-between items-center">
-        <h1 class="text-2xl">> Admin - Todos los Tickets<span class="cursor-blink">|</span></h1>
+        <h1 class="text-3xl">> Admin - Todos los Tickets<span class="cursor-blink">|</span></h1>
         <div>
           <button @click="$router.push('/admin')" class="btn-matrix text-sm mr-2">
             > Volver al Panel
@@ -15,12 +15,12 @@
     </header>
 
     <!-- Filtros y búsqueda -->
-    <div class="terminal-box p-4 mb-6">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="terminal-box p-3 mb-4">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
         <div>
           <label class="block text-green-400 text-sm mb-1">Filtrar por estado:</label>
-          <select v-model="filtroEstado" class="w-full bg-black border border-green-500 text-green-400 px-3 py-2 rounded">
-            <option value="TODOS">Todos los estados</option>
+          <select v-model="filtroEstado" class="w-full bg-black border border-green-500 text-green-400 px-2 py-1 rounded text-sm">
+            <option value="TODOS">Todos</option>
             <option value="ABIERTO">Abiertos</option>
             <option value="EN_PROGRESO">En progreso</option>
             <option value="RESUELTO">Resueltos</option>
@@ -30,12 +30,12 @@
         <div>
           <label class="block text-green-400 text-sm mb-1">Buscar por título:</label>
           <input v-model="busquedaTitulo" type="text" placeholder="Buscar tickets..."
-                 class="w-full bg-black border border-green-500 text-green-400 px-3 py-2 rounded">
+                 class="w-full bg-black border border-green-500 text-green-400 px-2 py-1 rounded">
         </div>
 
         <div>
           <label class="block text-green-400 text-sm mb-1">Ordenar por:</label>
-          <select v-model="orden" class="w-full bg-black border border-green-500 text-green-400 px-3 py-2 rounded">
+          <select v-model="orden" class="w-full bg-black border border-green-500 text-green-400 px-2 py-1 rounded text-sm">
             <option value="fechaReciente">Más recientes primero</option>
             <option value="fechaAntigua">Más antiguos primero</option>
             <option value="estado">Por estado</option>
@@ -45,45 +45,45 @@
     </div>
 
     <!-- Estadísticas -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-      <div class="terminal-box text-center p-4">
-        <div class="text-2xl text-green-400">{{ tickets.length }}</div>
-        <div class="text-sm text-green-500">Total Tickets</div>
+    <div class="grid grid-cols-4 gap-2 mb-4">
+      <div class="terminal-box text-center p-2">
+        <div class="text-lg text-green-400">{{ tickets.length }}</div>
+        <div class="text-xs text-green-500">Total Tickets</div>
       </div>
-      <div class="terminal-box text-center p-4">
-        <div class="text-2xl text-yellow-400">{{ ticketsAbiertos }}</div>
-        <div class="text-sm text-green-500">Abiertos</div>
+      <div class="terminal-box text-center p-2">
+        <div class="text-lg text-yellow-400">{{ ticketsAbiertos }}</div>
+        <div class="text-xs text-green-500">Abiertos</div>
       </div>
-      <div class="terminal-box text-center p-4">
-        <div class="text-2xl text-blue-400">{{ ticketsEnProgreso }}</div>
-        <div class="text-sm text-green-500">En Progreso</div>
+      <div class="terminal-box text-center p-2">
+        <div class="text-lg text-blue-400">{{ ticketsEnProgreso }}</div>
+        <div class="text-xs text-green-500">En Progreso</div>
       </div>
-      <div class="terminal-box text-center p-4">
-        <div class="text-2xl text-green-400">{{ ticketsResueltos }}</div>
-        <div class="text-sm text-green-500">Resueltos</div>
+      <div class="terminal-box text-center p-2">
+        <div class="text-lg text-green-400">{{ ticketsResueltos }}</div>
+        <div class="text-xs text-green-500">Resueltos</div>
       </div>
     </div>
 
     <!-- Lista de tickets -->
     <div class="terminal-box">
-      <div v-if="loading" class="text-green-500 text-center py-8">
+      <div v-if="loading" class="text-green-500 text-center py-4">
         > Cargando tickets...
       </div>
 
       <template v-else>
-        <div v-if="ticketsFiltrados.length === 0" class="text-gray-500 text-center py-8">
+        <div v-if="ticketsFiltrados.length === 0" class="text-gray-500 text-center py-4">
           > No hay tickets {{ mensajeFiltro }}
         </div>
 
         <div v-else>
           <!-- Tickets paginados -->
-          <div class="space-y-3">
+          <div class="space-y-2">
             <div v-for="ticket in ticketsPaginados" :key="ticket.id"
-                 class="p-4 border border-green-500 rounded hover:bg-green-900/10 cursor-pointer transition-colors"
+                 class="p-3 border border-green-500 rounded hover:bg-green-900/10 cursor-pointer transition-colors"
                  @click="verTicket(ticket.id)">
 
-              <div class="flex justify-between items-start mb-3">
-                <div>
+              <div class="flex justify-between items-center mb-2">
+                <div class="flex-1 min-w-0">
                   <h3 class="text-lg text-green-300 font-mono">#{{ ticket.id }} - {{ ticket.titulo }}</h3>
                   <p class="text-sm text-green-500 mt-1">Por: {{ ticket.usuario?.email || 'Usuario desconocido' }}</p>
                 </div>

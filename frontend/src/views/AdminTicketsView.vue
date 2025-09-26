@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-screen bg-black p-4">
-    <header class="terminal-box mb-4">
+  <div class="min-h-screen bg-black p-3">
+    <header class="terminal-box mb-3">
       <div class="flex justify-between items-center">
-        <h1 class="text-xl">> Admin - Todos los Tickets<span class="cursor-blink">|</span></h1>
+        <h1 class="text-lg">> Admin - Tickets<span class="cursor-blink">|</span></h1>
         <div>
           <button @click="$router.push('/admin')" class="btn-matrix text-xs mr-2">
             > Panel
@@ -14,145 +14,143 @@
       </div>
     </header>
 
-    <!-- Filtros y búsqueda -->
-    <div class="terminal-box p-3 mb-4">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+    <!-- Filtros compactos -->
+    <div class="terminal-box p-2 mb-3">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
         <div>
-          <label class="block text-green-400 text-xs mb-1">Filtrar por estado:</label>
-          <select v-model="filtroEstado" class="w-full bg-black border border-green-500 text-green-400 px-2 py-1 rounded text-sm">
+          <label class="block text-green-400 text-xs mb-1">Estado:</label>
+          <select v-model="filtroEstado" class="w-full bg-black border border-green-500 text-green-400 px-2 py-1 rounded text-xs">
             <option value="TODOS">Todos</option>
             <option value="ABIERTO">Abiertos</option>
-            <option value="EN_PROGRESO">En progreso</option>
+            <option value="EN_PROGRESO">Progreso</option>
             <option value="RESUELTO">Resueltos</option>
           </select>
         </div>
 
         <div>
           <label class="block text-green-400 text-xs mb-1">Buscar:</label>
-          <input v-model="busquedaTitulo" type="text" placeholder="Buscar tickets..."
-                 class="w-full bg-black border border-green-500 text-green-400 px-2 py-1 rounded text-sm">
+          <input v-model="busquedaTitulo" type="text" placeholder="Buscar..."
+                 class="w-full bg-black border border-green-500 text-green-400 px-2 py-1 rounded text-xs">
         </div>
 
         <div>
-          <label class="block text-green-400 text-xs mb-1">Ordenar:</label>
-          <select v-model="orden" class="w-full bg-black border border-green-500 text-green-400 px-2 py-1 rounded text-sm">
+          <label class="block text-green-400 text-xs mb-1">Orden:</label>
+          <select v-model="orden" class="w-full bg-black border border-green-500 text-green-400 px-2 py-1 rounded text-xs">
             <option value="fechaReciente">Recientes</option>
             <option value="fechaAntigua">Antiguos</option>
             <option value="estado">Estado</option>
           </select>
         </div>
+
+        <div class="flex items-end">
+          <button @click="fetchTickets" class="btn-matrix text-xs w-full py-1" :disabled="loading">
+            ↻ Actualizar
+          </button>
+        </div>
       </div>
     </div>
 
-    <!-- Estadísticas compactas -->
-    <div class="grid grid-cols-4 gap-2 mb-4">
-      <div class="terminal-box text-center p-2">
-        <div class="text-lg text-green-400">{{ tickets.length }}</div>
-        <div class="text-xs text-green-500">Total</div>
+    <!-- Estadísticas ultra compactas -->
+    <div class="grid grid-cols-4 gap-1 mb-3">
+      <div class="terminal-box text-center p-1">
+        <div class="text-base text-green-400">{{ tickets.length }}</div>
+        <div class="text-[10px] text-green-500">Total</div>
       </div>
-      <div class="terminal-box text-center p-2">
-        <div class="text-lg text-yellow-400">{{ ticketsAbiertos }}</div>
-        <div class="text-xs text-green-500">Abiertos</div>
+      <div class="terminal-box text-center p-1">
+        <div class="text-base text-yellow-400">{{ ticketsAbiertos }}</div>
+        <div class="text-[10px] text-green-500">Abiertos</div>
       </div>
-      <div class="terminal-box text-center p-2">
-        <div class="text-lg text-blue-400">{{ ticketsEnProgreso }}</div>
-        <div class="text-xs text-green-500">Progreso</div>
+      <div class="terminal-box text-center p-1">
+        <div class="text-base text-blue-400">{{ ticketsEnProgreso }}</div>
+        <div class="text-[10px] text-green-500">Progreso</div>
       </div>
-      <div class="terminal-box text-center p-2">
-        <div class="text-lg text-green-400">{{ ticketsResueltos }}</div>
-        <div class="text-xs text-green-500">Resueltos</div>
+      <div class="terminal-box text-center p-1">
+        <div class="text-base text-green-400">{{ ticketsResueltos }}</div>
+        <div class="text-[10px] text-green-500">Resueltos</div>
       </div>
     </div>
 
-    <!-- Lista de tickets compacta -->
-    <div class="terminal-box">
-      <div v-if="loading" class="text-green-500 text-center py-4">
+    <!-- Tabla compacta de tickets -->
+    <div class="terminal-box p-2">
+      <div v-if="loading" class="text-green-500 text-center py-3 text-sm">
         > Cargando...
       </div>
 
       <template v-else>
-        <div v-if="ticketsFiltrados.length === 0" class="text-gray-500 text-center py-4">
+        <div v-if="ticketsFiltrados.length === 0" class="text-gray-500 text-center py-3 text-sm">
           > No hay tickets {{ mensajeFiltro }}
         </div>
 
         <div v-else>
-          <!-- Tickets compactos -->
-          <div class="space-y-2">
-            <div v-for="ticket in ticketsPaginados" :key="ticket.id"
-                 class="p-3 border border-green-500 rounded hover:bg-green-900/10 cursor-pointer transition-colors"
-                 @click="verTicket(ticket.id)">
-
-              <div class="flex justify-between items-center mb-2">
-                <div class="flex-1 min-w-0">
-                  <h3 class="text-sm text-green-300 font-mono truncate">#{{ ticket.id }} - {{ ticket.titulo }}</h3>
-                  <p class="text-xs text-green-500 truncate">Por: {{ ticket.usuario?.email || 'Usuario desconocido' }}</p>
-                </div>
-                <span class="px-2 py-1 rounded text-xs font-medium ml-2 flex-shrink-0" :class="statusClass(ticket.estado)">
-                  {{ ticket.estado }}
-                </span>
-              </div>
-
-              <div class="grid grid-cols-4 gap-2 text-xs text-green-500">
-                <div class="text-center">
-                  <span class="block text-green-400">Creado</span>
-                  <span class="text-green-300 text-xs">{{ formatDateCompact(ticket.fechaCreacion) }}</span>
-                </div>
-                <div class="text-center">
-                  <span class="block text-green-400">Actualizado</span>
-                  <span class="text-green-300 text-xs">{{ formatDateCompact(ticket.fechaActualizacion) }}</span>
-                </div>
-                <div class="text-center">
-                  <span class="block text-green-400">Comentarios</span>
-                  <span class="text-green-300">{{ ticket.cantidadComentarios || 0 }}</span>
-                </div>
-                <div class="text-center">
-                  <span class="block text-green-400">Prioridad</span>
-                  <span class="text-green-300 text-xs">{{ ticket.prioridad || 'Media' }}</span>
-                </div>
-              </div>
-
-              <div class="mt-2 pt-2 border-t border-green-500/30">
-                <p class="text-xs text-green-400 line-clamp-1">{{ ticket.descripcion }}</p>
-              </div>
-            </div>
+          <!-- Tabla estilo terminal -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-xs">
+              <thead>
+                <tr class="text-green-400 border-b border-green-500">
+                  <th class="text-left py-1 px-1">ID</th>
+                  <th class="text-left py-1 px-1">Título</th>
+                  <th class="text-left py-1 px-1">Usuario</th>
+                  <th class="text-left py-1 px-1">Estado</th>
+                  <th class="text-left py-1 px-1">Creado</th>
+                  <th class="text-left py-1 px-1">Comentarios</th>
+                  <th class="text-left py-1 px-1">Prioridad</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="ticket in ticketsPaginados" :key="ticket.id"
+                    class="border-b border-green-500/30 hover:bg-green-900/10 cursor-pointer transition-colors"
+                    @click="verTicket(ticket.id)">
+                  <td class="py-1 px-1 text-green-300 font-mono">#{{ ticket.id }}</td>
+                  <td class="py-1 px-1">
+                    <div class="text-green-300 truncate max-w-[120px]">{{ ticket.titulo }}</div>
+                    <div class="text-green-500 text-[10px] truncate max-w-[120px]">{{ ticket.descripcion }}</div>
+                  </td>
+                  <td class="py-1 px-1 text-green-400 truncate max-w-[100px]">
+                    {{ ticket.usuario?.email || 'N/A' }}
+                  </td>
+                  <td class="py-1 px-1">
+                    <span class="px-1 rounded text-[10px] font-medium" :class="statusClass(ticket.estado)">
+                      {{ ticket.estado }}
+                    </span>
+                  </td>
+                  <td class="py-1 px-1 text-green-400">{{ formatDateCompact(ticket.fechaCreacion) }}</td>
+                  <td class="py-1 px-1 text-green-300 text-center">{{ ticket.cantidadComentarios || 0 }}</td>
+                  <td class="py-1 px-1 text-green-400">{{ ticket.prioridad || 'Media' }}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
-          <!-- Paginación compacta -->
-          <div class="mt-4 flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0">
+          <!-- Paginación ultra compacta -->
+          <div class="mt-3 flex flex-col sm:flex-row justify-between items-center space-y-1 sm:space-y-0">
             <span class="text-green-500 text-xs">
               {{ inicioPagina + 1 }}-{{ finPagina }} de {{ ticketsFiltrados.length }}
             </span>
 
             <div class="flex items-center space-x-1">
-              <button @click="paginaAnterior" class="btn-matrix text-xs px-2 py-1" :disabled="paginaActual === 1">
+              <button @click="paginaAnterior" class="btn-matrix text-xs px-1 py-0.5" :disabled="paginaActual === 1">
                 ←
               </button>
 
-              <span class="text-green-400 text-xs mx-2">
+              <span class="text-green-400 text-xs mx-1">
                 {{ paginaActual }}/{{ totalPaginas }}
               </span>
 
-              <button @click="paginaSiguiente" class="btn-matrix text-xs px-2 py-1" :disabled="paginaActual === totalPaginas">
+              <button @click="paginaSiguiente" class="btn-matrix text-xs px-1 py-0.5" :disabled="paginaActual === totalPaginas">
                 →
               </button>
             </div>
 
             <div class="flex items-center space-x-1">
-              <span class="text-green-400 text-xs">Por página:</span>
-              <select v-model="ticketsPorPagina" class="bg-black border border-green-500 text-green-400 px-1 py-1 rounded text-xs">
+              <span class="text-green-400 text-xs">Mostrar:</span>
+              <select v-model="ticketsPorPagina" class="bg-black border border-green-500 text-green-400 px-1 py-0.5 rounded text-xs">
                 <option value="10">10</option>
-                <option value="15">15</option>
                 <option value="20">20</option>
-                <option value="25">25</option>
+                <option value="30">30</option>
+                <option value="50">50</option>
               </select>
             </div>
           </div>
-        </div>
-
-        <div class="mt-3 flex justify-center">
-          <button @click="fetchTickets" class="btn-matrix text-xs px-3 py-1" :disabled="loading">
-            ↻ Actualizar
-          </button>
         </div>
       </template>
     </div>
@@ -172,9 +170,9 @@ export default {
       orden: 'fechaReciente',
       ticketsFiltrados: [],
 
-      // Paginación - más tickets por página
+      // Paginación - más tickets por defecto
       paginaActual: 1,
-      ticketsPorPagina: 15 // Aumentado para mostrar más tickets
+      ticketsPorPagina: 20 // Más tickets por página
     }
   },
 
@@ -335,31 +333,17 @@ export default {
       this.$router.push(`/admin/tickets/${ticketId}`);
     },
 
-    formatDate(dateData) {
-      if (!dateData) return 'N/A';
-
-      try {
-        const date = this.parseCustomDate(dateData);
-        return date.toLocaleDateString('es-MX', {
-          day: '2-digit',
-          month: 'short',
-          year: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit'
-        });
-      } catch (error) {
-        return 'N/A';
-      }
-    },
-
     formatDateCompact(dateData) {
       if (!dateData) return 'N/A';
 
       try {
         const date = this.parseCustomDate(dateData);
+        if (isNaN(date.getTime())) return 'N/A';
+
         return date.toLocaleDateString('es-MX', {
           day: '2-digit',
-          month: '2-digit'
+          month: '2-digit',
+          year: '2-digit'
         });
       } catch (error) {
         return 'N/A';
@@ -384,22 +368,8 @@ export default {
 </script>
 
 <style scoped>
-.line-clamp-1 {
-  display: -webkit-box;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
 .terminal-box {
-  @apply border border-green-500 rounded-lg p-3;
+  @apply border border-green-500 rounded p-2;
 }
 
 .btn-matrix {
@@ -418,5 +388,13 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+th, td {
+  border: none;
 }
 </style>

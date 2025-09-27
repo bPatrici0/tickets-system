@@ -227,6 +227,12 @@ export default {
             }
         },
 
+        getUsuarioNombre() {
+            if (!this.ticket.usuario) return 'Usuario desconocido';
+
+            return this.ticket.usuario.nombre || this.ticket.usuario.username || 'Usuario';
+        },
+
         ordenarComentarios() {
             if (!this.ticket.comentarios || this.ticket.comentarios.length === 0) return;
 

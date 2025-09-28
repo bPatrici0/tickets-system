@@ -233,6 +233,12 @@ export default {
             return this.ticket.usuario.nombre || this.ticket.usuario.username || 'Usuario';
         },
 
+        getUsuarioEmail() {
+            if (!this.ticket.usuario) return 'N/A';
+
+            return this.ticket.usuario.email || 'N/A';
+        },
+
         ordenarComentarios() {
             if (!this.ticket.comentarios || this.ticket.comentarios.length === 0) return;
 

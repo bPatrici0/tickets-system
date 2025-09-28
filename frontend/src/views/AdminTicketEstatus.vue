@@ -239,6 +239,12 @@ export default {
             return this.ticket.usuario.email || 'N/A';
         },
 
+        getComentarioAutorNombre(comentario) {
+            if (!comentario.autor) return 'Usuario';
+
+            return comentario.autor.nombre || comentario.autor.username || 'Usuario';
+        },
+
         ordenarComentarios() {
             if (!this.ticket.comentarios || this.ticket.comentarios.length === 0) return;
 

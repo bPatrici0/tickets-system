@@ -261,12 +261,27 @@ export default {
             });
         },
 
-        parseDate(dateData) {
-            if (Array.isArray(dateData)) {
-                const [year, month, day, hours, minutes] = dateData;
-                return new Date(year, month - 1, day, hours, minutes);
+        parseCustomDate(dateString) {
+            if (!dateString) return new Date();
+
+            console.log('Parseando fecha:', dateString);
+
+            if (typeof dateString === 'string' && dateString.includes(',')) {
+                const parts = dateString.split(',');
+                console.log('Partes de la fecha:', parts);
+
+                if (parts.length >= 6) {
+                    const year = parseInt(parts[0]);
+                    const month = parseInt(parts[1]) - 1;
+                    const day = parseInt(parts[2]);
+                    const hour =  parseInt(parts[3]);
+                    const minute = parseInt(parts[4]);
+
+                    const resultDate = new Date(year, month, day, hour, minute);
+                    console.log('Fecha parseada:', resultDate);
+                    return resultDate;
+                }
             }
-            return new Date(dateData);
         },
 
         formatDate(dateData) {

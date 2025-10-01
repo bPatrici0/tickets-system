@@ -296,16 +296,33 @@ export default {
         },
 
         formatDate(dateData) {
-            if (!dateData) return 'N/A';
+            if (!dateData) {
+                console.log('Fecha vacia');
+                return 'N/A';
+            }
 
-            const date = this.parseDate(dateData);
-            return date.toLocaleDateString('es-MX', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
+            try {
+                const date = this.parseCustomDate(dateData);
+
+                if (isNaN(date.getTime())) {
+                    console.log('Fecha invalida:', dateData);
+                    return 'N/A';
+                }
+
+                const formatted = date.toLocalDateString('es-MX', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                console.log('fecha formateada:', formatted);
+                return formatted;
+            } catch (error) {
+                console.error('Error formateando fecha:', dateData, error);
+                return 'N/A';
+            }
         },
 
         statusClass(estado) {

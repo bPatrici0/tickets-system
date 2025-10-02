@@ -34,6 +34,9 @@ public class Usuario implements UserDetails {
     @Column(nullable = false)
     private Boolean activo = true;
 
+    @Column(name = "password_reset_required", nullable = false)
+    private Boolean passwordResetRequired = false;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(rol));

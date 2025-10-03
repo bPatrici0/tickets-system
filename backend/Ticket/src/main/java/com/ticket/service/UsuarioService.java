@@ -6,12 +6,16 @@ import com.ticket.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 public class UsuarioService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public List<Usuario> obtenerTodosLosUsuarios() {
         System.out.println("UsuarioService.obtenerTodosLosUsuarios() llamado");
@@ -54,6 +58,17 @@ public class UsuarioService {
     public Usuario cambiarPassword(Long usuarioId, String nuevaPassword) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new NotFoundException("Uusario no encontrado"));
+
+        usuario.setPassword(passwordEncoder.encode(nuevaPassword));
+        usuario.setPasswordResetRequired(false); //ya no requiere cambio
+
+        return usuarioRepository.save(usuario);
+    }
+
+    //cambiar contraseña por email para uso despues del login
+    public Usuario cambiarPasswordPorEmail(String email, String nuevaPassword) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
 
         usuario.setPassword(passwordEncoder.encode(nuevaPassword));
         usuario.setPasswordResetRequired(false); //ya no requiere cambio

@@ -50,4 +50,14 @@ public class UsuarioService {
 
         return usuarioRepository.save(usuario);
     }
+
+    public Usuario cambiarPassword(Long usuarioId, String nuevaPassword) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new NotFoundException("Uusario no encontrado"));
+
+        usuario.setPassword(passwordEncoder.encode(nuevaPassword));
+        usuario.setPasswordResetRequired(false); //ya no requiere cambio
+
+        return usuarioRepository.save(usuario);
+    }
 }

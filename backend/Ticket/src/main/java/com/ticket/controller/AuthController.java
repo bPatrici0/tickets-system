@@ -43,6 +43,7 @@ public class AuthController {
         usuario.setPassword(passwordEncoder.encode(registroDTO.getPassword()));
         usuario.setRol(registroDTO.getRol() != null ? registroDTO.getRol() : "ROLE_USER");
         usuario.setNombre(registroDTO.getNombre());
+        usuario.setPasswordResetRequired(false);
 
         usuarioRepository.save(usuario);
         return ResponseEntity.ok("Usuario registrado exitosamente");
@@ -65,11 +66,27 @@ public class AuthController {
 
             //respuesta con datos necesarios
             return ResponseEntity.ok(new LoginResponseDTO(
-                usuario.getEmail(),
-                usuario.getRol()
+                    usuario.getEmail(),
+                    usuario.getRol(),
+                    usuario.getPasswordResetRequired(),
+                    usuario.getNombre()
             ));
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
+        }
+    }
+
+    @PostMapping("/cambiar-password")
+    public ResponseEntity<?> cambiarPassword(@RequestBody ChangePasswordDTO changePasswordDTO) {
+        try {
+            Usuario usuario = usuarioRepository.findByEmail(changePasswordDTO.getEmail())
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+            usuarioService.cambiarPasswordPorEmail(changePasswordDTO.getEmail(), changePasswordDTO.getNuevaPassword());
+
+            return ResponseEntity.ok("Contraseña cambiada correctamente");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error al cambiar constraseña: " + e.getMessage());
         }
     }
 }

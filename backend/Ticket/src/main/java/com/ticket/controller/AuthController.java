@@ -3,9 +3,11 @@ package com.ticket.controller;
 import com.ticket.dto.LoginDTO;
 import com.ticket.dto.LoginResponseDTO;
 import com.ticket.dto.RegistroDTO;
+import com.ticket.dto.ChangePasswordDTO;
 import com.ticket.entity.Usuario;
 import com.ticket.entity.Rol;
 import com.ticket.repository.UsuarioRepository;
+import com.ticket.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,6 +27,9 @@ public class AuthController {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private UsuarioService usuarioService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;

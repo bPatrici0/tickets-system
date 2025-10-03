@@ -114,4 +114,12 @@ public class Usuario implements UserDetails {
     public void setActivo(Boolean activo) {
         this.activo = activo;
     }
+
+    public Boolean getPasswordResetRequired() {
+        return passwordResetRequired;
+    }
+
+    public void setPasswordResetRequired(Boolean passwordResetRequired) {
+        this.passwordResetRequired = passwordResetRequired;
+    }
 }

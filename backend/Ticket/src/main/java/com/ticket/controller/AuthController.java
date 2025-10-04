@@ -89,4 +89,16 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error al cambiar constraseña: " + e.getMessage());
         }
     }
+
+    @GetMapping("/requiere-cambio-password/{email}")
+    public ResponseEntity<?> requiereCambioPassword(@PathVariable String email) {
+        try {
+            Usuario usuario = usuarioRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+            return ResponseEntity.ok(usuario.getPasswordResetRequired());
+        } catch (Execption e) {
+            return ResponseEntity.status(Http.BAD_REQUEST).body("Error al verificar estado de contraseña");
+        }
+    }
 }

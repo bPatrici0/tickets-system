@@ -194,4 +194,18 @@ public class AdminController {
         Ticket ticket = ticketService.cambiarEstadoTicket(id, nuevoEstado);
         return ResponseEntity.ok(ticket);
     }
+
+    @PostMapping("/usuarios/{id}/reiniciar-password")
+    public ResponseEntity<?> reiniciarPassword(@PathVariable Long id) {
+        try {
+            Usuario usuarioActualizado = usuarioService.reiniciarPassword(id);
+            return ResponseEntity.ok(Map.of(
+                    "mensaje", "Contraseña reiniciada correctamente",
+                    "usuario", usuarioActualizado.getEmail(),
+                    "passwordResetRequired", usuarioActualizado.getPasswordResetRequired()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al reiniciar contraseña: " + e.getMessage());
+        }
+    }
 }

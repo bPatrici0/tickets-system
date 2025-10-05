@@ -97,8 +97,8 @@ public class AuthController {
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
             return ResponseEntity.ok(usuario.getPasswordResetRequired());
-        } catch (Execption e) {
-            return ResponseEntity.status(Http.BAD_REQUEST).body("Error al verificar estado de contraseña");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error al verificar estado de contraseña");
         }
     }
 }

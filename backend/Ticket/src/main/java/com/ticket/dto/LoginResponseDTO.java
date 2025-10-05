@@ -3,10 +3,16 @@ package com.ticket.dto;
 public class LoginResponseDTO {
     private String email;
     private String rol;
+    private Boolean passwordResetRequired;
+    private String nombre;
 
-    public LoginResponseDTO(String email, String rol) {
+    public LoginResponseDTO() {}
+
+    public LoginResponseDTO(String email, String rol, Boolean passwordResetRequired, String nombre) {
         this.email = email;
         this.rol = rol;
+        this.passwordResetRequired = passwordResetRequired;
+        this.nombre = nombre;
     }
 
     public String getEmail() {
@@ -23,5 +29,21 @@ public class LoginResponseDTO {
 
     public void setRol(String rol) {
         this.rol = rol;
+    }
+
+    public Boolean getPasswordResetRequired() {
+        return passwordResetRequired;
+    }
+
+    public void setPasswordResetRequired(Boolean passwordResetRequired) {
+        this.passwordResetRequired = passwordResetRequired;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
     }
 }

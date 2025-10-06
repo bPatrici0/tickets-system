@@ -208,14 +208,4 @@ public class AdminController {
             return ResponseEntity.badRequest().body("Error al reiniciar contraseña: " + e.getMessage());
         }
     }
-
-    @getMapping("/usuarios/{id}")
-    public ResponseEntity<?> obtenerUsuario(@PathVariable Long id) {
-        try {
-            Usuario usuario = usuarioService.obtenerUsuarioPorId(id);
-            return ResponseEntity.ok(usuario);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error al obtener usuario: " + e.getMessage());
-        }
-    }
 }

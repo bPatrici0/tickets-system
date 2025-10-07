@@ -517,7 +517,20 @@ export default {
             } finally {
                 this.updating = false;
             }
-        }
+        },
+
+        async reiniciarPassword(user) {
+                    if (!confirm('¿Estás seguro de reiniciar la contraseña de ${user.nombre}?\n\nEl usuario recibirá una contraseña temporal y deberá establecer una nueva contraseña en su próximo login')) {
+                        return;
+                    }
+
+                    this.resettingPassword = true;
+                    try {
+                        const response = await api.post('/admin/usuarios/${user.id}/reiniciar-password');
+                        user.passwordResetRequired = true;
+                        alert('✅ Constraseña reiniciada correctamente')
+                    }
+                }
     },
 
     mounted() {

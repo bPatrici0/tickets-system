@@ -248,6 +248,10 @@
                                         <span v-else>⏳ Procesando...</span>
                                     </button>
                                 </div>
+
+                                <div class="mt-2 text-xs text-center" :class="editingUser.passwordResetRequired ? 'text-yellow-400' : 'text-green-400'">
+                                    {{ editingUser.passwordResetRequired ? '⚠️ Requiere cambio de contraseña' : '✅ Constraseña actualizada' }}
+                                </div>
                             </div>
 
                             <div class="flex space-x-2">
@@ -300,7 +304,8 @@ export default {
             registering: false,
             registerSuccess: false,
             registerError: '',
-            userToDelete: null
+            userToDelete: null,
+            resettingPassword: false
         }
     },
 

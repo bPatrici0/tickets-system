@@ -231,6 +231,25 @@
                                 </select>
                             </div>
 
+                            <div class="border-t border-green-500/30 pt-4">
+                                <label class="block text-green-400 text-sm mb-2">Gestion de contraseña</label>
+                                <div>
+                                    <div class="text-yellow-400 text-sm font-bold">Reiniciar Contraseña</div>
+                                    <div class="text-yellow-500 text-xs mt-1">
+                                        El usuario deberá establecer una nueva contraseña en su próximo login
+                                    </div>
+                                    <button
+                                        type="button"
+                                        @click="reiniciarPassword(editingUser)"
+                                        :disabled="resettingPassword"
+                                        class="btn-matrix bg-yellow-500/20 text-yellow-400 border-yellow-500 px-4 py-2 text-sm hover:bg-yellow-500/30 transition-colors"
+                                    >
+                                        <span v-if="!resettingPassword">🔄 Reiniciar</span>
+                                        <span v-else>⏳ Procesando...</span>
+                                    </button>
+                                </div>
+                            </div>
+
                             <div class="flex space-x-2">
                                 <button type="submit" :disabled="updating" class="btn-matrix flex-1 py-2">
                                     <span v-if="!updating">> Guardar</span>

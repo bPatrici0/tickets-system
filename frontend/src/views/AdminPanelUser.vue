@@ -467,7 +467,10 @@ export default {
         },
 
         editUser(user) {
-                    this.editingUser = { ...user};
+                    this.editingUser = {
+                        ...user,
+                        passwordResetRequired: user.passwordResetRequired || false
+                    };
                     this.updateError = '';
                     this.activeMenu = null;
         },

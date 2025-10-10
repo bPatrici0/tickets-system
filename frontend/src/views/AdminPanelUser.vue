@@ -528,9 +528,16 @@ export default {
                     try {
                         const response = await api.post('/admin/usuarios/${user.id}/reiniciar-password');
                         user.passwordResetRequired = true;
-                        alert('✅ Constraseña reiniciada correctamente')
+                        alert('✅ Constraseña reiniciada correctamente\n\nEl usuario deberá cambiar su contraseña al siguiente login!...');
+
+                        this.fetchUsers();
+                    } catch (error) {
+                        console.error("Error reiniciando password: ", error);
+                        alert("❌ error reiniciando constraseña: " + (error.response?.data?.message || error.message));
+                    } finally {
+                        this.resettingPassword = false;
                     }
-                }
+                },
     },
 
     mounted() {

@@ -520,24 +520,24 @@ export default {
         },
 
         async reiniciarPassword(user) {
-                    if (!confirm('¿Estás seguro de reiniciar la contraseña de ${user.nombre}?\n\nEl usuario recibirá una contraseña temporal y deberá establecer una nueva contraseña en su próximo login')) {
-                        return;
-                    }
+            if (!confirm('¿Estás seguro de reiniciar la contraseña de ${user.nombre}?\n\nEl usuario recibirá una contraseña temporal y deberá establecer una nueva contraseña en su próximo login')) {
+                return;
+            }
 
-                    this.resettingPassword = true;
-                    try {
-                        const response = await api.post('/admin/usuarios/${user.id}/reiniciar-password');
-                        user.passwordResetRequired = true;
-                        alert('✅ Constraseña reiniciada correctamente\n\nEl usuario deberá cambiar su contraseña al siguiente login!...');
+            this.resettingPassword = true;
+            try {
+                const response = await api.post('/admin/usuarios/${user.id}/reiniciar-password');
+                user.passwordResetRequired = true;
+                alert('✅ Constraseña reiniciada correctamente\n\nEl usuario deberá cambiar su contraseña al siguiente login!...');
 
-                        this.fetchUsers();
-                    } catch (error) {
-                        console.error("Error reiniciando password: ", error);
-                        alert("❌ error reiniciando constraseña: " + (error.response?.data?.message || error.message));
-                    } finally {
-                        this.resettingPassword = false;
-                    }
-                },
+                this.fetchUsers();
+            } catch (error) {
+                console.error("Error reiniciando password: ", error);
+                alert("❌ error reiniciando constraseña: " + (error.response?.data?.message || error.message));
+            } finally {
+                this.resettingPassword = false;
+            }
+        },
     },
 
     mounted() {

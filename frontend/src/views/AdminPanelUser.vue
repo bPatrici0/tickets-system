@@ -231,14 +231,6 @@
                                 </select>
                             </div>
 
-                            <th class="text-left py-2 text-green-400">Password</th>
-
-                            <td class="py-2">
-                                <span :class="user.passwordResetRequired ? 'text-yellow-400' : 'text-green-400'" class="text-xs">
-                                    {{ user.passwordResetRequired ? '🔄 Pendiente' : '✅ Actualización' }}
-                                </span>
-                            </td>
-
                             <div class="border-t border-green-500/30 pt-4">
                                 <label class="block text-green-400 text-sm mb-2">Gestion de contraseña</label>
                                 <div>
@@ -539,6 +531,7 @@ export default {
             try {
                 const response = await api.post('/admin/usuarios/${user.id}/reiniciar-password');
                 user.passwordResetRequired = true;
+                console.log('Usuario actulizado:', response.data);
                 alert('✅ Constraseña reiniciada correctamente\n\nEl usuario deberá cambiar su contraseña al siguiente login!...');
 
                 this.fetchUsers();

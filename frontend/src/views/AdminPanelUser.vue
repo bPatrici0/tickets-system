@@ -537,7 +537,7 @@ export default {
 
             this.resettingPassword = true;
             try {
-                const response = await api.post('/admin/usuarios/${user.id}/reiniciar-password');
+                const response = await api.post(`/admin/usuarios/${user.id}/reiniciar-password`);
                 user.passwordResetRequired = true;
                 console.log('Usuario actulizado:', response.data);
                 alert('✅ Constraseña reiniciada correctamente\n\nEl usuario deberá cambiar su contraseña al siguiente login!...');

@@ -233,6 +233,14 @@
 
                             <div class="border-t border-green-500/30 pt-4">
                                 <label class="block text-green-400 text-sm mb-2">Gestion de contraseña</label>
+                                <!--estado actual del password-->
+                                <div class="mb-3 p-2 border border-green-500/50 rounded">
+                                    <div class="text-green-400 text-sm font-bold mb-1">Estado actual:</div>
+                                    <div class="text-xs" :class="editingUser.passwordResetRequired ? 'text-yellow-400' : 'text-green-400'">
+                                        {{ editingUser.passwordResetRequired ? '🔄 Pendiente de cambio' : '✅ Constraseña actualizada' }}
+                                    </div>
+                                </div>
+
                                 <div>
                                     <div class="text-yellow-400 text-sm font-bold">Reiniciar Contraseña</div>
                                     <div class="text-yellow-500 text-xs mt-1">

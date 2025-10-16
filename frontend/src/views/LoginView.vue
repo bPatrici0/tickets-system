@@ -10,7 +10,7 @@
       <div class="terminal-box">
         <h2 class="text-xl mb-4 text-green-500">> Login</h2>
 
-        <form @submit.prevent="handleLogin" class="space-y-4">
+        <form v-if="!requirePasswordChange" @submit.prevent="handleLogin" class="space-y-4">
           <!-- Campo Email -->
           <div>
             <label class="block text-green-400 mb-1">> Correo:</label>
@@ -66,6 +66,11 @@
             <span v-else>> Verificando...</span>
           </button>
         </form>
+
+        <div v-else class="space-y-4">
+            <div class="bg-yellow-500/20 border border-yellow-500 p-4 rounded">
+            </div>
+        </div>
 
         <!-- Enlace a registro -->
         <p class="text-center mt-4 text-green-400">

@@ -69,6 +69,10 @@
 
         <div v-else class="space-y-4">
             <div class="bg-yellow-500/20 border border-yellow-500 p-4 rounded">
+                <h3 class="text-yellow-400 font-bold mb-2">⚠️ Cambio de contraseña requerido!...</h3>
+                <p class="text-yellow-300 text-sm">
+                    Por seguridad, debes establecer una nueva contraseña para continuar.
+                </p>
             </div>
         </div>
 

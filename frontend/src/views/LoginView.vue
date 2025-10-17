@@ -74,6 +74,19 @@
                     Por seguridad, debes establecer una nueva contraseña para continuar.
                 </p>
             </div>
+
+            <form @submit.prevent="handlePasswordChange">
+                <div>
+                    <label class="block text-green-400 mb-1">> Nueva Contraseña:</label>
+                    <input
+                        type="password"
+                        v-model="newPasswordData.newPassword"
+                        class="w-full bg-black border border-green-500 p-2 text-green-500 focus:outline-none"
+                        required
+                        palceholder="******"
+                        >
+                </div>
+            </form>
         </div>
 
         <!-- Enlace a registro -->

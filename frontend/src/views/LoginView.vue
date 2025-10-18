@@ -97,6 +97,10 @@
                         placeholder="Confirma tu contraseña"
                     >
                 </div>
+
+                <div v-if="passwordMismatch" class="text-red-400 text-sm mt-2">
+                    > Las contraseñas no coinciden
+                </div>
             </form>
         </div>
 

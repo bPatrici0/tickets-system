@@ -114,7 +114,7 @@
         </div>
 
         <!-- Enlace a registro -->
-        <p class="text-center mt-4 text-green-400">
+        <p v-if="!requiredPasswordChange" class="text-center mt-4 text-green-400">
           > ¿No tienes cuenta?
           <router-link
             to="/register"
@@ -123,6 +123,10 @@
             > Regístrate
           </router-link>
         </p>
+
+        <div v-if="error" class="text-red-400 text-sm mt-4 text-center">
+            > {{ error }}
+        </div>
 
         <div v-else class="space-y-4">
             <div class="bg-yellow-500/20 border border-yellow-500 p-4 rounded">
@@ -147,7 +151,13 @@ export default {
       showPassword: false,
       password: '',
       loading: false,
-      error: null
+      error: null,
+      requiredPasswordChange: false,
+      changingPassword: false,
+      newPasswordData: {
+        newPassword: '',
+        confirmPassword: ''
+      }
     }
   },
   methods: {

@@ -101,6 +101,15 @@
                 <div v-if="passwordMismatch" class="text-red-400 text-sm mt-2">
                     > Las contraseñas no coinciden
                 </div>
+
+                <button
+                    type="submit"
+                    class="btn-matrix w-full py-2 mt-4"
+                    :disabled="chingingPassword"
+                >
+                    <span v-if="!changingPassword">> Establecer nueva contraseña</span>
+                    <span v-else>> Procesando...</span>
+                </button>
             </form>
         </div>
 

@@ -86,6 +86,17 @@
                         palceholder="******"
                         >
                 </div>
+
+                <div>
+                    <label class="block text-green-400 mb-1">> Confirmar contraseña:</label>
+                    <input
+                        type="password"
+                        v-model="newPasswordData.confirmPassword"
+                        class="w-full bg-black border border-green-500 p-2 text-green-500 focus:outline-none"
+                        required
+                        placeholder="Confirma tu contraseña"
+                    >
+                </div>
             </form>
         </div>
 

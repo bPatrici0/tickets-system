@@ -160,6 +160,12 @@ export default {
       }
     }
   },
+  computed: {
+    passwordMismatch() {
+        return this.newPasswordData.newPassword !== this.newPasswordData.confirmPassword &&
+            this.newPasswordData.confirmPassword !== '';
+    }
+  },
   methods: {
     async handleLogin() {
         this.loading = true;

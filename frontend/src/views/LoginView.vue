@@ -169,6 +169,8 @@ export default {
   methods: {
     async handleLogin() {
         this.loading = true;
+        this.error = null;
+
         try {
             // Conexión backend
             const response = await api.post('/auth/login', {

@@ -172,16 +172,18 @@ export default {
         this.error = null;
 
         try {
-            // Conexión backend
+            const credentials = btoa(`${this.email.trim()}:${this.password}`);
+
             const response = await api.post('/auth/login', {
                 email: this.email.trim(),
                 password: this.password
             }, {
-                auth: {
-                    username: this.email.trim(),
-                    password: this.password
+                headers: {
+                    'Authorization': `Basic ${credentials}`
                 }
             });
+
+            console.log('Login response:', response.data);
 
             if (response.data) {
                 localStorage.setItem('userEmail', this.email.trim());

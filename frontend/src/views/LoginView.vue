@@ -185,17 +185,15 @@ export default {
 
             console.log('Login response:', response.data);
 
-            if (response.data) {
+            if (response.data.passwordResetRequired) {
+                this.requirePasswordChange = true;
+                this.tempUserEmail = this.email.trim();
+                this.error = null;
+            } else {
                 localStorage.setItem('userEmail', this.email.trim());
-                localStorage.setItem('userPassword', this.password);
                 localStorage.setItem('userRole', response.data.rol);
-
-                //redirigir segun rol
-                if (response.data.rol === "ROLE_ADMIN"){
-                    this.$router.push('/admin');
-                } else {
-                    this.$router.push('/tickets');
-                }
+                localStorage.setItem('userName', response.data.nombre || 'Usuario');
+                localStorage.setItem('token', credentials);
             }
         } catch (error) {
             console.error("Error: ", error.response);

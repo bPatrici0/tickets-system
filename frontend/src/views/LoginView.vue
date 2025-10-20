@@ -194,6 +194,13 @@ export default {
                 localStorage.setItem('userRole', response.data.rol);
                 localStorage.setItem('userName', response.data.nombre || 'Usuario');
                 localStorage.setItem('token', credentials);
+
+                //redirigir segun rol
+                if (response.data.rol === "ROLE_ADMIN"){
+                    this.$router.push('/admin');
+                } else {
+                    this.$router.push('/tickets');
+                }
             }
         } catch (error) {
             console.error("Error: ", error.response);

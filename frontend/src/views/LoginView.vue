@@ -209,6 +209,12 @@ export default {
             this.loading = false;
         }
     },
+    async handlePasswordChange() {
+        if (this.passwordMismatch) {
+            this.error = 'Las constraseñas no coinciden';
+            return;
+        }
+    }
     async submitTicket() {
         this.isSubmitting = true;
         try {

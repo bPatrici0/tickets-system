@@ -239,7 +239,7 @@ export default {
         } finally {
             this.changingPassword = false;
         }
-    }
+    },
     async submitTicket() {
         this.isSubmitting = true;
         try {

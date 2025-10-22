@@ -214,6 +214,31 @@ export default {
             this.error = 'Las constraseñas no coinciden';
             return;
         }
+
+        this.changingPassword = true;
+        this.error = null;
+
+        try {
+            await api.post('/auth/cambiar-password', {
+                email: this.tempUserEmail,
+                nuevaPassword: this.newPasswordData.newPassword
+            });
+
+            alert('✅ Constraseña cambiada correctamente. Ahora puedes iniciar sesión con tu nueva contraseña.');
+
+            this.requirePasswordChange = false;
+            this.newPasswordData = {
+                newPassword: '',
+                confirmPassword: ''
+            };
+            this.email = '';
+            this.password = '';
+        } catch (error) {
+            console.error('Password change error:', error);
+            this.error = error.response?.data || 'Error al cambiar contraseña';
+        } finally {
+            this.changingPassword = false;
+        }
     }
     async submitTicket() {
         this.isSubmitting = true;

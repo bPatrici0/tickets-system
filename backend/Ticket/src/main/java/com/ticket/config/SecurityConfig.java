@@ -49,6 +49,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/tickets/*").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/tickets/*/estado").authenticated()
 
+                        //Permirtir el cambio de contraseña sin autenticacion
+                        .requestMatchers(HttpMethod.POST, "/api/auth/cambiar-password").permitAll()
+
                         //Solo el admin puede
                         .requestMatchers(HttpMethod.GET, "/api/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/admin/**").hasRole("ADMIN")

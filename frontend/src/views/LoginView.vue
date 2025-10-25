@@ -6,7 +6,6 @@
         > Sistema de Tickets<span class="cursor-blink">|</span>
       </h1>
 
-      <!-- Formulario con bordes controlados -->
       <div class="terminal-box">
         <h2 class="text-xl mb-4 text-green-500">> Login</h2>
 
@@ -105,7 +104,7 @@
                 <button
                     type="submit"
                     class="btn-matrix w-full py-2 mt-4"
-                    :disabled="chingingPassword"
+                    :disabled="changingPassword"
                 >
                     <span v-if="!changingPassword">> Establecer nueva contraseña</span>
                     <span v-else>> Procesando...</span>
@@ -145,6 +144,7 @@
 import api from '@/services/api';
 
 export default {
+    name: 'LoginView',
   data() {
     return {
       email: '',
@@ -152,8 +152,9 @@ export default {
       password: '',
       loading: false,
       error: null,
-      requiredPasswordChange: false,
+      requirePasswordChange: false,
       changingPassword: false,
+      tempUserEmail: '',
       newPasswordData: {
         newPassword: '',
         confirmPassword: ''
@@ -194,6 +195,8 @@ export default {
                 localStorage.setItem('userRole', response.data.rol);
                 localStorage.setItem('userName', response.data.nombre || 'Usuario');
                 localStorage.setItem('token', credentials);
+
+                this.redirectByRole(response.data.rol);
 
                 //redirigir segun rol
                 if (response.data.rol === "ROLE_ADMIN"){

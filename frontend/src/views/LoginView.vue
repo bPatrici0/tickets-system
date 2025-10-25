@@ -243,6 +243,13 @@ export default {
             this.changingPassword = false;
         }
     },
+    redirectByRole(role) {
+        if (role === 'ROLE_ADMIN') {
+            this.$router.push('/admin');
+        } else {
+            this.$router.push('/tickets');
+        }
+    },
     async submitTicket() {
         this.isSubmitting = true;
         try {

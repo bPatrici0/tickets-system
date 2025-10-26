@@ -9,6 +9,7 @@
       <div class="terminal-box">
         <h2 class="text-xl mb-4 text-green-500">> Login</h2>
 
+        <!-- FORMULARIO DE LOGIN NORMAL -->
         <form v-if="!requirePasswordChange" @submit.prevent="handleLogin" class="space-y-4">
           <!-- Campo Email -->
           <div>
@@ -66,6 +67,7 @@
           </button>
         </form>
 
+        <!-- FORMULARIO DE CAMBIO DE CONTRASEÑA OBLIGATORIO -->
         <div v-else class="space-y-4">
             <div class="bg-yellow-500/20 border border-yellow-500 p-4 rounded">
                 <h3 class="text-yellow-400 font-bold mb-2">⚠️ Cambio de contraseña requerido!...</h3>
@@ -82,8 +84,8 @@
                         v-model="newPasswordData.newPassword"
                         class="w-full bg-black border border-green-500 p-2 text-green-500 focus:outline-none"
                         required
-                        palceholder="******"
-                        >
+                        placeholder="Mínimo 6 caracteres"
+                    >
                 </div>
 
                 <div>
@@ -112,8 +114,8 @@
             </form>
         </div>
 
-        <!-- Enlace a registro -->
-        <p v-if="!requiredPasswordChange" class="text-center mt-4 text-green-400">
+        <!-- Enlace a registro (SOLO mostrar en login normal) -->
+        <p v-if="!requirePasswordChange" class="text-center mt-4 text-green-400"> <!-- CORREGIDO: requirePasswordChange -->
           > ¿No tienes cuenta?
           <router-link
             to="/register"
@@ -123,18 +125,20 @@
           </router-link>
         </p>
 
+        <!-- Mensaje de error -->
         <div v-if="error" class="text-red-400 text-sm mt-4 text-center">
             > {{ error }}
         </div>
 
-        <div v-else class="space-y-4">
+        <!-- ELIMINAR ESTE BLOQUE DUPLICADO -->
+        <!-- <div v-else class="space-y-4">
             <div class="bg-yellow-500/20 border border-yellow-500 p-4 rounded">
                 <h3 class="text-yellow-400 font-bold mb-2">⚠️ Cambio de contraseña requerido</h3>
                 <p class="text-yellow-300 text-sm">
                     Por seguridad, debes establecer una nueva contraseña para continuar!...
                 </p>
             </div>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
@@ -196,25 +200,26 @@ export default {
                 localStorage.setItem('userName', response.data.nombre || 'Usuario');
                 localStorage.setItem('token', credentials);
 
+                // SOLO LLAMAR redirectByRole - ELIMINAR EL CÓDIGO DUPLICADO
                 this.redirectByRole(response.data.rol);
-
-                //redirigir segun rol
-                if (response.data.rol === "ROLE_ADMIN"){
-                    this.$router.push('/admin');
-                } else {
-                    this.$router.push('/tickets');
-                }
             }
         } catch (error) {
             console.error("Error: ", error.response);
-            alert(error.response?.data || "Error de conexión");
+            this.error = error.response?.data || "Error de conexión"; // Cambiar alert por this.error
         } finally {
             this.loading = false;
         }
     },
+
     async handlePasswordChange() {
         if (this.passwordMismatch) {
-            this.error = 'Las constraseñas no coinciden';
+            this.error = 'Las contraseñas no coinciden';
+            return;
+        }
+
+        // Validar longitud mínima
+        if (this.newPasswordData.newPassword.length < 6) {
+            this.error = 'La contraseña debe tener al menos 6 caracteres';
             return;
         }
 
@@ -227,7 +232,7 @@ export default {
                 nuevaPassword: this.newPasswordData.newPassword
             });
 
-            alert('✅ Constraseña cambiada correctamente. Ahora puedes iniciar sesión con tu nueva contraseña.');
+            alert('✅ Contraseña cambiada correctamente. Ahora puedes iniciar sesión con tu nueva contraseña.');
 
             this.requirePasswordChange = false;
             this.newPasswordData = {
@@ -243,45 +248,24 @@ export default {
             this.changingPassword = false;
         }
     },
+
     redirectByRole(role) {
         if (role === 'ROLE_ADMIN') {
             this.$router.push('/admin');
         } else {
             this.$router.push('/tickets');
         }
-    },
-    async submitTicket() {
-        this.isSubmitting = true;
-        try {
-            const response = await api.post('/tickets', {
-                title: this.newTicket.subject,
-                description: this.newTicket.description,
-                status: 'ABIERTO'
-            });
-
-            if(response.status === 201) {
-                alert('Ticket creado exitosamente!...');
-                this.newTicket = { subject: '', description: '' };
-                //para actulizar lista de tickets
-            }
-        }catch (error) {
-            console.error("Error completo: ", error);
-            if (error.response?.status === 401) {
-                alert("Tu sesión ha expirado. Por favor inicia sesión nuevamente!...");
-                this.$router.push('/login');
-            } else {
-                alert(error.response?.data?.message || "Error al crear ticket!...");
-            }
-        } finally {
-            this.isSubmitting = false;
-        }
     }
+
+    // ELIMINAR EL MÉTODO submitTicket - NO PERTENECE AQUÍ
+    // async submitTicket() {
+    //     ...
+    // }
   }
 }
 </script>
 
 <style scoped>
-/* Estilos específicos para esta vista */
 .terminal-box {
   @apply border border-green-500 p-6 rounded-lg;
   width: 100%;
@@ -289,6 +273,10 @@ export default {
 
 .btn-matrix {
   @apply bg-green-500 text-black px-4 py-2 rounded hover:bg-green-400 transition-colors;
+}
+
+.btn-matrix:disabled {
+  @apply opacity-50 cursor-not-allowed;
 }
 
 .cursor-blink {
@@ -299,7 +287,6 @@ export default {
   50% { opacity: 0; }
 }
 
-/* Elimina el scroll global */
 html, body {
   overflow: hidden;
 }

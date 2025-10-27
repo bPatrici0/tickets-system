@@ -9,7 +9,7 @@
       <div class="terminal-box">
         <h2 class="text-xl mb-4 text-green-500">> Login</h2>
 
-        <!-- FORMULARIO DE LOGIN NORMAL -->
+        <!-- Formulario de login-->
         <form v-if="!requirePasswordChange" @submit.prevent="handleLogin" class="space-y-4">
           <!-- Campo Email -->
           <div>
@@ -67,7 +67,7 @@
           </button>
         </form>
 
-        <!-- FORMULARIO DE CAMBIO DE CONTRASEÑA OBLIGATORIO -->
+        <!-- Formulario de cambio de contraseña -->
         <div v-else class="space-y-4">
             <div class="bg-yellow-500/20 border border-yellow-500 p-4 rounded">
                 <h3 class="text-yellow-400 font-bold mb-2">⚠️ Cambio de contraseña requerido!...</h3>
@@ -114,7 +114,7 @@
             </form>
         </div>
 
-        <!-- Enlace a registro (SOLO mostrar en login normal) -->
+        <!-- Enlace a registro -->
         <p v-if="!requirePasswordChange" class="text-center mt-4 text-green-400"> <!-- CORREGIDO: requirePasswordChange -->
           > ¿No tienes cuenta?
           <router-link
@@ -129,16 +129,6 @@
         <div v-if="error" class="text-red-400 text-sm mt-4 text-center">
             > {{ error }}
         </div>
-
-        <!-- ELIMINAR ESTE BLOQUE DUPLICADO -->
-        <!-- <div v-else class="space-y-4">
-            <div class="bg-yellow-500/20 border border-yellow-500 p-4 rounded">
-                <h3 class="text-yellow-400 font-bold mb-2">⚠️ Cambio de contraseña requerido</h3>
-                <p class="text-yellow-300 text-sm">
-                    Por seguridad, debes establecer una nueva contraseña para continuar!...
-                </p>
-            </div>
-        </div> -->
       </div>
     </div>
   </div>

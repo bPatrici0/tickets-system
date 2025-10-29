@@ -168,6 +168,7 @@ export default {
 
         try {
             const credentials = btoa(`${this.email.trim()}:${this.password}`);
+            console.log('Credenciales creadas:', credentials);
 
             const response = await api.post('/auth/login', {
                 email: this.email.trim(),

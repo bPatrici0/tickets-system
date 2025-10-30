@@ -180,18 +180,21 @@ export default {
             });
 
             console.log('Login response:', response.data);
+            console.log('passwordResetRequired:', response.data.passwordResetRequired);
 
             if (response.data.passwordResetRequired) {
+                console.log('Mostrando formulario de cambio de contraseña');
                 this.requirePasswordChange = true;
                 this.tempUserEmail = this.email.trim();
                 this.error = null;
+                console.log('Estado actual - requirePasswordChange:', this.requierePasswordChange);
             } else {
+                console.log('Login normal - redirigiendo');
                 localStorage.setItem('userEmail', this.email.trim());
                 localStorage.setItem('userRole', response.data.rol);
                 localStorage.setItem('userName', response.data.nombre || 'Usuario');
                 localStorage.setItem('token', credentials);
 
-                // SOLO LLAMAR redirectByRole - ELIMINAR EL CÓDIGO DUPLICADO
                 this.redirectByRole(response.data.rol);
             }
         } catch (error) {

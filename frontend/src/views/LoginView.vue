@@ -6,11 +6,6 @@
         > Sistema de Tickets<span class="cursor-blink">|</span>
       </h1>
 
-      <div class="text-xs text-gray-500 mb-4">
-          DEBUG: requirePasswordChange = {{ requirePasswordChange }},
-          tempUserEmail = {{ tempUserEmail }}
-      </div>
-
       <div class="terminal-box">
         <h2 class="text-xl mb-4 text-green-500">> Login</h2>
 

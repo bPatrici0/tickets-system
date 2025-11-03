@@ -62,8 +62,8 @@ public class SecurityConfig {
                         //caulqueir otra peticion requeire autenticacion
                         .anyRequest().authenticated()
                 )
-                .httpBasic().disable()
-                //.and()
+                .httpBasic()
+                .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         return http.build();

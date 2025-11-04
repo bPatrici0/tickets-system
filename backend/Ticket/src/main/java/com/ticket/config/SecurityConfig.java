@@ -53,11 +53,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/cambiar-password").permitAll()
 
                         //Solo el admin puede
-                        .requestMatchers(HttpMethod.GET, "/api/admin/**").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/admin/**").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/admin/**").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/admin/**").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/tickets/*").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/tickets/*").hasRole("ADMIN")
 
                         //caulqueir otra peticion requeire autenticacion
                         .anyRequest().authenticated()

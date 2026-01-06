@@ -180,14 +180,11 @@ export default {
             });
 
             console.log('Login response:', response.data);
-            console.log('passwordResetRequired:', response.data.passwordResetRequired);
 
             if (response.data.passwordResetRequired) {
-                console.log('Mostrando formulario de cambio de contraseña');
                 this.requirePasswordChange = true;
                 this.tempUserEmail = this.email.trim();
                 this.error = null;
-                console.log('Estado actual - requirePasswordChange:', this.requierePasswordChange);
             } else {
                 console.log('Login normal - redirigiendo');
                 localStorage.setItem('userEmail', this.email.trim());
@@ -195,11 +192,14 @@ export default {
                 localStorage.setItem('userName', response.data.nombre || 'Usuario');
                 localStorage.setItem('token', credentials);
 
+                console.log('Token guardado en localStorage');
+                console.log('Rol:', response.data.rol);
+
                 this.redirectByRole(response.data.rol);
             }
         } catch (error) {
             console.error("Error: ", error.response);
-            this.error = error.response?.data || "Error de conexión"; // Cambiar alert por this.error
+            this.error = error.response?.data || "Error de conexión";
         } finally {
             this.loading = false;
         }

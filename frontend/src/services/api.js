@@ -10,16 +10,15 @@ const api = axios.create({
     }
 });
 
+//interceptor para agregar el token correctamente
 api.interceptors.request.use(config => {
     const token = localStorage.getItem('token');
 
     console.log('Token encontrado en localStorage:', token ? 'SÍ' : 'NO');
-    console.log('Peticion a:', config.url);
-    //const email = localStorage.getItem('userEmail');
-    //const password = localStorage.getItem('userPassword');
+    console.log('Petición a:', config.url);
 
     if(token) {
-        config.headers.Autthorization = `Basic ${token}`;
+        config.headers.Authorization = `Basic ${token}`;
         console.log('Autorization header agregado:', config.headers.Authorization.substring(0, 30) + '...');
     } else {
         console.log('no hay token en localStorage');

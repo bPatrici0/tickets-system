@@ -261,25 +261,32 @@ export default {
             });
         },
 
-        parseCustomDate(dateString) {
-            if (!dateString) return new Date();
+        parseDate(dateString) {
+            if (!dateData) {
+                console.log('Fecha vacía');
+                return null;
+            }
 
-            console.log('Parseando fecha:', dateString);
+            console.log('Parseando fecha:', dateData);
 
-            if (typeof dateString === 'string' && dateString.includes(',')) {
-                const parts = dateString.split(',');
-                console.log('Partes de la fecha:', parts);
+            try {
+                if (Array.isArray(dateData)) {
+                    console.log('Es un array:'. dateData);
+                    const [year, month, day, hour, minute] = dateData;
+                    const daqte = new Date(year, month -1, day, hour, minute);
+                    console.log('Fecha desde array:', date);
+                    return date;
+                }
 
-                if (parts.length >= 6) {
-                    const year = parseInt(parts[0]);
-                    const month = parseInt(parts[1]) - 1;
-                    const day = parseInt(parts[2]);
-                    const hour =  parseInt(parts[3]);
-                    const minute = parseInt(parts[4]);
-
-                    const resultDate = new Date(year, month, day, hour, minute);
-                    console.log('Fecha parseada:', resultDate);
-                    return resultDate;
+                if (typeof dateData === 'string' && dateData.includes(',')) {
+                    console.log('Es un string con comas:', dateData);
+                    const parts = dateData.split(',').map(Number);
+                    if (parts.length >= 6) {
+                        const [year, month, day, hour, minute]) = parts;
+                        const date = new Date(year, month - 1, day, hour, minute);
+                        console.log('Fecha desde String:', date);
+                        return date;
+                    }
                 }
             }
 

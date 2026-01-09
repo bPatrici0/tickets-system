@@ -257,6 +257,11 @@ export default {
             this.ticket.comentarios.sort((a, b) => {
                 const dateA = this.parseDate(a.fechaCreacion);
                 const dateB = this.parseDate(b.fechaCreacion);
+
+                //manejar fechas nulas
+                if (!dateA || isNaN(dateA.getTime())) return 1;
+                if (!dateB || isNaN(dateB.getTime())) return -1;
+
                 return dateB - dateA; // Más recientes primero
             });
         },

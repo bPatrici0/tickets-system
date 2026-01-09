@@ -287,7 +287,7 @@ export default {
                     console.log('Es un string con comas:', dateData);
                     const parts = dateData.split(',').map(Number);
                     if (parts.length >= 6) {
-                        const [year, month, day, hour, minute]) = parts;
+                        const [year, month, day, hour, minute] = parts;
                         const date = new Date(year, month - 1, day, hour, minute);
                         console.log('Fecha desde String:', date);
                         return date;
@@ -408,12 +408,24 @@ export default {
             if (!this.ticket.fechaCreacion) return 'N/A';
 
             const creacion = this.parseDate(this.ticket.fechaCreacion);
+
+            if (!creacion || isNaN(creacion.getTime())) {
+                return 'Fecha inválida';
+            }
+
             const ahora = new Date();
             const diffMs = ahora - creacion;
             const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
             const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
 
-            return `${diffDays}d ${diffHours}h`;
+            if (diffDays > 0) {
+                return `${diffDays}d ${diffHours}h`;
+            } else if (diffHours > 0) {
+                return `${diffHours}h ${diffMinutes}m`;
+            } else {
+                return `${diffMinutes}m`;
+            }
         },
 
         handleLogout() {

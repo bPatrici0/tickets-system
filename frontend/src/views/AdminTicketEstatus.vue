@@ -311,10 +311,10 @@ export default {
             }
 
             try {
-                const date = this.parseCustomDate(dateData);
+                const date = this.parseDate(dateData);
 
-                if (isNaN(date.getTime())) {
-                    console.log('Fecha invalida:', dateData);
+                if (!date || isNaN(date.getTime())) {
+                    console.log('Fecha invalida despues de parsear:', dateData);
                     return 'N/A';
                 }
 

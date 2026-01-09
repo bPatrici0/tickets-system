@@ -288,18 +288,20 @@ export default {
                         return date;
                     }
                 }
-            }
 
-            if (Array.isArray(dateString)) {
-                const [year, month, day, hour, minute] = dateString;
-                const resultDate = Date(year, month - 1, day, hour, minute);
-                console.log("Fecha desde array:", resultDate);
-                return resultDate;
-            }
+                const fallbackDate = new Date(dateData);
+                console.log('Fecha fallback:', fallbackDate);
 
-            const fallbackDate = new Date(dateString);
-            console.log('Fecha fallback:', fallbackDate);
-            return fallbackDate;
+                if (isNaN(fallbackDate.getTime())) {
+                    console.log('Fecha inválida:', dateData);
+                    return null;
+                }
+
+                return fallbackDate;
+            } catch (error) {
+                console.error('Error parseando fecha:', error);
+                return null;
+            }
         },
 
         formatDate(dateData) {

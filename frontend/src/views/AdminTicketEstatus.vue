@@ -336,7 +336,7 @@ export default {
                     return 'N/A';
                 }
 
-                const formatted = date.toLocalDateString('es-MX', {
+                const formatted = date.toLocaleDateString('es-MX', {
                     year: 'numeric',
                     month: 'short',
                     day: 'numeric',

@@ -198,7 +198,7 @@ export default {
             this.loading = true;
             try {
                 const ticketId = this.$route.params.id;
-                console.log('Ticket ID:', ticketID);
+                console.log('Ticket ID:', ticketId);
 
                 const [ticketResponse, comentariosResponse] = await Promise.all([
                     api.get(`/admin/tickets/${ticketId}`),
@@ -219,7 +219,7 @@ export default {
                 console.log('Comentarios recibidos:', this.ticket.comentarios);
 
                 if (this.ticket.comentarios && this.ticket.comentarios.length > 0) {
-                    this.ticket.comentarios.forEach((comentaio, index) => {
+                    this.ticket.comentarios.forEach((comentario, index) => {
                         console.log(`Comentario ${index} fecha:`, comentario.fechaCreacion);
                     });
                 }
@@ -279,7 +279,7 @@ export default {
             });
         },
 
-        parseDate(dateString) {
+        parseDate(dateData) {
             if (!dateData) {
                 console.log('Fecha vacía');
                 return null;
@@ -289,9 +289,9 @@ export default {
 
             try {
                 if (Array.isArray(dateData)) {
-                    console.log('Es un array:'. dateData);
+                    console.log('Es un array:', dateData);
                     const [year, month, day, hour, minute] = dateData;
-                    const daqte = new Date(year, month -1, day, hour, minute);
+                    const date = new Date(year, month -1, day, hour, minute);
                     console.log('Fecha desde array:', date);
                     return date;
                 }

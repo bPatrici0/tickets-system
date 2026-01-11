@@ -198,11 +198,16 @@ export default {
             this.loading = true;
             try {
                 const ticketId = this.$route.params.id;
+                console.log('Ticket ID:', ticketID);
 
                 const [ticketResponse, comentariosResponse] = await Promise.all([
                     api.get(`/admin/tickets/${ticketId}`),
                     api.get(`/tickets/${ticketId}/comentarios`)
                 ]);
+
+                console.log('Ticket recibido:', ticketResponse.data);
+                console.log('Fecha creación tipo:', typeof ticketResponse.data?.fechaCreacion);
+                console.log('Fecha creacion valor:', ticketResponse.data?.fechaCreacion);
 
                 this.ticket = {
                     ...ticketResponse.data,
@@ -210,6 +215,14 @@ export default {
                         ? comentariosResponse.data
                         : []
                 };
+
+                console.log('Comentarios recibidos:', this.ticket.comentarios);
+
+                if (this.ticket.comentarios && this.ticket.comentarios.length > 0) {
+                    this.ticket.comentarios.forEach((comentaio, index) => {
+                        console.log(`Comentario ${index} fecha:`, comentario.fechaCreacion);
+                    });
+                }
 
                 this.ordenarComentarios();
 

@@ -246,7 +246,7 @@ export default {
             if (!this.ticket.usuario) return 'Usuario desconocido';
 
             if (typeof this.ticket.usuario === 'object') {
-                return this.ticket.usuario. ||
+                return this.ticket.usuario.nombre ||
                         this.ticket.usuario.username ||
                         this.ticket.usuario.email ||
                         'Usuario';
@@ -258,7 +258,15 @@ export default {
         getUsuarioEmail() {
             if (!this.ticket.usuario) return 'N/A';
 
-            return this.ticket.usuario.email || 'N/A';
+            if (typeof this.ticket.usuario === 'object') {
+                return this.ticket.usuario.email || 'N/A';
+            }
+
+            if (typeof this.ticket.usuario === 'string' && this.ticket.usuario.includes('@')) {
+                return this.ticket.usuario;
+            }
+
+            return 'N/A';
         },
 
         getComentarioAutorNombre(comentario) {

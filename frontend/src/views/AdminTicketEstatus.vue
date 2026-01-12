@@ -32,7 +32,7 @@
                     <div class="grid grid-cols-2 gap-4 text-sm">
                         <div>
                             <span class="text-green-500">> Creado por: </span>
-                            <span class="ml-2">{{ ticket.usuario?.nombre || 'Usuario' }}</span>
+                            <span class="ml-2">{{ ticket.usuario?.email || ticket.usuario?.username || 'Usuario' }}</span>
                         </div>
                         <div>
                             <span class="text-green-500">> Email: </span>
@@ -205,9 +205,11 @@ export default {
                     api.get(`/tickets/${ticketId}/comentarios`)
                 ]);
 
-                console.log('Ticket recibido:', ticketResponse.data);
-                console.log('Fecha creación tipo:', typeof ticketResponse.data?.fechaCreacion);
-                console.log('Fecha creacion valor:', ticketResponse.data?.fechaCreacion);
+                console.log('ticket completo:', ticketResponse.data);
+
+                //console.log('Ticket recibido:', ticketResponse.data);
+                //console.log('Fecha creación tipo:', typeof ticketResponse.data?.fechaCreacion);
+                //console.log('Fecha creacion valor:', ticketResponse.data?.fechaCreacion);
 
                 this.ticket = {
                     ...ticketResponse.data,

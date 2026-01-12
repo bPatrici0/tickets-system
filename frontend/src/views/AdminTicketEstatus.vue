@@ -32,11 +32,11 @@
                     <div class="grid grid-cols-2 gap-4 text-sm">
                         <div>
                             <span class="text-green-500">> Creado por: </span>
-                            <span class="ml-2">{{ ticket.usuario?.email || ticket.usuario?.username || 'Usuario' }}</span>
+                            <span class="ml-2">{{ ticket.creadoPor?.nombre || ticket.creadoPor?.email || 'Usuario' }}</span>
                         </div>
                         <div>
                             <span class="text-green-500">> Email: </span>
-                            <span class="ml-2">{{ ticket.usuario?.email || 'N/A' }}</span>
+                            <span class="ml-2">{{ ticket.creadoPor?.email || 'N/A' }}</span>
                         </div>
                         <div>
                             <span class="text-green-500">> Fecha creación: </span>

@@ -243,16 +243,8 @@ export default {
         },
 
         getUsuarioNombre() {
-            if (!this.ticket.usuario) return 'Usuario desconocido';
-
-            if (typeof this.ticket.usuario === 'object') {
-                return this.ticket.usuario.nombre ||
-                        this.ticket.usuario.username ||
-                        this.ticket.usuario.email ||
-                        'Usuario';
-            }
-
-            return this.ticket.usuario.nombre || this.ticket.usuario.username || 'Usuario';
+            if (!this.ticket.creadoPor) return 'Usuario desconocido';
+            return this.ticket.cradoPor.nombre || this.ticket.creadoPor.email || 'Usuario';
         },
 
         getUsuarioEmail() {

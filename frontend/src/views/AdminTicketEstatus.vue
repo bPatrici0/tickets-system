@@ -249,16 +249,7 @@ export default {
 
         getUsuarioEmail() {
             if (!this.ticket.usuario) return 'N/A';
-
-            if (typeof this.ticket.usuario === 'object') {
-                return this.ticket.usuario.email || 'N/A';
-            }
-
-            if (typeof this.ticket.usuario === 'string' && this.ticket.usuario.includes('@')) {
-                return this.ticket.usuario;
-            }
-
-            return 'N/A';
+            return this.ticket.creadoPor.email || 'N/A';
         },
 
         getComentarioAutorNombre(comentario) {

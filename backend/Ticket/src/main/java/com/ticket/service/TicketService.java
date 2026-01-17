@@ -57,9 +57,8 @@ public class TicketService {
         ticket.setDescripcion(ticketDTO.getDescripcion());
 
         try {
-            ticket.setEstado(ticketDTO.getEstado() != null ?
-                    EstadoTicket.valueOf(ticketDTO.getEstado()) :
-                    EstadoTicket.ABIERTO);
+            ticket.setEstado(
+                    ticketDTO.getEstado() != null ? EstadoTicket.valueOf(ticketDTO.getEstado()) : EstadoTicket.ABIERTO);
         } catch (IllegalArgumentException e) {
             throw new BadRequestException("Estado de ticket inválido");
         }
@@ -122,7 +121,22 @@ public class TicketService {
         ComentarioDTO dto = new ComentarioDTO();
         dto.setId(comentario.getId());
         dto.setContenido(comentario.getContenido());
-        dto.setAutor(comentario.getAutor());
+
+        ComentarioDTO.AutorInfo autorInfo = new ComentarioDTO.AutorInfo();
+        String emailAutor = comentario.getAutor();
+
+        autorInfo.setEmail(emailAutor);
+        autorInfo.setNombre("Usuario");
+        autorInfo.setRol("ROLE_USER");
+
+        if (emailAutor != null) {
+            usuarioRepository.findByEmail(emailAutor).ifPresent(usuario -> {
+                autorInfo.setNombre(usuario.getNombre() != null ? usuario.getNombre() : "Usuario");
+                autorInfo.setRol(usuario.getRol());
+            });
+        }
+
+        dto.setAutor(autorInfo);
         dto.setFechaCreacion(comentario.getFechaCreacion());
         return dto;
     }
@@ -131,7 +145,7 @@ public class TicketService {
         Ticket ticket = ticketRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Ticket no encontrado"));
 
-        if (ticketDTO.getTitulo() != null){
+        if (ticketDTO.getTitulo() != null) {
             ticket.setTitulo(ticketDTO.getTitulo());
         }
         if (ticketDTO.getDescripcion() != null) {
@@ -157,7 +171,8 @@ public class TicketService {
 
     @Transactional
     public ComentarioDTO agregarComentario(Long ticketId, ComentarioDTO comentarioDTO, String autor) {
-        logger.info("datos recibidos - ticketId: {}, autor: {}, contenido: {}", ticketId, autor, comentarioDTO.getContenido());
+        logger.info("datos recibidos - ticketId: {}, autor: {}, contenido: {}", ticketId, autor,
+                comentarioDTO.getContenido());
 
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new NotFoundException("ticket no encontrado"));
@@ -166,11 +181,11 @@ public class TicketService {
             throw new BadRequestException("El contenido del comentario no puede estar vacio");
         }
 
-        //crear y guardar comentario
+        // crear y guardar comentario
         Comentario comentario = new Comentario();
         comentario.setContenido(comentarioDTO.getContenido());
         comentario.setAutor(autor);
-        //comentario.setFechaCreacion(LocalDateTime.now());
+        // comentario.setFechaCreacion(LocalDateTime.now());
         comentario.setTicket(ticket);
 
         Comentario comentarioGuardado = comentarioRepository.save(comentario);
@@ -185,7 +200,7 @@ public class TicketService {
         return convertComentarioToDTO(comentarioGuardado);
     }
 
-    public Ticket cambiarEstadoTicket(Long Id, String nuevoEstado){
+    public Ticket cambiarEstadoTicket(Long Id, String nuevoEstado) {
         Ticket ticket = ticketRepository.findById(Id)
                 .orElseThrow(() -> new NotFoundException("Ticket no encontrado"));
         List<String> estadosPermitidos = Arrays.asList("ABIERTO", "EN_PROGRESO", "RESUELTO");
@@ -204,7 +219,7 @@ public class TicketService {
             throw new NotFoundException("Ticket no encontrado");
         }
 
-        //obtener los comentarios directamente del repositorio
+        // obtener los comentarios directamente del repositorio
         List<Comentario> comentarios = comentarioRepository.findByTicketId(ticketId);
 
         return comentarios.stream()

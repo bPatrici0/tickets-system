@@ -71,7 +71,7 @@
                     <div v-for="comentario in ticket.comentarios" :key="comentario.id"
                         class="border-l-2 border-green-500 pl-3 py-2 history-entry">
                         <div class="flex justify-between text-sm text-green-500">
-                            <span>> {{ comentario.autor || 'Usuario desconocido' }}</span>
+                            <span>> {{ comentario.autor?.nombre || comentario.autor?.email || 'Usuario desconocido' }}</span>
                             <span>{{ formatDate(comentario.fechaCreacion) }}</span>
                         </div>
                         <pre class="text-green-300 mt-1 font-mono whitespace-pre-wrap">{{ comentario.contenido }}</pre>

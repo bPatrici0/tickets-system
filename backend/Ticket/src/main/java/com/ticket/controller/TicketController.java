@@ -36,7 +36,8 @@ public class TicketController {
 
     @PostMapping("/{id}/comentarios")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Object> agregarComentario(@PathVariable Long id, @RequestBody ComentarioDTO comentarioDTO, Authentication authentication) {
+    public ResponseEntity<Object> agregarComentario(@PathVariable Long id, @RequestBody ComentarioDTO comentarioDTO,
+            Authentication authentication) {
         log.info("intentando agregar comentario al ticket {} por usuario {}", id, authentication.getName());
 
         try {
@@ -44,7 +45,8 @@ public class TicketController {
                 return ResponseEntity.badRequest().body("El contenido no puede estar vacio");
             }
 
-            ComentarioDTO comentarioCreado = ticketService.agregarComentario(id, comentarioDTO, authentication.getName());
+            ComentarioDTO comentarioCreado = ticketService.agregarComentario(id, comentarioDTO,
+                    authentication.getName());
 
             return ResponseEntity.ok(comentarioCreado);
         } catch (BadRequestException e) {
@@ -79,7 +81,7 @@ public class TicketController {
     }
 
     @PostMapping
-    @PreAuthorize("isAuthenticated()") //solo usuarios logueados pueden crear tickets
+    @PreAuthorize("isAuthenticated()") // solo usuarios logueados pueden crear tickets
     public ResponseEntity<Ticket> crearTicket(@RequestBody TicketDTO ticketDTO) {
         return ResponseEntity.ok(ticketService.crearTicket(ticketDTO));
     }
@@ -109,14 +111,5 @@ public class TicketController {
     public ResponseEntity<Void> eliminarTicket(@PathVariable Long id) {
         ticketService.eliminarTicket(id);
         return ResponseEntity.noContent().build();
-    }
-
-    private ComentarioDTO convertToComentarioDTO(Comentario comentario) {
-        ComentarioDTO dto = new ComentarioDTO();
-        dto.setId(comentario.getId());
-        dto.setContenido(comentario.getContenido());
-        dto.setAutor(comentario.getAutor());
-        dto.setFechaCreacion(comentario.getFechaCreacion());
-        return dto;
     }
 }

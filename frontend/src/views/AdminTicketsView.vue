@@ -243,6 +243,11 @@ export default {
     parseCustomDate(dateString) {
       if (!dateString) return new Date();
 
+      if (Array.isArray(dateString)) {
+        const [year, month, day, hours, minutes] = dateString;
+        return new Date(year, month - 1, day, hours, minutes || 0);
+      }
+
       if (typeof dateString === 'string' && dateString.includes(',')) {
         const parts = dateString.split(',');
         if (parts.length >= 6) {
@@ -251,13 +256,18 @@ export default {
           const day = parseInt(parts[2]);
           const hour = parseInt(parts[3]);
           const minute = parseInt(parts[4]);
-          const second = parseInt(parts[5]);
-
-          return new Date(year, month, day, hour, minute, second);
+          
+          return new Date(year, month, day, hour, minute);
         }
       }
 
-      return new Date(dateString);
+      const date = new Date(dateString);
+      // Fallback for some string formats if needed
+      if (isNaN(date.getTime()) && typeof dateString === 'string' && dateString.includes('T')) {
+         return new Date(dateString.replace('+', '.000+'));
+      }
+      
+      return date;
     },
 
     aplicarFiltrosYOrden() {

@@ -19,7 +19,7 @@
             <div class="border-b border-green-500 pb-4 mb-4">
                 <span class="mb-2" px-100>> Asunto: </span>
                 <h1 class="text-4xl text-green-400 mb-2">> {{ ticket.titulo }}</h1>
-                <div class="flex flex-wrap gap-4 text-sm">
+                <div class="flex flex-wrap gap-6 text-sm">
                     <div>
                         <span class="text-green-500">> Estado: </span>
                         <span class="ml-2 px-2 py-1 rounded"
@@ -28,8 +28,16 @@
                         </span>
                     </div>
                     <div>
-                        <span class="text-green-500 mb-12">> Creado: </span>
+                        <span class="text-green-500">> Autor: </span>
+                        <span class="ml-2">{{ ticket.creadoPor?.nombre || ticket.creadoPor?.email || 'Desconocido' }}</span>
+                    </div>
+                    <div>
+                        <span class="text-green-500">> Creado: </span>
                         <span class="ml-2">{{ formatDate(ticket.fechaCreacion) }}</span>
+                    </div>
+                    <div>
+                        <span class="text-green-500">> Comentarios: </span>
+                        <span class="ml-2">{{ ticket.comentarios ? ticket.comentarios.length : 0 }}</span>
                     </div>
                 </div>
             </div>
@@ -258,8 +266,8 @@ export default {
         async agregarComentario() {
             this.isSubmitting = true;
             try {
-                if (this.ticket.estado !== 'ABIERTO') {
-                    alert("Solo puedes agregar comentarios a tickets ABIERTOS");
+                if (this.ticket.estado !== 'ABIERTO' && this.ticket.estado !== 'EN_PROGRESO') {
+                    alert("Solo puedes agregar comentarios a tickets ABIERTOS o EN PROGRESO");
                     return;
                 }
 

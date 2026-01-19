@@ -106,7 +106,7 @@
                     <div class="text-green-500 text-[10px] truncate max-w-[120px]">{{ ticket.descripcion }}</div>
                   </td>
                   <td class="py-1 px-1 text-green-400 truncate max-w-[100px]">
-                    {{ ticket.usuario?.email || 'N/A' }}
+                    {{ ticket.creadoPor?.email || ticket.creadoPor?.nombre || 'N/A' }}
                   </td>
                   <td class="py-1 px-1">
                     <span class="px-1 rounded text-[10px] font-medium" :class="statusClass(ticket.estado)">

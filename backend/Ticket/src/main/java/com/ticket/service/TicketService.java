@@ -69,7 +69,7 @@ public class TicketService {
 
     @Transactional(readOnly = true)
     public List<Ticket> obtenerTodosLosTickets() {
-        System.out.println("TicketService.obtenerTodosLosTickets() llamado");
+        logger.debug("TicketService.obtenerTodosLosTickets() llamado");
         List<Ticket> tickets = ticketRepository.findAll();
 
         return tickets;
@@ -77,15 +77,15 @@ public class TicketService {
 
     @Transactional(readOnly = true)
     public Ticket obtenerTicketPorId(Long id) {
-        System.out.println("TicketService.obtenerTicketPorId() llamado - ID: " + id);
+        logger.debug("TicketService.obtenerTicketPorId() llamado - ID: {}", id);
         Optional<Ticket> ticketOpt = ticketRepository.findById(id);
 
         if (ticketOpt.isPresent()) {
             Ticket ticket = ticketOpt.get();
-            System.out.println("Ticket encontrado: " + ticket.getTitulo());
+            logger.debug("Ticket encontrado: {}", ticket.getTitulo());
             return ticket;
         } else {
-            System.out.println("Ticket no encontrado - ID: " + id);
+            logger.warn("Ticket no encontrado - ID: {}", id);
             throw new NotFoundException("Ticket no encontrado con ID: " + id);
         }
     }

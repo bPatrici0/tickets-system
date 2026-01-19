@@ -17,8 +17,11 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.http.SessionCreationPolicy;
 import java.util.Arrays;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Configuration
 @EnableWebSecurity
+@Slf4j
 public class SecurityConfig {
 
     @Bean
@@ -35,33 +38,32 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        //tickets
+                        // tickets
                         .requestMatchers(HttpMethod.GET, "/api/tickets").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/tickets/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/tickets/*/comentarios").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/tickets/usuario/*").authenticated()
 
-                        //crear tickets y comentarios
+                        // crear tickets y comentarios
                         .requestMatchers(HttpMethod.POST, "/api/tickets").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/tickets/*/comentarios").authenticated()
 
-                        //actualizar tickets, solo usuarios autenticados
+                        // actualizar tickets, solo usuarios autenticados
                         .requestMatchers(HttpMethod.PUT, "/api/tickets/*").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/tickets/*/estado").authenticated()
 
-                        //Permirtir el cambio de contraseña sin autenticacion
+                        // Permirtir el cambio de contraseña sin autenticacion
                         .requestMatchers(HttpMethod.POST, "/api/auth/cambiar-password").permitAll()
 
-                        //Solo el admin puede
+                        // Solo el admin puede
                         .requestMatchers(HttpMethod.GET, "/api/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/tickets/*").hasRole("ADMIN")
 
-                        //caulqueir otra peticion requeire autenticacion
-                        .anyRequest().authenticated()
-                )
+                        // caulqueir otra peticion requeire autenticacion
+                        .anyRequest().authenticated())
                 .httpBasic()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
@@ -90,7 +92,7 @@ public class SecurityConfig {
 
     @PostConstruct
     public void init() {
-        System.out.println(">>> Configuración de seguridad cargada");
-        System.out.println(">>> Endpoints protegidos: GET /api/tickets/**");
+        log.info(">>> Configuración de seguridad cargada");
+        log.info(">>> Endpoints protegidos: GET /api/tickets/**");
     }
 }

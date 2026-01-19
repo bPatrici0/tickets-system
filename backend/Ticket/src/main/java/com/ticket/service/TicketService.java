@@ -195,6 +195,12 @@ public class TicketService {
         }
         ticket.getComentarios().add(comentarioGuardado);
 
+        // Actualizar estado si esta ABIERTO
+        if (ticket.getEstado() == EstadoTicket.ABIERTO) {
+            ticket.setEstado(EstadoTicket.EN_PROGRESO);
+            ticket.setFechaActualizacion(new Date());
+        }
+
         ticketRepository.save(ticket);
 
         return convertComentarioToDTO(comentarioGuardado);

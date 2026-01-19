@@ -257,7 +257,13 @@ export default {
       this.loadingTickets = true;
       try {
         const response = await api.get('/tickets');
-        this.tickets = response.data;
+        
+        // Ordenar por fecha de creación (Reciente a antiguo)
+        const ticketsData = response.data || [];
+        this.tickets = ticketsData.sort((a, b) => {
+            return this.getTimestamp(b.fechaCreacion) - this.getTimestamp(a.fechaCreacion);
+        });
+
         console.log('Tickets cargados:', this.tickets.length);
       } catch (error) {
         console.error("Error fetching tickets: ", error);
@@ -265,6 +271,15 @@ export default {
       } finally {
         this.loadingTickets = false;
       }
+    },
+
+    getTimestamp(dateData) {
+        if (!dateData) return 0;
+        if (Array.isArray(dateData)) {
+            const [year, month, day, hours, minutes] = dateData;
+            return new Date(year, month - 1, day, hours, minutes).getTime();
+        }
+        return new Date(dateData).getTime();
     },
 
     async toggleRole(user) {

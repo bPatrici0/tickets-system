@@ -15,6 +15,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import java.util.Arrays;
 
 import lombok.extern.slf4j.Slf4j;
@@ -32,8 +34,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors().configurationSource(corsConfigurationSource()).and()
-                .csrf().disable()
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
@@ -64,9 +66,8 @@ public class SecurityConfig {
 
                         // caulqueir otra peticion requeire autenticacion
                         .anyRequest().authenticated())
-                .httpBasic()
-                .and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .httpBasic(Customizer.withDefaults())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
     }

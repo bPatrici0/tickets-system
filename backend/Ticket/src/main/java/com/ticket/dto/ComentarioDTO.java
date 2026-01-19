@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 public class ComentarioDTO {
     private Long id;
     private String contenido;
-    private String autor;
+    private AutorInfo autor;
     private LocalDateTime fechaCreacion;
 
     public Long getId() {
@@ -24,11 +24,11 @@ public class ComentarioDTO {
         this.contenido = contenido;
     }
 
-    public String getAutor() {
+    public AutorInfo getAutor() {
         return autor;
     }
 
-    public void setAutor(String autor) {
+    public void setAutor(AutorInfo autor) {
         this.autor = autor;
     }
 
@@ -38,5 +38,35 @@ public class ComentarioDTO {
 
     public void setFechaCreacion(LocalDateTime fechaCreacion) {
         this.fechaCreacion = fechaCreacion;
+    }
+
+    public static class AutorInfo {
+        private String email;
+        private String nombre;
+        private String rol;
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public String getNombre() {
+            return nombre;
+        }
+
+        public void setNombre(String nombre) {
+            this.nombre = nombre;
+        }
+
+        public String getRol() {
+            return rol;
+        }
+
+        public void setRol(String rol) {
+            this.rol = rol;
+        }
     }
 }

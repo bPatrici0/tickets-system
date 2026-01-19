@@ -65,7 +65,11 @@ public class SecurityConfig {
 
                         // caulqueir otra peticion requeire autenticacion
                         .anyRequest().authenticated())
-                .httpBasic(AbstractHttpConfigurer::disable)
+                .httpBasic(basic -> basic
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.sendError(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED,
+                                    authException.getMessage());
+                        }))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();

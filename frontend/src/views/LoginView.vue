@@ -114,17 +114,6 @@
             </form>
         </div>
 
-        <!-- Enlace a registro -->
-        <p v-if="!requirePasswordChange" class="text-center mt-4 text-green-400"> <!-- CORREGIDO: requirePasswordChange -->
-          > ¿No tienes cuenta?
-          <router-link
-            to="/register"
-            class="text-green-300 hover:underline"
-          >
-            > Regístrate
-          </router-link>
-        </p>
-
         <!-- Mensaje de error -->
         <div v-if="error" class="text-red-400 text-sm mt-4 text-center">
             > {{ error }}

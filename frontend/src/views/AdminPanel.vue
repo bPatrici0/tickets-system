@@ -155,6 +155,7 @@
 
 <script>
 import api from '@/services/api';
+import Swal from 'sweetalert2';
 
 export default {
   data() {
@@ -208,9 +209,8 @@ export default {
     console.log('Rol del usuario:', userRole);
 
     if (userRole !== 'ROLE_ADMIN') {
-      console.log('Acceso denegado, redirigiendo a /tickets');
-      this.$router.push('/tickets');
-      return;
+        this.verificarPermisos(userRole);
+        return;
     }
 
     console.log('Acceso permitido, cargando datos...');
@@ -296,18 +296,70 @@ export default {
         const mensaje = newRole === 'ROLE_ADMIN'
             ? 'Usuario modificado a Administrador'
             : 'Usuario modificado a Usuario normal';
-        alert(mensaje);
+        
+        // Custom Alert
+        Swal.fire({
+            title: '> Rol Actualizado',
+            text: mensaje,
+            icon: 'success',
+            background: '#000',
+            color: '#00ff41',
+            confirmButtonText: '> OK',
+            confirmButtonColor: '#00aa00',
+            customClass: {
+                popup: 'border border-green-500 rounded-none',
+                title: 'font-mono',
+                confirmButton: 'font-mono'
+            },
+            timer: 2000,
+            timerProgressBar: true
+        });
 
       } catch (error) {
         console.error("Error updating role: ", error);
-        alert("Error al cambiar rol: " + (error.response?.data?.message || error.message));
+        
+        Swal.fire({
+            title: '> Error',
+            text: "Error al cambiar rol: " + (error.response?.data?.message || error.message),
+            icon: 'error',
+            background: '#000',
+            color: '#ff4444',
+            confirmButtonText: '> OK',
+            confirmButtonColor: '#333',
+            customClass: {
+                popup: 'border border-red-500 rounded-none',
+                title: 'font-mono',
+                confirmButton: 'font-mono'
+            }
+        });
       } finally {
         this.updatingUser = null;
       }
     },
-
+    
     verTicket(ticketId) {
       this.$router.push(`/admin/tickets/${ticketId}`);
+    },
+
+    verificarPermisos(userRole) {
+         if (userRole !== 'ROLE_ADMIN') {
+            Swal.fire({
+                title: '> Acceso Denegado',
+                text: 'No tienes permisos de administrador',
+                icon: 'warning',
+                background: '#000',
+                color: '#ffff00',
+                confirmButtonText: '> Volver',
+                confirmButtonColor: '#333',
+                customClass: {
+                    popup: 'border border-yellow-500 rounded-none',
+                    title: 'font-mono',
+                    confirmButton: 'font-mono'
+                }
+            }).then(() => {
+                this.$router.push('/tickets');
+            });
+         }
     },
 
     formatDate(dateData) {

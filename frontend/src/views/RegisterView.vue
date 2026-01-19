@@ -50,6 +50,7 @@
 
 <script>
 import api from '@/services/api';
+import Swal from 'sweetalert2';
 export default {
     data() {
         return {
@@ -74,12 +75,38 @@ export default {
                 });
 
                 if (response.status === 200) {
-                    alert("Registro exitoso!...");
+                    await Swal.fire({
+                        title: '> Registro Exitoso',
+                        text: 'Tu cuenta ha sido creada correctamente.',
+                        icon: 'success',
+                        background: '#000',
+                        color: '#00ff41',
+                        confirmButtonText: '> Iniciar Sesion',
+                        confirmButtonColor: '#00aa00',
+                        customClass: {
+                            popup: 'border border-green-500 rounded-none',
+                            title: 'font-mono',
+                            confirmButton: 'font-mono'
+                        }
+                    });
                     this.$router.push('/login');
                 }
             } catch (error) {
                 console.error("Error en registro: ", error.response);
-                alert(error.response?.data || "> Error al registrar...");
+                Swal.fire({
+                    title: '> Error',
+                    text: error.response?.data || "No se pudo crear la cuenta",
+                    icon: 'error',
+                    background: '#000',
+                    color: '#ff4444', 
+                    confirmButtonText: '> Reintentar',
+                    confirmButtonColor: '#333',
+                    customClass: {
+                        popup: 'border border-red-500 rounded-none',
+                        title: 'font-mono',
+                        confirmButton: 'font-mono'
+                    }
+                });
             }
         }
     }

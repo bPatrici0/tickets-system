@@ -159,6 +159,7 @@
 
 <script>
 import api from '@/services/api';
+import Swal from 'sweetalert2';
 
 export default {
   data() {
@@ -320,8 +321,21 @@ export default {
     verificarPermisos() {
       const userRole = localStorage.getItem('userRole');
       if (userRole !== 'ROLE_ADMIN') {
-        alert('No tienes permisos de administrador');
-        this.$router.push('/tickets');
+        Swal.fire({
+            title: '> Acceso Prohibido',
+            text: 'No tienes permisos de administrador',
+            icon: 'error',
+            background: '#000',
+            color: '#ff4444',
+            confirmButtonText: '> OK',
+            confirmButtonColor: '#333',
+            customClass: {
+                popup: 'border border-red-500 rounded-none',
+                title: 'font-mono'
+            }
+        }).then(() => {
+            this.$router.push('/tickets');
+        });
       }
     },
 
@@ -333,7 +347,18 @@ export default {
         this.aplicarFiltrosYOrden();
       } catch (error) {
         console.error("Error fetching tickets:", error);
-        alert("Error al cargar tickets");
+        Swal.fire({
+            title: '> Error de Carga',
+            text: "Error al cargar tickets",
+            icon: 'error',
+            background: '#000',
+            color: '#ff4444',
+            confirmButtonText: '> OK',
+            confirmButtonColor: '#333',
+            customClass: {
+                popup: 'border border-red-500 rounded-none'
+            }
+        });
       } finally {
         this.loading = false;
       }

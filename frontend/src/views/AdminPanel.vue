@@ -238,12 +238,46 @@ export default {
             console.error('Data error:', error.response.data);
 
             if (error.response.status === 403) {
-                alert('No tienes permisos de administrador');
+                Swal.fire({
+                    title: '> Acceso Denegado',
+                    text: 'No tienes permisos de administrador',
+                    icon: 'error',
+                    background: '#000',
+                    color: '#ff4444',
+                    confirmButtonText: '> OK',
+                    confirmButtonColor: '#333',
+                    customClass: {
+                        popup: 'border border-red-500 rounded-none'
+                    }
+                });
             } else if (error.response.status === 401) {
-                alert('Sesión expirada. Por favor inicia sesión nuevamente.');
-                this.handleLogout();
+                Swal.fire({
+                    title: '> Sesión Expirada',
+                    text: 'Sesión expirada. Por favor inicia sesión nuevamente.',
+                    icon: 'warning',
+                    background: '#000',
+                    color: '#ffaa00',
+                    confirmButtonText: '> OK',
+                    confirmButtonColor: '#333',
+                    customClass: {
+                        popup: 'border border-yellow-500 rounded-none'
+                    }
+                }).then(() => {
+                    this.handleLogout();
+                });
             } else if (error.response.status === 404) {
-                alert('Endpoint no encontrado. Verifica la configuración del backend!...');
+                Swal.fire({
+                    title: '> Error 404',
+                    text: 'Endpoint no encontrado. Verifica la configuración del backend!...',
+                    icon: 'error',
+                    background: '#000',
+                    color: '#ff4444',
+                    confirmButtonText: '> OK',
+                    confirmButtonColor: '#333',
+                    customClass: {
+                        popup: 'border border-red-500 rounded-none'
+                    }
+                });
             }
         }
 
@@ -267,7 +301,18 @@ export default {
         console.log('Tickets cargados:', this.tickets.length);
       } catch (error) {
         console.error("Error fetching tickets: ", error);
-        alert("Error al cargar tickets");
+        Swal.fire({
+            title: '> Error',
+            text: "Error al cargar tickets",
+            icon: 'error',
+            background: '#000',
+            color: '#ff4444',
+            confirmButtonText: '> OK',
+            confirmButtonColor: '#333',
+            customClass: {
+                popup: 'border border-red-500 rounded-none'
+            }
+        });
       } finally {
         this.loadingTickets = false;
       }

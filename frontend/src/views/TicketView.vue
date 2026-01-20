@@ -329,7 +329,18 @@ export default {
 
             } catch (error) {
                 console.error("Error agregando comentario:", error);
-                alert("Error al agregar comentario: " + (error.response?.data || error.message));
+                Swal.fire({
+                    title: '> Error',
+                    text: "Error al agregar comentario: " + (error.response?.data || error.message),
+                    icon: 'error',
+                    background: '#000',
+                    color: '#ff4444',
+                    confirmButtonText: '> OK',
+                    confirmButtonColor: '#333',
+                    customClass: {
+                        popup: 'border border-red-500 rounded-none'
+                    }
+                });
             } finally {
                 this.isSubmitting = false;
             }

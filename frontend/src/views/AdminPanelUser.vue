@@ -289,6 +289,7 @@
 
 <script>
 import api from '@/services/api'
+import Swal from 'sweetalert2'
 
 export default {
     data() {
@@ -382,10 +383,35 @@ export default {
             } catch (error) {
                 console.error("Error fetching users: ", error);
                 if (error.response?.status === 403) {
-                    alert('No tienes permisos de administrador');
+                    Swal.fire({
+                        title: '> Acceso Denegado',
+                        text: 'No tienes permisos de administrador',
+                        icon: 'error',
+                        background: '#000',
+                        color: '#ff4444',
+                        confirmButtonText: '> OK',
+                        confirmButtonColor: '#333',
+                        customClass: {
+                            popup: 'border border-red-500 rounded-none',
+                            title: 'font-mono'
+                        }
+                    });
                 } else if (error.response?.status === 401) {
-                    alert('Sesion expirada. Por favor inicia sesión nuevamente!...');
-                    this.handleLogout();
+                    Swal.fire({
+                        title: '> Sesión Expirada',
+                        text: 'Sesion expirada. Por favor inicia sesión nuevamente!...',
+                        icon: 'warning',
+                        background: '#000',
+                        color: '#ffaa00',
+                        confirmButtonText: '> OK',
+                        confirmButtonColor: '#333',
+                        customClass: {
+                            popup: 'border border-yellow-500 rounded-none',
+                            title: 'font-mono'
+                        }
+                    }).then(() => {
+                        this.handleLogout();
+                    });
                 }
                 this.users = [];
             } finally {
@@ -439,7 +465,19 @@ export default {
                 user.rol = newRole;
             } catch (error) {
                 console.error("Error updating role: ", error);
-                alert("Error al cambiar rol: " + (error.response?.data?.message || error.message));
+                Swal.fire({
+                    title: '> Error de Rol',
+                    text: "Error al cambiar rol: " + (error.response?.data?.message || error.message),
+                    icon: 'error',
+                    background: '#000',
+                    color: '#ff4444',
+                    confirmButtonText: '> OK',
+                    confirmButtonColor: '#333',
+                    customClass: {
+                        popup: 'border border-red-500 rounded-none',
+                        title: 'font-mono'
+                    }
+                });
             } finally {
                 this.updatingUser = null;
             }
@@ -453,7 +491,19 @@ export default {
                 user.activo = newStatus;
             } catch (error) {
                 console.error("Error updating status: ", error);
-                alert("Error al cambiar estado: " + (error.response?.data?.message || error.message));
+                Swal.fire({
+                    title: '> Error de Estado',
+                    text: "Error al cambiar estado: " + (error.response?.data?.message || error.message),
+                    icon: 'error',
+                    background: '#000',
+                    color: '#ff4444',
+                    confirmButtonText: '> OK',
+                    confirmButtonColor: '#333',
+                    customClass: {
+                        popup: 'border border-red-500 rounded-none',
+                        title: 'font-mono'
+                    }
+                });
             } finally {
                 this.updatingUser = null;
             }
@@ -483,8 +533,27 @@ export default {
                     this.activeMenu = null;
         },
 
-        confirmDelete(user) {
-            if (confirm('Estas seguro de eliminar a ${ user.nombre } (${ user.email })? Esta acción no se puede deshacer!...')) {
+        async confirmDelete(user) {
+            const result = await Swal.fire({
+                title: '> ¿Confirmar Eliminación?',
+                text: `¿Estás seguro de eliminar a ${user.nombre} (${user.email})? Esta acción no se puede deshacer!...`,
+                icon: 'warning',
+                showCancelButton: true,
+                background: '#000',
+                color: '#ffaa00',
+                confirmButtonText: '> SÍ, ELIMINAR',
+                cancelButtonText: '> CANCELAR',
+                confirmButtonColor: '#990000',
+                cancelButtonColor: '#333',
+                customClass: {
+                    popup: 'border border-red-500 rounded-none',
+                    title: 'font-mono',
+                    confirmButton: 'font-mono',
+                    cancelButton: 'font-mono'
+                }
+            });
+
+            if (result.isConfirmed) {
                 this.deleteUser(user);
             }
         },
@@ -494,10 +563,32 @@ export default {
             try {
                 await api.delete(`/admin/usuarios/${user.id}`);
                 this.fetchUsers();
-                alert(`Usuario ${user.nombre} eliminado exitosamente`);
+                Swal.fire({
+                    title: '> Usuario Eliminado',
+                    text: `Usuario ${user.nombre} eliminado exitosamente`,
+                    icon: 'success',
+                    background: '#000',
+                    color: '#00ff41',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    customClass: {
+                        popup: 'border border-green-500 rounded-none shadow-[0_0_15px_rgba(0,255,65,0.3)]'
+                    }
+                });
             } catch (error) {
                 console.error("Error deleting user: ", error);
-                alert("Error al eliminar usuario: " + (error.response?.data?.message || error.message));
+                Swal.fire({
+                    title: '> Error',
+                    text: "Error al eliminar usuario: " + (error.response?.data?.message || error.message),
+                    icon: 'error',
+                    background: '#000',
+                    color: '#ff4444',
+                    confirmButtonText: '> OK',
+                    confirmButtonColor: '#333',
+                    customClass: {
+                        popup: 'border border-red-500 rounded-none'
+                    }
+                });
             } finally {
                 this.updatingUser = null;
             }
@@ -521,7 +612,18 @@ export default {
                 }
 
                 this.editingUser = null;
-                alert('Usuario actualizado exitosamente');
+                Swal.fire({
+                    title: '> Éxito',
+                    text: 'Usuario actualizado exitosamente',
+                    icon: 'success',
+                    background: '#000',
+                    color: '#00ff41',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    customClass: {
+                        popup: 'border border-green-500 rounded-none'
+                    }
+                });
             } catch (error) {
                 console.error("Error updating user: ", error);
                 this.updateError = error.response?.data?.message || 'Error al actualizar usuario';
@@ -531,21 +633,57 @@ export default {
         },
 
         async reiniciarPassword(user) {
-            if (!confirm('¿Estás seguro de reiniciar la contraseña de ${user.nombre}?\n\nEl usuario recibirá una contraseña temporal y deberá establecer una nueva contraseña en su próximo login')) {
-                return;
-            }
+            const result = await Swal.fire({
+                title: '> ¿Reiniciar Contraseña?',
+                text: `¿Estás seguro de reiniciar la contraseña de ${user.nombre}? El usuario recibirá una contraseña temporal y deberá establecer una nueva en su próximo login.`,
+                icon: 'warning',
+                showCancelButton: true,
+                background: '#000',
+                color: '#ffaa00',
+                confirmButtonText: '> SÍ, REINICIAR',
+                cancelButtonText: '> CANCELAR',
+                confirmButtonColor: '#aa6600',
+                cancelButtonColor: '#333',
+                customClass: {
+                    popup: 'border border-yellow-500 rounded-none',
+                    title: 'font-mono'
+                }
+            });
+
+            if (!result.isConfirmed) return;
 
             this.resettingPassword = true;
             try {
                 const response = await api.post(`/admin/usuarios/${user.id}/reiniciar-password`);
                 user.passwordResetRequired = true;
                 console.log('Usuario actulizado:', response.data);
-                alert('✅ Constraseña reiniciada correctamente\n\nEl usuario deberá cambiar su contraseña al siguiente login!...');
+                
+                Swal.fire({
+                    title: '> Sistema Actualizado',
+                    text: 'Contraseña reiniciada correctamente. El usuario deberá cambiarla al iniciar sesión.',
+                    icon: 'success',
+                    background: '#000',
+                    color: '#00ff41',
+                    confirmButtonText: '> ENTENDIDO',
+                    confirmButtonColor: '#00aa00',
+                    customClass: {
+                        popup: 'border border-green-500 rounded-none shadow-[0_0_15px_rgba(0,255,65,0.3)]'
+                    }
+                });
 
                 this.fetchUsers();
             } catch (error) {
                 console.error("Error reiniciando password: ", error);
-                alert("❌ error reiniciando constraseña: " + (error.response?.data?.message || error.message));
+                Swal.fire({
+                    title: '> Error',
+                    text: "Error al reiniciar contraseña: " + (error.response?.data?.message || error.message),
+                    icon: 'error',
+                    background: '#000',
+                    color: '#ff4444',
+                    customClass: {
+                        popup: 'border border-red-500 rounded-none'
+                    }
+                });
             } finally {
                 this.resettingPassword = false;
             }

@@ -125,6 +125,7 @@
 
 <script>
 import api from '@/services/api';
+import Swal from 'sweetalert2';
 
 export default {
     name: 'LoginView',
@@ -215,7 +216,20 @@ export default {
                 nuevaPassword: this.newPasswordData.newPassword
             });
 
-            alert('✅ Contraseña cambiada correctamente. Ahora puedes iniciar sesión con tu nueva contraseña.');
+            await Swal.fire({
+                title: '> Éxito',
+                text: 'Contraseña cambiada correctamente. Ahora puedes iniciar sesión con tu nueva contraseña.',
+                icon: 'success',
+                background: '#000',
+                color: '#00ff41',
+                confirmButtonText: '> OK',
+                confirmButtonColor: '#00aa00',
+                customClass: {
+                    popup: 'border border-green-500 rounded-none shadow-[0_0_15px_rgba(0,255,65,0.3)]',
+                    title: 'font-mono',
+                    confirmButton: 'font-mono'
+                }
+            });
 
             this.requirePasswordChange = false;
             this.newPasswordData = {

@@ -159,6 +159,7 @@
 
 <script>
 import api from '@/services/api';
+import Swal from 'sweetalert2';
 
 export default {
     data() {
@@ -188,8 +189,21 @@ export default {
         verificarPermisos() {
             const userRole = localStorage.getItem('userRole');
             if (userRole !== 'ROLE_ADMIN') {
-                alert('No tienes permisos de administrador');
-                this.$router.push('/tickets');
+                Swal.fire({
+                    title: '> Acceso Prohibido',
+                    text: 'No tienes permisos de administrador',
+                    icon: 'error',
+                    background: '#000',
+                    color: '#ff4444',
+                    confirmButtonText: '> OK',
+                    confirmButtonColor: '#333',
+                    customClass: {
+                        popup: 'border border-red-500 rounded-none',
+                        title: 'font-mono'
+                    }
+                }).then(() => {
+                    this.$router.push('/tickets');
+                });
                 return;
             }
         },
@@ -231,11 +245,35 @@ export default {
             } catch (error) {
                 console.error("Error cargando ticket:", error);
                 if (error.response?.status === 403) {
-                    alert('No tienes permisos para ver este ticket');
-                    this.$router.push('/admin/tickets');
+                    Swal.fire({
+                        title: '> Error de Permisos',
+                        text: 'No tienes permisos para ver este ticket',
+                        icon: 'error',
+                        background: '#000',
+                        color: '#ff4444',
+                        confirmButtonText: '> OK',
+                        confirmButtonColor: '#333',
+                        customClass: {
+                            popup: 'border border-red-500 rounded-none'
+                        }
+                    }).then(() => {
+                        this.$router.push('/admin/tickets');
+                    });
                 } else if (error.response?.status === 404) {
-                    alert('Ticket no encontrado');
-                    this.$router.push('/admin/tickets');
+                    Swal.fire({
+                        title: '> No Encontrado',
+                        text: 'Ticket no encontrado',
+                        icon: 'warning',
+                        background: '#000',
+                        color: '#ffaa00',
+                        confirmButtonText: '> OK',
+                        confirmButtonColor: '#333',
+                        customClass: {
+                            popup: 'border border-yellow-500 rounded-none'
+                        }
+                    }).then(() => {
+                        this.$router.push('/admin/tickets');
+                    });
                 }
             } finally {
                 this.loading = false;
@@ -371,28 +409,78 @@ export default {
         },
 
         async cambiarEstado(nuevoEstado) {
-            if (!confirm(`¿Cambiar estado a ${nuevoEstado}?`)) return;
+            const result = await Swal.fire({
+                title: '> ¿Confirmar Cambio?',
+                text: `¿Cambiar estado a ${nuevoEstado}?`,
+                icon: 'question',
+                showCancelButton: true,
+                background: '#000',
+                color: '#00ff41',
+                confirmButtonText: '> SÍ, CAMBIAR',
+                cancelButtonText: '> CANCELAR',
+                confirmButtonColor: '#00aa00',
+                cancelButtonColor: '#333',
+                customClass: {
+                    popup: 'border border-green-500 rounded-none',
+                    confirmButton: 'font-mono',
+                    cancelButton: 'font-mono'
+                }
+            });
+
+            if (!result.isConfirmed) return;
 
             try {
                 await api.put(`/admin/tickets/${this.ticket.id}/estado`, {
-
                     estado: nuevoEstado
                 });
 
                 this.ticket.estado = nuevoEstado;
                 this.ticket.fechaActualizacion = new Date().toISOString();
 
-                alert(`Estado cambiado a ${nuevoEstado}`);
+                Swal.fire({
+                    title: '> Estado Actualizado',
+                    text: `Estado cambiado a ${nuevoEstado}`,
+                    icon: 'success',
+                    background: '#000',
+                    color: '#00ff41',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    customClass: {
+                        popup: 'border border-green-500 rounded-none shadow-[0_0_15px_rgba(0,255,65,0.3)]'
+                    }
+                });
 
             } catch (error) {
                 console.error("Error cambiando estado:", error);
-                alert("Error al cambiar estado: " + (error.response?.data?.message || error.message));
+                Swal.fire({
+                    title: '> Error',
+                    text: "Error al cambiar estado: " + (error.response?.data?.message || error.message),
+                    icon: 'error',
+                    background: '#000',
+                    color: '#ff4444',
+                    confirmButtonText: '> OK',
+                    confirmButtonColor: '#333',
+                    customClass: {
+                        popup: 'border border-red-500 rounded-none'
+                    }
+                });
             }
         },
 
         async agregarComentario() {
             if (this.ticket.estado === 'RESUELTO') {
-                alert("No se pueden agregar comentarios a tickets resueltos");
+                Swal.fire({
+                    title: '> Ticket Resuelto',
+                    text: "No se pueden agregar comentarios a tickets resueltos",
+                    icon: 'warning',
+                    background: '#000',
+                    color: '#ffaa00',
+                    confirmButtonText: '> OK',
+                    confirmButtonColor: '#333',
+                    customClass: {
+                        popup: 'border border-yellow-500 rounded-none'
+                    }
+                });
                 return;
             }
 
@@ -407,11 +495,33 @@ export default {
                 this.ordenarComentarios();
                 this.nuevoComentario = '';
 
-                alert("Comentario agregado exitosamente");
+                Swal.fire({
+                    title: '> Éxito',
+                    text: "Comentario agregado exitosamente",
+                    icon: 'success',
+                    background: '#000',
+                    color: '#00ff41',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    customClass: {
+                        popup: 'border border-green-500 rounded-none shadow-[0_0_15px_rgba(0,255,65,0.3)]'
+                    }
+                });
 
             } catch (error) {
                 console.error("Error agregando comentario:", error);
-                alert("Error al agregar comentario: " + (error.response?.data?.message || error.message));
+                Swal.fire({
+                    title: '> Error',
+                    text: "Error al agregar comentario: " + (error.response?.data?.message || error.message),
+                    icon: 'error',
+                    background: '#000',
+                    color: '#ff4444',
+                    confirmButtonText: '> OK',
+                    confirmButtonColor: '#333',
+                    customClass: {
+                        popup: 'border border-red-500 rounded-none'
+                    }
+                });
             } finally {
                 this.isSubmitting = false;
             }

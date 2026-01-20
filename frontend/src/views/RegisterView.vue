@@ -27,13 +27,15 @@
                         <input type="password" v-model="confirmPassword" class="w-full bg-black border border-green-500 p-2 text-green-500 focus:outline-none focus:ring-1 focus:ring-green-500" required>
                     </div>
 
-                    <button type="submit" class="btn-matrix mt-4 w-full py-2 hover:bg-green-600 transition-colors" :disable="loading">
+                    <button type="submit" class="btn-matrix mt-4 w-full py-2 hover:bg-green-600 transition-colors" :disabled="loading">
                         <span v-if="!loading">> Crear cuenta</span>
                         <span v-else class="flex items-center justify-center">
                             > Procesando<span class="cursor-blink">|</span>
                         </span>
                     </button>
                 </form>
+
+
 
                 <p class="mt-4 text-center">> Ya tienes una cuenta?
                     <router-link
@@ -65,7 +67,7 @@ export default {
         async handleRegister() {
             try {
                 const response = await api.post('/auth/registro',{
-                    name: this.name.trim(),
+                    nombre: this.name.trim(),
                     email: this.email.trim(),
                     password: this.password
                 }, {

@@ -97,6 +97,7 @@
 
 <script>
 import api from '@/services/api';
+import Swal from 'sweetalert2';
 
 export default {
     data() {
@@ -267,12 +268,38 @@ export default {
             this.isSubmitting = true;
             try {
                 if (this.ticket.estado !== 'ABIERTO' && this.ticket.estado !== 'EN_PROGRESO') {
-                    alert("Solo puedes agregar comentarios a tickets ABIERTOS o EN PROGRESO");
+                    Swal.fire({
+                        title: '> Error',
+                        text: "Solo puedes agregar comentarios a tickets ABIERTOS o EN PROGRESO",
+                        icon: 'warning',
+                        background: '#000',
+                        color: '#ffaa00',
+                        confirmButtonText: '> OK',
+                        confirmButtonColor: '#333',
+                        customClass: {
+                            popup: 'border border-yellow-500 rounded-none',
+                            title: 'font-mono',
+                            confirmButton: 'font-mono'
+                        }
+                    });
                     return;
                 }
 
                 if (!this.nuevoComentario.trim()) {
-                    alert("El comentario no puede estar vacío");
+                    Swal.fire({
+                        title: '> Input Vacío',
+                        text: "El comentario no puede estar vacío",
+                        icon: 'error',
+                        background: '#000',
+                        color: '#ff4444',
+                        confirmButtonText: '> OK',
+                        confirmButtonColor: '#333',
+                        customClass: {
+                            popup: 'border border-red-500 rounded-none',
+                            title: 'font-mono',
+                            confirmButton: 'font-mono'
+                        }
+                    });
                     return;
                 }
 

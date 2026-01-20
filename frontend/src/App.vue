@@ -9,5 +9,8 @@
 <script>
 export default {
     name: 'App',
+    mounted() {
+        console.log('>>> Sistema de Tickets Iniciado');
+    }
 }
 </script>

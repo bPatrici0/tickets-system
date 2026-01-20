@@ -297,9 +297,9 @@ export default {
             ? 'Usuario modificado a Administrador'
             : 'Usuario modificado a Usuario normal';
         
-        // Custom Alert
+        // Success Notification (Matrix Theme)
         Swal.fire({
-            title: '> Rol Actualizado',
+            title: '> Sistema Actualizado',
             text: mensaje,
             icon: 'success',
             background: '#000',
@@ -307,7 +307,7 @@ export default {
             confirmButtonText: '> OK',
             confirmButtonColor: '#00aa00',
             customClass: {
-                popup: 'border border-green-500 rounded-none',
+                popup: 'border border-green-500 rounded-none shadow-[0_0_15px_rgba(0,255,65,0.3)]',
                 title: 'font-mono',
                 confirmButton: 'font-mono'
             },

@@ -126,6 +126,7 @@
 
 <script>
 import api from '@/services/api';
+import Swal from 'sweetalert2';
 
 export default {
     data() {
@@ -180,7 +181,18 @@ export default {
                 });
 
                 if (response.status === 200 || response.status === 201) {
-                    alert('Ticket creado exitosamente!...');
+                    Swal.fire({
+                        title: '> Sistema de Seguimiento',
+                        text: 'Ticket creado exitosamente. Pronto recibirás una respuesta.',
+                        icon: 'success',
+                        background: '#000',
+                        color: '#00ff41',
+                        timer: 2000,
+                        showConfirmButton: false,
+                        customClass: {
+                            popup: 'border border-green-500 rounded-none shadow-[0_0_15px_rgba(0,255,65,0.3)]'
+                        }
+                    });
                     this.newTicket = { titulo: '', descripcion: '' };
                     this.fetchTickets();
                 }
@@ -197,7 +209,18 @@ export default {
                     }
                 }
 
-                alert(errorMsg);
+                Swal.fire({
+                    title: '> Error de Transmisión',
+                    text: errorMsg,
+                    icon: 'error',
+                    background: '#000',
+                    color: '#ff4444',
+                    confirmButtonText: '> REINTENTAR',
+                    confirmButtonColor: '#333',
+                    customClass: {
+                        popup: 'border border-red-500 rounded-none'
+                    }
+                });
             } finally {
                 this.isSubmitting = false;
             }

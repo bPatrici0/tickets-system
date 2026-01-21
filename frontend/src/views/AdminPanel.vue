@@ -12,6 +12,10 @@
       </div>
     </header>
 
+    <!-- Admin Dashboard -->
+    <AdminDashboard :tickets="tickets" :users="users" />
+
+
     <!-- Estadísticas -->
     <div class="terminal-box p-4">
         <h2 class="text-xl mb-4">> Estadísticas<span class="cursor-blink"></span></h2>
@@ -156,9 +160,15 @@
 <script>
 import api from '@/services/api';
 import Swal from 'sweetalert2';
+import AdminDashboard from '@/components/AdminDashboard.vue';
+
 
 export default {
+  components: {
+    AdminDashboard
+  },
   data() {
+
     return {
       users: [],
       tickets: [],

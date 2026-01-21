@@ -43,6 +43,9 @@ public class TicketService {
     @Autowired
     private ComentarioRepository comentarioRepository;
 
+    @Autowired
+    private NotificationService notificationService;
+
     public Ticket crearTicket(TicketDTO ticketDTO) {
         if (ticketDTO.getTitulo() == null || ticketDTO.getTitulo().isEmpty()) {
             throw new BadRequestException("El titulo del ticket es requerido");
@@ -64,7 +67,14 @@ public class TicketService {
         }
         ticket.setCreadoPor(usuario);
 
-        return ticketRepository.save(ticket);
+        Ticket savedTicket = ticketRepository.save(ticket);
+
+        // Notificar a los administradores sobre el nuevo ticket
+        notificationService
+                .notifyAdmins("NUEVO_TICKET: " + savedTicket.getTitulo() + " (ID: " + savedTicket.getId() + ")");
+
+        return savedTicket;
+
     }
 
     @Transactional(readOnly = true)
@@ -203,7 +213,18 @@ public class TicketService {
 
         ticketRepository.save(ticket);
 
+        // Notificar al creador del ticket o a los admins
+        if (autor.equals(ticket.getCreadoPor().getEmail())) {
+            // Si el usuario comenta, notificar a los admins
+            notificationService.notifyAdmins("NUEVO_COMENTARIO en Ticket #" + ticket.getId() + " por " + autor);
+        } else {
+            // Si es un admin (u otro) el que comenta, notificar al creador
+            notificationService.notifyUser(ticket.getCreadoPor().getEmail(),
+                    "NUEVO_COMENTARIO en tu Ticket #" + ticket.getId());
+        }
+
         return convertComentarioToDTO(comentarioGuardado);
+
     }
 
     public Ticket cambiarEstadoTicket(Long Id, String nuevoEstado) {
@@ -217,7 +238,14 @@ public class TicketService {
         ticket.setEstado(EstadoTicket.valueOf(nuevoEstado));
         ticket.setFechaActualizacion(new Date());
 
-        return ticketRepository.save(ticket);
+        Ticket updatedTicket = ticketRepository.save(ticket);
+
+        // Notificar al usuario sobre el cambio de estado
+        notificationService.notifyUser(updatedTicket.getCreadoPor().getEmail(),
+                "ESTADO_ACTUALIZADO: Tu ticket #" + updatedTicket.getId() + " ahora está " + nuevoEstado);
+
+        return updatedTicket;
+
     }
 
     public List<ComentarioDTO> obtenerComentariosPorTicket(Long ticketId) {

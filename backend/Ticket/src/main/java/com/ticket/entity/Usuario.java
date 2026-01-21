@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "usuarios")
@@ -36,6 +37,10 @@ public class Usuario implements UserDetails {
 
     @Column(name = "password_reset_required", nullable = false)
     private Boolean passwordResetRequired = false;
+
+    @OneToMany(mappedBy = "creadoPor", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Ticket> tickets = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -121,5 +126,13 @@ public class Usuario implements UserDetails {
 
     public void setPasswordResetRequired(Boolean passwordResetRequired) {
         this.passwordResetRequired = passwordResetRequired;
+    }
+
+    public List<Ticket> getTickets() {
+        return tickets;
+    }
+
+    public void setTickets(List<Ticket> tickets) {
+        this.tickets = tickets;
     }
 }

@@ -161,6 +161,8 @@
 import api from '@/services/api';
 import Swal from 'sweetalert2';
 import AdminDashboard from '@/components/AdminDashboard.vue';
+import SocketService from '@/services/SocketService';
+
 
 
 export default {
@@ -226,6 +228,17 @@ export default {
     console.log('Acceso permitido, cargando datos...');
     this.fetchUsers();
     this.fetchTickets();
+
+    // Suscribirse a actualizaciones en tiempo real con binding correcto
+    this.liveUpdateHandler = this.handleLiveUpdate.bind(this);
+    SocketService.on('TICKET_UPDATE', this.liveUpdateHandler);
+  },
+
+  beforeUnmount() {
+    // Limpiar suscripción para evitar fugas de memoria
+    if (this.liveUpdateHandler) {
+        SocketService.off('TICKET_UPDATE', this.liveUpdateHandler);
+    }
   },
 
   methods: {
@@ -448,6 +461,13 @@ export default {
       } catch (error) {
         return '[Error fecha]';
       }
+    },
+
+    handleLiveUpdate(data) {
+        console.log('>>> Actualización en vivo recibida:', data);
+        // Recargar datos suavemente
+        this.fetchUsers();
+        this.fetchTickets();
     },
 
     statusClass(estado) {

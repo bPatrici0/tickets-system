@@ -98,6 +98,7 @@
 <script>
 import api from '@/services/api';
 import Swal from 'sweetalert2';
+import SocketService from '@/services/SocketService';
 
 export default {
     data() {
@@ -119,10 +120,20 @@ export default {
     created() {
         this.cargarTicketCompleto();
         this.iniciarPolling();
+
+        // Suscribirse a actualizaciones en tiempo real
+        this.liveUpdateHandler = () => {
+            console.log('>>> Recargando detalles del ticket por evento Socket');
+            this.cargarTicketCompleto();
+        };
+        SocketService.on('TICKET_UPDATE', this.liveUpdateHandler);
     },
 
     beforeUnmount() {
         this.detenerPolling();
+        if (this.liveUpdateHandler) {
+            SocketService.off('TICKET_UPDATE', this.liveUpdateHandler);
+        }
     },
 
     methods: {

@@ -26,7 +26,9 @@ public class NotificationService {
      */
     public void notifyUser(String email, String message) {
         log.info(">>> Enviando notificación a usuario {}: {}", email, message);
-        messagingTemplate.convertAndSendToUser(Objects.requireNonNull(email), "/queue/notifications",
+        // Usamos un tópico específico por email para evitar problemas de
+        // Principal/Sesión en WebSockets
+        messagingTemplate.convertAndSend("/topic/user." + Objects.requireNonNull(email),
                 Objects.requireNonNull(message));
     }
 

@@ -58,9 +58,8 @@ class SocketService {
                 });
             }
 
-            // 2. Suscribirse a notificaciones personales (User queue)
-            // Spring usa /user/queue/notifications que se traduce internamente por usuario
-            this.client.subscribe('/user/queue/notifications', (message) => {
+            // 2. Suscribirse a canal personal basado en email
+            this.client.subscribe(`/topic/user.${userEmail}`, (message) => {
                 this.showNotification('SISTEMA', message.body);
                 this.emit('TICKET_UPDATE', message.body);
             });

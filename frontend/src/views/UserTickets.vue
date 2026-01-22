@@ -127,6 +127,7 @@
 <script>
 import api from '@/services/api';
 import Swal from 'sweetalert2';
+import SocketService from '@/services/SocketService';
 
 export default {
     data() {
@@ -162,6 +163,19 @@ export default {
         this.fetchTickets();
         if (localStorage.getItem('userRole') === 'ROLE_ADMIN') {
             this.$router.push('/admin');
+        }
+
+        // Suscribirse a actualizaciones en tiempo real
+        this.liveUpdateHandler = () => {
+            console.log('>>> Recargando tickets del usuario por evento Socket');
+            this.fetchTickets();
+        };
+        SocketService.on('TICKET_UPDATE', this.liveUpdateHandler);
+    },
+
+    beforeUnmount() {
+        if (this.liveUpdateHandler) {
+            SocketService.off('TICKET_UPDATE', this.liveUpdateHandler);
         }
     },
     methods: {

@@ -12,6 +12,7 @@ public class TicketResponseDTO {
     private String titulo;
     private String descripcion;
     private String estado;
+    private String categoria;
     private LocalDateTime fechaCreacion;
     private List<ComentarioDTO> comentarios;
 
@@ -61,5 +62,13 @@ public class TicketResponseDTO {
 
     public void setComentarios(List<ComentarioDTO> comentarios) {
         this.comentarios = comentarios;
+    }
+
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
     }
 }

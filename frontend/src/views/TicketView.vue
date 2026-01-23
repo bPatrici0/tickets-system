@@ -17,8 +17,12 @@
         <main class="terminal-box">
             <!--encabezado ticket-->
             <div class="border-b border-green-500 pb-4 mb-4">
-                <span class="mb-2" px-100>> Asunto: </span>
-                <h1 class="text-4xl text-green-400 mb-2">> {{ ticket.titulo }}</h1>
+                <h1 class="text-4xl text-green-400 mb-2">
+                    > {{ ticket.titulo }}
+                    <span v-if="ticket.categoria" :class="['tag-badge', getTagClass(ticket.categoria)]">
+                        [{{ ticket.categoria }}]
+                    </span>
+                </h1>
                 <div class="flex flex-wrap gap-6 text-sm">
                     <div>
                         <span class="text-green-500">> Estado: </span>
@@ -273,6 +277,17 @@ export default {
                 'RESUELTO': 'bg-green-500/20 text-green-400'
             };
             return statusMap[estado] || 'bg-gray-500/20 text-gray-400';
+        },
+
+        getTagClass(categoria) {
+            if (!categoria) return '';
+            const map = {
+                'HARDWARE': 'tag-hardware',
+                'SOFTWARE': 'tag-software',
+                'REDES': 'tag-redes',
+                'OTROS': 'tag-otros'
+            };
+            return map[categoria] || 'tag-otros';
         },
 
         async agregarComentario() {

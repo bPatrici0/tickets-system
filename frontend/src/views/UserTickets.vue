@@ -59,6 +59,21 @@
                     </div>
 
                     <div class="mb-4">
+                        <label class="block text-green-400 mb-1">> Categoría: </label>
+                        <select
+                            v-model="newTicket.categoria"
+                            class="w-full bg-black border border-green-500 p-2 text-green-500 focus:outline-none"
+                            required
+                        >
+                            <option value="" disabled selected>Selecciona una categoría</option>
+                            <option value="HARDWARE">HARDWARE</option>
+                            <option value="SOFTWARE">SOFTWARE</option>
+                            <option value="REDES">REDES</option>
+                            <option value="OTROS">OTROS</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
                         <label class="block text-green-400 mb-1">> Descripción: </label>
                             <textarea
                                 v-model="newTicket.descripcion"
@@ -95,7 +110,12 @@
                     >
                         <div class="flex justify-between items-start">
                             <div>
-                                <h4 class="text-green-400 font-mono"># {{ ticket.id }} > {{ ticket.titulo }}</h4>
+                                <h4 class="text-green-400 font-mono">
+                                    # {{ ticket.id }} > {{ ticket.titulo }}
+                                    <span v-if="ticket.categoria" :class="['tag-badge', getTagClass(ticket.categoria)]">
+                                        [{{ ticket.categoria }}]
+                                    </span>
+                                </h4>
                                 <p class="text-green-300 text-sm mt-1">{{ ticket.descripcion }}</p>
                             </div>
                             <span class="text-xs px-2 py-1 rounded"
@@ -134,7 +154,8 @@ export default {
         return {
             newTicket: {
                 titulo: '',
-                descripcion: ''
+                descripcion: '',
+                categoria: ''
             },
             tickets:[],
             isSubmitting: false,
@@ -191,7 +212,8 @@ export default {
             try {
                 const response = await api.post('/tickets', {
                     titulo: this.newTicket.titulo,
-                    descripcion: this.newTicket.descripcion
+                    descripcion: this.newTicket.descripcion,
+                    categoria: this.newTicket.categoria
                 });
 
                 if (response.status === 200 || response.status === 201) {
@@ -207,7 +229,7 @@ export default {
                             popup: 'border border-green-500 rounded-none shadow-[0_0_15px_rgba(0,255,65,0.3)]'
                         }
                     });
-                    this.newTicket = { titulo: '', descripcion: '' };
+                    this.newTicket = { titulo: '', descripcion: '', categoria: '' };
                     this.fetchTickets();
                 }
             } catch (error) {
@@ -312,6 +334,17 @@ export default {
         verTicket(id) {
             console.log('Ver ticket con ID: ', id);
             this.$router.push(`/tickets/${id}`);
+        },
+
+        getTagClass(categoria) {
+            if (!categoria) return '';
+            const map = {
+                'HARDWARE': 'tag-hardware',
+                'SOFTWARE': 'tag-software',
+                'REDES': 'tag-redes',
+                'OTROS': 'tag-otros'
+            };
+            return map[categoria] || 'tag-otros';
         }
     }
 }

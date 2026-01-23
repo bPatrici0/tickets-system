@@ -17,12 +17,7 @@
         <main class="terminal-box">
             <!--encabezado ticket-->
             <div class="border-b border-green-500 pb-4 mb-4">
-                <h1 class="text-4xl text-green-400 mb-2">
-                    > {{ ticket.titulo }}
-                    <span v-if="ticket.categoria" :class="['tag-badge', getTagClass(ticket.categoria)]">
-                        [{{ ticket.categoria }}]
-                    </span>
-                </h1>
+                <h1 class="text-4xl text-green-400 mb-2">> {{ ticket.titulo }}</h1>
                 <div class="flex flex-wrap gap-6 text-sm">
                     <div>
                         <span class="text-green-500">> Estado: </span>
@@ -42,6 +37,13 @@
                     <div>
                         <span class="text-green-500">> Comentarios: </span>
                         <span class="ml-2">{{ ticket.comentarios ? ticket.comentarios.length : 0 }}</span>
+                    </div>
+                    <div>
+                        <span class="text-green-500">> Categoría: </span>
+                        <span v-if="ticket.categoria" :class="['tag-badge', getTagClass(ticket.categoria)]" class="ml-2">
+                            {{ ticket.categoria }}
+                        </span>
+                        <span v-else class="ml-2 text-gray-500">--</span>
                     </div>
                 </div>
             </div>

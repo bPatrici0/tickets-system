@@ -115,9 +115,6 @@
                   <td class="py-1 px-1">
                     <div class="text-green-300 truncate max-w-[120px]">
                       {{ ticket.titulo }}
-                      <span v-if="ticket.categoria" :class="['tag-badge', getTagClass(ticket.categoria)]">
-                        [{{ ticket.categoria }}]
-                      </span>
                     </div>
                     <div class="text-green-500 text-[10px] truncate max-w-[120px]">{{ ticket.descripcion }}</div>
                   </td>

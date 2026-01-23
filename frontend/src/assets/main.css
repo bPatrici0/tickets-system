@@ -17,7 +17,7 @@ body {
     animation: blink 1s step-end infinite;
 }
 
-@ketframes blink {
+@keyframes blink {
     50% {
         opacity: 0;
     }
@@ -58,32 +58,6 @@ textarea:focus {
     box-shadow: 0 0 0 1px #00FF41;
 }
 
-/*estilos div1, 2 y 3
-.parent {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    gap: 10px;
-}
-
-.div1 {
-    grid-column: span 2 / span 2;
-}
-
-.div2 {
-    grid-row: span 2 / span 2;
-    grid-row-start: 2;
-}
-
-.div3 {
-    grid-row-start: 2;
-}
-
-.div4 {
-    grid-column-start: 2;
-    grid-row-start: 3;
-}
-
 /* SweetAlert2 Z-Index Fix */
 .swal2-container {
     z-index: 999999 !important;
@@ -93,4 +67,33 @@ textarea:focus {
     background: #000 !important;
     border: 1px solid #00ff41 !important;
     color: #00ff41 !important;
+}
+
+/* Neon Tags */
+.tag-badge {
+    @apply text-[10px] uppercase font-bold px-2 py-0.5 rounded border ml-2 inline-block;
+}
+
+.tag-hardware {
+    border-color: #00f3ff !important;
+    color: #00f3ff !important;
+    box-shadow: 0 0 5px rgba(0, 243, 255, 0.5);
+}
+
+.tag-software {
+    border-color: #ff00ff !important;
+    color: #ff00ff !important;
+    box-shadow: 0 0 5px rgba(255, 0, 255, 0.5);
+}
+
+.tag-redes {
+    border-color: #ffff00 !important;
+    color: #ffff00 !important;
+    box-shadow: 0 0 5px rgba(255, 255, 0, 0.5);
+}
+
+.tag-otros {
+    border-color: #00ff41 !important;
+    color: #00ff41 !important;
+    box-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
 }

@@ -21,6 +21,8 @@ public class Ticket {
     @Column(nullable = false)
     private EstadoTicket estado = EstadoTicket.ABIERTO; // valor por defecto
 
+    private String categoria;
+
     private LocalDateTime fechaCreacion = LocalDateTime.now();
 
     @ManyToOne
@@ -113,5 +115,13 @@ public class Ticket {
 
     public void setFechaActualizacion(Date fechaActualizacion) {
         this.fechaActualizacion = fechaActualizacion;
+    }
+
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
     }
 }

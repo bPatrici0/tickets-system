@@ -58,6 +58,7 @@ public class TicketService {
         Ticket ticket = new Ticket();
         ticket.setTitulo(ticketDTO.getTitulo());
         ticket.setDescripcion(ticketDTO.getDescripcion());
+        ticket.setCategoria(ticketDTO.getCategoria());
 
         try {
             ticket.setEstado(
@@ -115,6 +116,7 @@ public class TicketService {
         dto.setDescripcion(ticket.getDescripcion());
         dto.setEstado(ticket.getEstado().toString());
         dto.setFechaCreacion(ticket.getFechaCreacion());
+        dto.setCategoria(ticket.getCategoria());
 
         if (ticket.getComentarios() != null) {
             dto.setComentarios(ticket.getComentarios().stream()
@@ -160,6 +162,9 @@ public class TicketService {
         }
         if (ticketDTO.getDescripcion() != null) {
             ticket.setDescripcion(ticketDTO.getDescripcion());
+        }
+        if (ticketDTO.getCategoria() != null) {
+            ticket.setCategoria(ticketDTO.getCategoria());
         }
         if (ticketDTO.getEstado() != null) {
             try {

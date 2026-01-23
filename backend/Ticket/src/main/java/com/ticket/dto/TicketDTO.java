@@ -9,6 +9,7 @@ public class TicketDTO {
     private String titulo;
     private String descripcion;
     private String estado;
+    private String categoria;
 
     public String getTitulo() {
         return titulo;
@@ -32,5 +33,13 @@ public class TicketDTO {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
     }
 }

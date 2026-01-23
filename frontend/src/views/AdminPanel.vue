@@ -133,7 +133,12 @@
                class="p-3 border border-green-500 rounded hover:bg-green-900/10 cursor-pointer"
                @click="verTicket(ticket.id)">
             <div class="flex justify-between items-center mb-2">
-              <span class="text-green-300">#{{ ticket.id }} - {{ ticket.titulo }}</span>
+              <span class="text-green-300">
+                #{{ ticket.id }} - {{ ticket.titulo }}
+                <span v-if="ticket.categoria" :class="['tag-badge', getTagClass(ticket.categoria)]">
+                  [{{ ticket.categoria }}]
+                </span>
+              </span>
               <span class="text-xs px-2 py-1 rounded" :class="statusClass(ticket.estado)">
                 {{ ticket.estado }}
               </span>
@@ -477,6 +482,17 @@ export default {
         'RESUELTO': 'bg-green-500/20 text-green-400'
       };
       return statusMap[estado] || 'bg-gray-500/20 text-gray-400';
+    },
+
+    getTagClass(categoria) {
+      if (!categoria) return '';
+      const map = {
+        'HARDWARE': 'tag-hardware',
+        'SOFTWARE': 'tag-software',
+        'REDES': 'tag-redes',
+        'OTROS': 'tag-otros'
+      };
+      return map[categoria] || 'tag-otros';
     },
 
     handleLogout() {

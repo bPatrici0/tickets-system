@@ -165,6 +165,7 @@
 <script>
 import api from '@/services/api';
 import Swal from 'sweetalert2';
+import SoundService from '@/services/SoundService';
 
 export default {
     data() {
@@ -445,6 +446,7 @@ export default {
 
             if (!result.isConfirmed) return;
 
+            SoundService.playClick();
             try {
                 await api.put(`/admin/tickets/${this.ticket.id}/estado`, {
                     estado: nuevoEstado
@@ -453,6 +455,7 @@ export default {
                 this.ticket.estado = nuevoEstado;
                 this.ticket.fechaActualizacion = new Date().toISOString();
 
+                SoundService.playSuccess();
                 Swal.fire({
                     title: '> Estado Actualizado',
                     text: `Estado cambiado a ${nuevoEstado}`,
@@ -467,6 +470,7 @@ export default {
                 });
 
             } catch (error) {
+                SoundService.playError();
                 console.error("Error cambiando estado:", error);
                 Swal.fire({
                     title: '> Error',
@@ -501,6 +505,7 @@ export default {
             }
 
             this.isSubmitting = true;
+            SoundService.playClick();
             try {
                 const response = await api.post(`/tickets/${this.ticket.id}/comentarios`, {
                     contenido: this.nuevoComentario
@@ -511,6 +516,7 @@ export default {
                 this.ordenarComentarios();
                 this.nuevoComentario = '';
 
+                SoundService.playSuccess();
                 Swal.fire({
                     title: '> Éxito',
                     text: "Comentario agregado exitosamente",
@@ -525,6 +531,7 @@ export default {
                 });
 
             } catch (error) {
+                SoundService.playError();
                 console.error("Error agregando comentario:", error);
                 Swal.fire({
                     title: '> Error',

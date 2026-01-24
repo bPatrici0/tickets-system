@@ -126,6 +126,7 @@
 <script>
 import api from '@/services/api';
 import Swal from 'sweetalert2';
+import SoundService from '@/services/SoundService';
 
 export default {
     name: 'LoginView',
@@ -160,6 +161,7 @@ export default {
             const credentials = btoa(`${this.email.trim()}:${this.password}`);
             console.log('Credenciales creadas:', credentials);
 
+            SoundService.playClick();
             const response = await api.post('/auth/login', {
                 email: this.email.trim(),
                 password: this.password
@@ -185,9 +187,11 @@ export default {
                 console.log('Token guardado en localStorage');
                 console.log('Rol:', response.data.rol);
 
+                SoundService.playSuccess();
                 this.redirectByRole(response.data.rol);
             }
         } catch (error) {
+            SoundService.playError();
             console.error("Error: ", error.response);
             this.error = error.response?.data || "Error de conexión";
         } finally {

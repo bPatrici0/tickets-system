@@ -23,10 +23,15 @@
                 <div class="border-b border-green-500 pb-4 mb-4">
                     <div class="flex justify-between items-start mb-4">
                         <h1 class="text-3xl text-green-400">> {{ ticket.titulo }}</h1>
-                        <span class="px-3 py-1 rounded text-sm font-bold"
-                            :class="statusClass(ticket.estado)">
-                            {{ ticket.estado }}
-                        </span>
+                        <div class="flex items-center space-x-2">
+                            <span v-if="ticket.categoria" :class="['tag-badge', getTagClass(ticket.categoria)]">
+                                [{{ ticket.categoria }}]
+                            </span>
+                            <span class="px-3 py-1 rounded text-sm font-bold"
+                                :class="statusClass(ticket.estado)">
+                                {{ ticket.estado }}
+                            </span>
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4 text-sm">
@@ -397,6 +402,17 @@ export default {
                 'RESUELTO': 'bg-green-500/20 text-green-400'
             };
             return statusMap[estado] || 'bg-gray-500/20 text-gray-400';
+        },
+
+        getTagClass(categoria) {
+            if (!categoria) return '';
+            const map = {
+                'HARDWARE': 'tag-hardware',
+                'SOFTWARE': 'tag-software',
+                'REDES': 'tag-redes',
+                'OTROS': 'tag-otros'
+            };
+            return map[categoria] || 'tag-otros';
         },
 
         statusTextClass(estado) {

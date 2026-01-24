@@ -1,6 +1,7 @@
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import Swal from 'sweetalert2';
+import SoundService from './SoundService';
 
 class SocketService {
     constructor() {
@@ -85,6 +86,7 @@ class SocketService {
     }
 
     showNotification(title, message) {
+        SoundService.playNotification();
         Swal.fire({
             title: `> ${title}`,
             text: message,

@@ -25,6 +25,9 @@
                             :class="statusClass(ticket.estado)">
                             {{ ticket.estado }}
                         </span>
+                        <span v-if="ticket.categoria" :class="['tag-badge', getTagClass(ticket.categoria)]">
+                            [{{ ticket.categoria }}]
+                        </span>
                     </div>
                     <div>
                         <span class="text-green-500">> Autor: </span>
@@ -37,13 +40,6 @@
                     <div>
                         <span class="text-green-500">> Comentarios: </span>
                         <span class="ml-2">{{ ticket.comentarios ? ticket.comentarios.length : 0 }}</span>
-                    </div>
-                    <div>
-                        <span class="text-green-500">> Categoría: </span>
-                        <span v-if="ticket.categoria" :class="['tag-badge', getTagClass(ticket.categoria)]" class="ml-2">
-                            {{ ticket.categoria }}
-                        </span>
-                        <span v-else class="ml-2 text-gray-500">--</span>
                     </div>
                 </div>
             </div>

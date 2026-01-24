@@ -148,6 +148,7 @@
 import api from '@/services/api';
 import Swal from 'sweetalert2';
 import SocketService from '@/services/SocketService';
+import SoundService from '@/services/SoundService';
 
 export default {
     data() {
@@ -209,6 +210,7 @@ export default {
         },
         async submitTicket() {
             this.isSubmitting = true;
+            SoundService.playClick();
             try {
                 const response = await api.post('/tickets', {
                     titulo: this.newTicket.titulo,
@@ -217,6 +219,7 @@ export default {
                 });
 
                 if (response.status === 200 || response.status === 201) {
+                    SoundService.playSuccess();
                     Swal.fire({
                         title: '> Sistema de Seguimiento',
                         text: 'Ticket creado exitosamente. Pronto recibirás una respuesta.',
@@ -233,6 +236,7 @@ export default {
                     this.fetchTickets();
                 }
             } catch (error) {
+                SoundService.playError();
                 console.error("Error al crear ticket: ", error);
                 let errorMsg = "Error al crear ticket!...";
 

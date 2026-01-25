@@ -1,6 +1,7 @@
 package com.ticket.dto;
 
 import com.ticket.entity.EstadoTicket;
+import com.ticket.entity.PrioridadTicket;
 import lombok.Data;
 import java.time.LocalDateTime;
 
@@ -10,6 +11,7 @@ public class TicketDTO {
     private String descripcion;
     private String estado;
     private String categoria;
+    private String prioridad;
 
     public String getTitulo() {
         return titulo;
@@ -41,5 +43,13 @@ public class TicketDTO {
 
     public void setCategoria(String categoria) {
         this.categoria = categoria;
+    }
+
+    public String getPrioridad() {
+        return prioridad;
+    }
+
+    public void setPrioridad(String prioridad) {
+        this.prioridad = prioridad;
     }
 }

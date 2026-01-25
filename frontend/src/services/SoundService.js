@@ -57,6 +57,13 @@ class SoundService {
         this.beep(660, 0.2, 0.05, 'sine');
     }
 
+    playAlarm() {
+        // Sonido de alarma crítica (repetitivo)
+        this.beep(440, 0.2, 0.1, 'sawtooth');
+        setTimeout(() => this.beep(440, 0.2, 0.1, 'sawtooth'), 250);
+        setTimeout(() => this.beep(440, 0.4, 0.1, 'sawtooth'), 500);
+    }
+
     playClick() {
         // Click mecánico sutil
         this.beep(Math.random() * 50 + 400, 0.01, 0.02, 'sine');

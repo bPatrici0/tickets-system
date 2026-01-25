@@ -131,12 +131,16 @@
         <div v-else class="space-y-3 max-h-96 overflow-y-auto">
           <div v-for="ticket in tickets" :key="ticket.id"
                class="p-3 border border-green-500 rounded hover:bg-green-900/10 cursor-pointer"
+               :class="{ 'row-critica': ticket.prioridad === 'CRITICA' }"
                @click="verTicket(ticket.id)">
             <div class="flex justify-between items-center mb-2">
               <span class="text-green-300">
                 #{{ ticket.id }} - {{ ticket.titulo }}
                 <span v-if="ticket.categoria" :class="['tag-badge', getTagClass(ticket.categoria)]">
                   [{{ ticket.categoria }}]
+                </span>
+                <span v-if="ticket.prioridad" :class="['prio-badge', getPrioClass(ticket.prioridad)]">
+                  {{ ticket.prioridad }}
                 </span>
               </span>
               <span class="text-xs px-2 py-1 rounded" :class="statusClass(ticket.estado)">
@@ -493,6 +497,17 @@ export default {
         'OTROS': 'tag-otros'
       };
       return map[categoria] || 'tag-otros';
+    },
+
+    getPrioClass(prioridad) {
+        if (!prioridad) return '';
+        const map = {
+            'BAJA': 'prio-baja',
+            'MEDIA': 'prio-media',
+            'ALTA': 'prio-alta',
+            'CRITICA': 'prio-critica'
+        };
+        return map[prioridad] || '';
     },
 
     handleLogout() {

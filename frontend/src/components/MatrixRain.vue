@@ -26,7 +26,7 @@ export default {
       columns: 0,
       drops: [],
       fontSize: 16,
-      chars: 'アカサタナハマヤラワABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=%\"\'#&_(),.;:?!\\|{}<>[]',
+      chars: 'アカサタナハマヤラワABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=%"\'#&_(),.;:?!\\|{}<>[]',
       animationId: null
     };
   },

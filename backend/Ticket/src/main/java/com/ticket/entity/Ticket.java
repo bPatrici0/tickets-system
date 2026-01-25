@@ -23,6 +23,9 @@ public class Ticket {
 
     private String categoria;
 
+    @Enumerated(EnumType.STRING)
+    private PrioridadTicket prioridad = PrioridadTicket.MEDIA;
+
     private LocalDateTime fechaCreacion = LocalDateTime.now();
 
     @ManyToOne
@@ -123,5 +126,13 @@ public class Ticket {
 
     public void setCategoria(String categoria) {
         this.categoria = categoria;
+    }
+
+    public PrioridadTicket getPrioridad() {
+        return prioridad;
+    }
+
+    public void setPrioridad(PrioridadTicket prioridad) {
+        this.prioridad = prioridad;
     }
 }

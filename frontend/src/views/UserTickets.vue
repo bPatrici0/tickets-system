@@ -74,6 +74,20 @@
                     </div>
 
                     <div class="mb-4">
+                        <label class="block text-green-400 mb-1">> Prioridad: </label>
+                        <select
+                            v-model="newTicket.prioridad"
+                            class="w-full bg-black border border-green-500 p-2 text-green-500 focus:outline-none"
+                            required
+                        >
+                            <option value="BAJA">BAJA</option>
+                            <option value="MEDIA" selected>MEDIA</option>
+                            <option value="ALTA">ALTA</option>
+                            <option value="CRITICA">CRÍTICA (ALERTA ROJA)</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
                         <label class="block text-green-400 mb-1">> Descripción: </label>
                             <textarea
                                 v-model="newTicket.descripcion"
@@ -114,6 +128,9 @@
                                     # {{ ticket.id }} > {{ ticket.titulo }}
                                     <span v-if="ticket.categoria" :class="['tag-badge', getTagClass(ticket.categoria)]">
                                         [{{ ticket.categoria }}]
+                                    </span>
+                                    <span v-if="ticket.prioridad" :class="['prio-badge', getPrioClass(ticket.prioridad)]">
+                                        {{ ticket.prioridad }}
                                     </span>
                                 </h4>
                                 <p class="text-green-300 text-sm mt-1">{{ ticket.descripcion }}</p>
@@ -156,7 +173,8 @@ export default {
             newTicket: {
                 titulo: '',
                 descripcion: '',
-                categoria: ''
+                categoria: '',
+                prioridad: 'MEDIA'
             },
             tickets:[],
             isSubmitting: false,
@@ -215,7 +233,8 @@ export default {
                 const response = await api.post('/tickets', {
                     titulo: this.newTicket.titulo,
                     descripcion: this.newTicket.descripcion,
-                    categoria: this.newTicket.categoria
+                    categoria: this.newTicket.categoria,
+                    prioridad: this.newTicket.prioridad
                 });
 
                 if (response.status === 200 || response.status === 201) {
@@ -232,7 +251,7 @@ export default {
                             popup: 'border border-green-500 rounded-none shadow-[0_0_15px_rgba(0,255,65,0.3)]'
                         }
                     });
-                    this.newTicket = { titulo: '', descripcion: '', categoria: '' };
+                    this.newTicket = { titulo: '', descripcion: '', categoria: '', prioridad: 'MEDIA' };
                     this.fetchTickets();
                 }
             } catch (error) {
@@ -349,6 +368,17 @@ export default {
                 'OTROS': 'tag-otros'
             };
             return map[categoria] || 'tag-otros';
+        },
+
+        getPrioClass(prioridad) {
+            if (!prioridad) return '';
+            const map = {
+                'BAJA': 'prio-baja',
+                'MEDIA': 'prio-media',
+                'ALTA': 'prio-alta',
+                'CRITICA': 'prio-critica'
+            };
+            return map[prioridad] || '';
         }
     }
 }

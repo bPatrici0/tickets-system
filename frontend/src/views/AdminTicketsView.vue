@@ -39,6 +39,17 @@
         </div>
 
         <div>
+          <label class="block text-green-400 text-xs mb-1">Prioridad:</label>
+          <select v-model="filtroPrioridad" class="w-full bg-black border border-green-500 text-green-400 px-2 py-1 rounded text-xs">
+            <option value="TODOS">Todas</option>
+            <option value="BAJA">Baja</option>
+            <option value="MEDIA">Media</option>
+            <option value="ALTA">Alta</option>
+            <option value="CRITICA">Crítica</option>
+          </select>
+        </div>
+
+        <div>
           <label class="block text-green-400 text-xs mb-1">Buscar:</label>
           <input v-model="busquedaTitulo" type="text" placeholder="Buscar..."
                  class="w-full bg-black border border-green-500 text-green-400 px-2 py-1 rounded text-xs">
@@ -105,11 +116,13 @@
                   <th class="text-left py-1 px-1">Creado</th>
                   <th class="text-left py-1 px-1">Comentarios</th>
                   <th class="text-left py-1 px-1">Categoría</th>
+                  <th class="text-left py-1 px-1">Prioridad</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="ticket in ticketsPaginados" :key="ticket.id"
                     class="border-b border-green-500/30 hover:bg-green-900/10 cursor-pointer transition-colors"
+                    :class="{ 'row-critica': ticket.prioridad === 'CRITICA' }"
                     @click="verTicket(ticket.id)">
                   <td class="py-1 px-1 text-green-300 font-mono">#{{ ticket.id }}</td>
                   <td class="py-1 px-1">
@@ -131,6 +144,12 @@
                   <td class="py-1 px-1">
                     <span v-if="ticket.categoria" :class="['tag-badge', getTagClass(ticket.categoria)]">
                       {{ ticket.categoria }}
+                    </span>
+                    <span v-else class="text-gray-600">--</span>
+                  </td>
+                  <td class="py-1 px-1">
+                    <span v-if="ticket.prioridad" :class="['prio-badge', getPrioClass(ticket.prioridad)]">
+                      {{ ticket.prioridad }}
                     </span>
                     <span v-else class="text-gray-600">--</span>
                   </td>
@@ -186,6 +205,7 @@ export default {
       loading: false,
       filtroEstado: 'TODOS',
       filtroCategoria: 'TODOS',
+      filtroPrioridad: 'TODOS',
       busquedaTitulo: '',
       orden: 'fechaReciente',
       ticketsFiltrados: [],
@@ -201,6 +221,9 @@ export default {
       this.aplicarFiltrosYOrden();
     },
     filtroCategoria() {
+      this.aplicarFiltrosYOrden();
+    },
+    filtroPrioridad() {
       this.aplicarFiltrosYOrden();
     },
     busquedaTitulo() {
@@ -302,6 +325,10 @@ export default {
 
       if (this.filtroCategoria !== 'TODOS') {
         filtered = filtered.filter(ticket => ticket.categoria === this.filtroCategoria);
+      }
+
+      if (this.filtroPrioridad !== 'TODOS') {
+        filtered = filtered.filter(ticket => ticket.prioridad === this.filtroPrioridad);
       }
 
       if (this.busquedaTitulo) {
@@ -429,6 +456,17 @@ export default {
         'OTROS': 'tag-otros'
       };
       return map[categoria] || 'tag-otros';
+    },
+
+    getPrioClass(prioridad) {
+      if (!prioridad) return '';
+      const map = {
+        'BAJA': 'prio-baja',
+        'MEDIA': 'prio-media',
+        'ALTA': 'prio-alta',
+        'CRITICA': 'prio-critica'
+      };
+      return map[prioridad] || '';
     },
 
     handleLogout() {

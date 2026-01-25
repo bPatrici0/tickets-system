@@ -9,6 +9,7 @@ import com.ticket.entity.Ticket;
 import com.ticket.entity.Comentario;
 import com.ticket.entity.Usuario;
 import com.ticket.entity.EstadoTicket;
+import com.ticket.entity.PrioridadTicket;
 import com.ticket.exception.NotFoundException;
 import com.ticket.exception.BadRequestException;
 import com.ticket.repository.TicketRepository;
@@ -60,6 +61,14 @@ public class TicketService {
         ticket.setDescripcion(ticketDTO.getDescripcion());
         ticket.setCategoria(ticketDTO.getCategoria());
 
+        if (ticketDTO.getPrioridad() != null) {
+            try {
+                ticket.setPrioridad(PrioridadTicket.valueOf(ticketDTO.getPrioridad()));
+            } catch (IllegalArgumentException e) {
+                ticket.setPrioridad(PrioridadTicket.MEDIA); // Default
+            }
+        }
+
         try {
             ticket.setEstado(
                     ticketDTO.getEstado() != null ? EstadoTicket.valueOf(ticketDTO.getEstado()) : EstadoTicket.ABIERTO);
@@ -72,7 +81,8 @@ public class TicketService {
 
         // Notificar a los administradores sobre el nuevo ticket
         notificationService
-                .notifyAdmins("NUEVO_TICKET: " + savedTicket.getTitulo() + " (ID: " + savedTicket.getId() + ")");
+                .notifyAdmins("NUEVO_TICKET [" + savedTicket.getPrioridad() + "]: " + savedTicket.getTitulo() + " (ID: "
+                        + savedTicket.getId() + ")");
 
         return savedTicket;
 
@@ -117,6 +127,7 @@ public class TicketService {
         dto.setEstado(ticket.getEstado().toString());
         dto.setFechaCreacion(ticket.getFechaCreacion());
         dto.setCategoria(ticket.getCategoria());
+        dto.setPrioridad(ticket.getPrioridad() != null ? ticket.getPrioridad().toString() : null);
 
         if (ticket.getComentarios() != null) {
             dto.setComentarios(ticket.getComentarios().stream()
@@ -165,6 +176,14 @@ public class TicketService {
         }
         if (ticketDTO.getCategoria() != null) {
             ticket.setCategoria(ticketDTO.getCategoria());
+        }
+        if (ticketDTO.getPrioridad() != null) {
+            try {
+                ticket.setPrioridad(PrioridadTicket.valueOf(ticketDTO.getPrioridad()));
+            } catch (IllegalArgumentException e) {
+                // Si la prioridad no es válida, no hacemos nada o lanzamos error. Por ahora
+                // ignoramos.
+            }
         }
         if (ticketDTO.getEstado() != null) {
             try {

@@ -13,6 +13,7 @@ public class TicketResponseDTO {
     private String descripcion;
     private String estado;
     private String categoria;
+    private String prioridad;
     private LocalDateTime fechaCreacion;
     private List<ComentarioDTO> comentarios;
 
@@ -70,5 +71,13 @@ public class TicketResponseDTO {
 
     public void setCategoria(String categoria) {
         this.categoria = categoria;
+    }
+
+    public String getPrioridad() {
+        return prioridad;
+    }
+
+    public void setPrioridad(String prioridad) {
+        this.prioridad = prioridad;
     }
 }

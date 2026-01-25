@@ -86,21 +86,26 @@ class SocketService {
     }
 
     showNotification(title, message) {
-        SoundService.playNotification();
+        const isCritical = message.includes('CRITICA') || message.includes('CRÍTICA');
+        if (isCritical) {
+            SoundService.playAlarm();
+        } else {
+            SoundService.playNotification();
+        }
         Swal.fire({
             title: `> ${title}`,
             text: message,
-            icon: 'info',
+            icon: isCritical ? 'error' : 'info',
             toast: true,
             position: 'top-end',
             showConfirmButton: false,
-            timer: 5000,
+            timer: isCritical ? 10000 : 5000,
             timerProgressBar: true,
-            background: '#000',
-            color: '#00ff41',
+            background: isCritical ? '#440000' : '#000',
+            color: isCritical ? '#ff0000' : '#00ff41',
             customClass: {
-                popup: 'border border-green-500 rounded-none shadow-[0_0_15px_rgba(0,255,65,0.3)]',
-                title: 'font-mono text-xs',
+                popup: `border ${isCritical ? 'border-red-600' : 'border-green-500'} rounded-none shadow-[0_0_15px_rgba(255,0,0,0.3)]`,
+                title: 'font-mono text-xs font-bold',
                 htmlContainer: 'font-mono text-xs'
             }
         });

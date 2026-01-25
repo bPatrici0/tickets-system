@@ -27,6 +27,9 @@
                             <span v-if="ticket.categoria" :class="['tag-badge', getTagClass(ticket.categoria)]">
                                 [{{ ticket.categoria }}]
                             </span>
+                            <span v-if="ticket.prioridad" :class="['prio-badge', getPrioClass(ticket.prioridad)]">
+                                {{ ticket.prioridad }}
+                            </span>
                             <span class="px-3 py-1 rounded text-sm font-bold"
                                 :class="statusClass(ticket.estado)">
                                 {{ ticket.estado }}
@@ -414,6 +417,17 @@ export default {
                 'OTROS': 'tag-otros'
             };
             return map[categoria] || 'tag-otros';
+        },
+
+        getPrioClass(prioridad) {
+            if (!prioridad) return '';
+            const map = {
+                'BAJA': 'prio-baja',
+                'MEDIA': 'prio-media',
+                'ALTA': 'prio-alta',
+                'CRITICA': 'prio-critica'
+            };
+            return map[prioridad] || '';
         },
 
         statusTextClass(estado) {

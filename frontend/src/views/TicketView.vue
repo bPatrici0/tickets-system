@@ -28,6 +28,9 @@
                         <span v-if="ticket.categoria" :class="['tag-badge', getTagClass(ticket.categoria)]">
                             [{{ ticket.categoria }}]
                         </span>
+                        <span v-if="ticket.prioridad" :class="['prio-badge', getPrioClass(ticket.prioridad)]">
+                            {{ ticket.prioridad }}
+                        </span>
                     </div>
                     <div>
                         <span class="text-green-500">> Autor: </span>
@@ -283,9 +286,20 @@ export default {
                 'HARDWARE': 'tag-hardware',
                 'SOFTWARE': 'tag-software',
                 'REDES': 'tag-redes',
-                'OTROS': 'tag-otros'
+            'OTROS': 'tag-otros'
             };
             return map[categoria] || 'tag-otros';
+        },
+
+        getPrioClass(prioridad) {
+            if (!prioridad) return '';
+            const map = {
+                'BAJA': 'prio-baja',
+                'MEDIA': 'prio-media',
+                'ALTA': 'prio-alta',
+                'CRITICA': 'prio-critica'
+            };
+            return map[prioridad] || '';
         },
 
         async agregarComentario() {

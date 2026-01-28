@@ -3,13 +3,31 @@
         <header class="terminal-box mb-6">
             <div class="flex justify-between items-center">
                 <h1 class="text-2xl">> Gestion de Usuarios Panel<span>|</span></h1>
-                <div>
-                    <button @click="$router.push('/admin')" class="btn-matrix text-sm mr-2">
+                <div class="flex items-center space-x-2">
+                    <button @click="$router.push('/admin')" class="btn-matrix text-sm">
                         > Volver al panel
                     </button>
-                    <button @click="handleLogout" class="btn-matrix text-sm">
-                        > Cerrar Sesión
-                    </button>
+                    
+                    <div class="relative">
+                        <button
+                            @click="toggleUtilityMenu"
+                            class="btn-matrix text-sm"
+                        >
+                            > Opciones [{{ showUtilityMenu ? '-' : '+' }}]
+                        </button>
+                        
+                        <!-- Menú desplegable -->
+                        <transition name="menu">
+                            <div v-if="showUtilityMenu" class="absolute right-0 mt-2 w-48 bg-black border border-green-500 rounded shadow-[0_0_15px_rgba(0,255,65,0.3)] z-50 overflow-hidden">
+                                <button @click="generarReporte" class="w-full text-left px-4 py-2 text-green-400 hover:bg-green-500/20 transition-colors border-b border-green-900/50">
+                                    > Generar Reporte PDF
+                                </button>
+                                <button @click="handleLogout" class="w-full text-left px-4 py-2 text-red-500 hover:bg-red-500/10 transition-colors">
+                                    > Cerrar sesión
+                                </button>
+                            </div>
+                        </transition>
+                    </div>
                 </div>
             </div>
         </header>
@@ -290,6 +308,7 @@
 <script>
 import api from '@/services/api'
 import Swal from 'sweetalert2'
+import ReportService from '@/services/ReportService';
 
 export default {
     data() {
@@ -314,7 +333,8 @@ export default {
             registerSuccess: false,
             registerError: '',
             userToDelete: null,
-            resettingPassword: false
+            resettingPassword: false,
+            showUtilityMenu: false
         }
     },
 
@@ -512,6 +532,67 @@ export default {
         handleLogout() {
             localStorage.clear();
             this.$router.push('/login');
+        },
+
+        toggleUtilityMenu() {
+            this.showUtilityMenu = !this.showUtilityMenu;
+        },
+
+        async generarReporte() {
+            this.showUtilityMenu = false;
+            Swal.fire({
+                title: '> RECOPILANDO DATOS',
+                text: 'Extrayendo logs de la simulación...',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading(),
+                background: '#000',
+                color: '#00ff41',
+                customClass: { popup: 'border border-green-500 rounded-none' }
+            });
+
+            try {
+                // Para el reporte necesitamos tickets y usuarios
+                const [ticketsRes, usersRes] = await Promise.all([
+                    api.get('/admin/tickets'),
+                    api.get('/admin/usuarios')
+                ]);
+
+                const tickets = ticketsRes.data || [];
+                const users = usersRes.data || [];
+
+                const stats = {
+                    totalUsers: users.length,
+                    totalAdmins: users.filter(u => u.rol === 'ROLE_ADMIN').length,
+                    totalRegularUsers: users.filter(u => u.rol === 'ROLE_USER').length,
+                    activeUsers: users.filter(u => u.activo).length,
+                    inactiveUsers: users.filter(u => !u.activo).length,
+                    openTickets: tickets.filter(t => t.estado === 'ABIERTO').length,
+                    inProgressTickets: tickets.filter(t => t.estado === 'EN_PROGRESO').length,
+                    resolvedTickets: tickets.filter(t => t.estado === 'RESUELTO').length,
+                    totalTickets: tickets.length
+                };
+
+                await ReportService.generateSystemReport(stats, tickets);
+
+                Swal.fire({
+                    title: '> SISTEMA EXPORTADO',
+                    text: 'El reporte en PDF se ha descargado correctamente.',
+                    icon: 'success',
+                    background: '#000',
+                    color: '#00ff41',
+                    customClass: { popup: 'border border-green-500 rounded-none' }
+                });
+            } catch (error) {
+                console.error("Error en reporte:", error);
+                Swal.fire({
+                    title: '> ERROR CRÍTICO',
+                    text: 'Error al interceptar datos del sistema.',
+                    icon: 'error',
+                    background: '#000',
+                    color: '#ff0000',
+                    customClass: { popup: 'border border-red-500 rounded-none' }
+                });
+            }
         },
 
         toggleMenu(userId) {
@@ -768,4 +849,13 @@ th, td {
   background-color: #00FF41;
   border-radius: 3px;
 }
+/* Animaciones del Menú */
+.menu-enter-active, .menu-leave-active {
+  transition: all 0.3s ease;
+}
+.menu-enter-from, .menu-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
 </style>
+```

@@ -3,12 +3,26 @@
     <header class="terminal-box mb-6">
       <div class="flex justify-between items-center">
         <h1 class="text-2xl">> Panel Admin<span class="cursor-blink">|</span></h1>
-        <button
-          @click="handleLogout"
-          class="btn-matrix text-sm"
-        >
-          > Cerrar sesión
-        </button>
+        <div class="relative">
+          <button
+            @click="toggleMenu"
+            class="btn-matrix text-sm"
+          >
+            > Opciones [{{ showMenu ? '-' : '+' }}]
+          </button>
+          
+          <!-- Menú desplegable -->
+          <transition name="menu">
+            <div v-if="showMenu" class="absolute right-0 mt-2 w-48 bg-black border border-green-500 rounded shadow-[0_0_15px_rgba(0,255,65,0.3)] z-50 overflow-hidden">
+              <button @click="generarReporte" class="w-full text-left px-4 py-2 text-green-400 hover:bg-green-500/20 transition-colors border-b border-green-900/50">
+                > Generar Reporte PDF
+              </button>
+              <button @click="handleLogout" class="w-full text-left px-4 py-2 text-red-500 hover:bg-red-500/10 transition-colors">
+                > Cerrar sesión
+              </button>
+            </div>
+          </transition>
+        </div>
       </div>
     </header>
 
@@ -169,7 +183,8 @@
 <script>
 import api from '@/services/api';
 import Swal from 'sweetalert2';
-import AdminDashboard from '@/components/AdminDashboard.vue';
+import AdminDashboard from '../components/AdminDashboard.vue';
+import ReportService from '@/services/ReportService';
 import SocketService from '@/services/SocketService';
 
 
@@ -186,7 +201,8 @@ export default {
       loadingUsers: false,
       loadingTickets: false,
       updatingUser: null,
-      filtroRol: 'TODOS'
+      filtroRol: 'TODOS',
+      showMenu: false
     }
   },
 
@@ -510,6 +526,52 @@ export default {
         return map[prioridad] || '';
     },
 
+    toggleMenu() {
+        this.showMenu = !this.showMenu;
+    },
+
+    async generarReporte() {
+        this.showMenu = false;
+        try {
+            const stats = {
+                totalUsers: this.users.length,
+                totalAdmins: this.administradoresCount,
+                totalRegularUsers: this.usuariosCount,
+                activeUsers: this.users.filter(u => u.activo).length,
+                inactiveUsers: this.users.filter(u => !u.activo).length,
+                openTickets: this.ticketsAbiertos,
+                inProgressTickets: this.ticketsEnProgreso,
+                resolvedTickets: this.ticketsResueltos,
+                totalTickets: this.tickets.length
+            };
+            
+            await ReportService.generateSystemReport(stats, this.tickets);
+            
+            Swal.fire({
+                title: '> REPORTE GENERADO',
+                text: 'La simulación de datos se ha exportado correctamente',
+                icon: 'success',
+                background: '#000',
+                color: '#00ff41',
+                customClass: {
+                    popup: 'border border-green-500 rounded-none shadow-[0_0_15px_rgba(0,255,65,0.3)]'
+                }
+            });
+        } catch (error) {
+            console.error('Error generando reporte:', error);
+            Swal.fire({
+                title: '> ERROR DE SISTEMA',
+                text: 'No se pudo generar el reporte. Intente más tarde.',
+                icon: 'error',
+                background: '#000',
+                color: '#ff0000',
+                customClass: {
+                    popup: 'border border-red-500 rounded-none'
+                }
+            });
+        }
+    },
+
     handleLogout() {
       localStorage.clear();
       this.$router.push('/login');
@@ -556,6 +618,15 @@ select:focus {
 
 .btn-matrix {
   @apply bg-green-500/20 text-green-400 border border-green-500 px-3 py-1 hover:bg-green-500/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+/* Animaciones del Menú */
+.menu-enter-active, .menu-leave-active {
+  transition: all 0.3s ease;
+}
+.menu-enter-from, .menu-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 
 .switch {

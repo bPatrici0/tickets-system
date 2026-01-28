@@ -1,12 +1,11 @@
 import axios from 'axios';
 import router from '@/router';
 
+const host = window.location.hostname;
 const api = axios.create({
-    baseURL: 'http://localhost:8081/api',
-    //withCredentials: true,
+    baseURL: `http://${host}:8081/api`,
     headers: {
         'Content-Type': 'application/json',
-        //'Authorization': 'Basic ' + btoa(localStorage.getItem('userEmail') + ':' + localStorage.getItem('userPassword'))
     }
 });
 
@@ -17,7 +16,7 @@ api.interceptors.request.use(config => {
     console.log('Token encontrado en localStorage:', token ? 'SÍ' : 'NO');
     console.log('Petición a:', config.url);
 
-    if(token) {
+    if (token) {
         config.headers.Authorization = `Basic ${token}`;
         console.log('Autorization header agregado:', config.headers.Authorization.substring(0, 30) + '...');
     } else {

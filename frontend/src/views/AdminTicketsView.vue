@@ -3,13 +3,31 @@
     <header class="terminal-box mb-3">
       <div class="flex justify-between items-center">
         <h1 class="text-lg">> Admin - Tickets<span class="cursor-blink">|</span></h1>
-        <div>
-          <button @click="$router.push('/admin')" class="btn-matrix text-xs mr-2">
+        <div class="flex items-center space-x-2">
+          <button @click="$router.push('/admin')" class="btn-matrix text-xs">
             > Panel
           </button>
-          <button @click="handleLogout" class="btn-matrix text-xs">
-            > Salir
-          </button>
+          
+          <div class="relative">
+            <button
+              @click="toggleMenu"
+              class="btn-matrix text-xs"
+            >
+              > Opciones [{{ showMenu ? '-' : '+' }}]
+            </button>
+            
+            <!-- Menú desplegable -->
+            <transition name="menu">
+              <div v-if="showMenu" class="absolute right-0 mt-2 w-48 bg-black border border-green-500 rounded shadow-[0_0_15px_rgba(0,255,65,0.3)] z-50 overflow-hidden">
+                <button @click="generarReporte" class="w-full text-left px-4 py-2 text-green-400 hover:bg-green-500/20 transition-colors border-b border-green-900/50">
+                  > Generar Reporte PDF
+                </button>
+                <button @click="handleLogout" class="w-full text-left px-4 py-2 text-red-500 hover:bg-red-500/10 transition-colors">
+                  > Cerrar sesión
+                </button>
+              </div>
+            </transition>
+          </div>
         </div>
       </div>
     </header>
@@ -197,6 +215,7 @@
 <script>
 import api from '@/services/api';
 import Swal from 'sweetalert2';
+import ReportService from '@/services/ReportService';
 
 export default {
   data() {
@@ -212,7 +231,8 @@ export default {
 
       // Paginación - más tickets por defecto
       paginaActual: 1,
-      ticketsPorPagina: 20 // Más tickets por página
+      ticketsPorPagina: 20,
+      showMenu: false
     }
   },
 
@@ -467,6 +487,68 @@ export default {
         'CRITICA': 'prio-critica'
       };
       return map[prioridad] || '';
+    },
+
+    toggleMenu() {
+        this.showMenu = !this.showMenu;
+    },
+
+    async generarReporte() {
+        this.showMenu = false;
+        Swal.fire({
+            title: '> ANALIZANDO DATOS...',
+            text: 'Descifrando estadísticas del sistema',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            },
+            background: '#000',
+            color: '#00ff41',
+            customClass: { popup: 'border border-green-500 rounded-none' }
+        });
+
+        try {
+            // Necesitamos fetchUsers para el reporte completo
+            const usersResponse = await api.get('/admin/usuarios');
+            const users = usersResponse.data || [];
+            
+            const stats = {
+                totalUsers: users.length,
+                totalAdmins: users.filter(u => u.rol === 'ROLE_ADMIN').length,
+                totalRegularUsers: users.filter(u => u.rol === 'ROLE_USER').length,
+                activeUsers: users.filter(u => u.activo).length,
+                inactiveUsers: users.filter(u => !u.activo).length,
+                openTickets: this.ticketsAbiertos,
+                inProgressTickets: this.ticketsEnProgreso,
+                resolvedTickets: this.ticketsResueltos,
+                totalTickets: this.tickets.length
+            };
+            
+            await ReportService.generateSystemReport(stats, this.tickets);
+            
+            Swal.fire({
+                title: '> EXPORTACIÓN COMPLETA',
+                text: 'El reporte del sistema se ha generado con éxito.',
+                icon: 'success',
+                background: '#000',
+                color: '#00ff41',
+                customClass: {
+                    popup: 'border border-green-500 rounded-none shadow-[0_0_15px_rgba(0,255,65,0.3)]'
+                }
+            });
+        } catch (error) {
+            console.error('Error generando reporte:', error);
+            Swal.fire({
+                title: '> FALLO DE RECOLECCIÓN',
+                text: 'Hubo un error al obtener las últimas estadísticas.',
+                icon: 'error',
+                background: '#000',
+                color: '#ff0000',
+                customClass: {
+                    popup: 'border border-red-500 rounded-none'
+                }
+            });
+        }
     },
 
     handleLogout() {

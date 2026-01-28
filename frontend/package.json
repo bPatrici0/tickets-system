@@ -13,6 +13,8 @@
     "axios": "^1.11.0",
     "chart.js": "^4.5.1",
     "core-js": "^3.8.3",
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.8.2",
     "sockjs-client": "^1.6.1",
     "sweetalert2": "^11.26.17",
     "vue": "^3.2.13",

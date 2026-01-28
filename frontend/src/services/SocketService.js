@@ -33,8 +33,9 @@ class SocketService {
         if (this.connected || this.connecting) return;
         this.connecting = true;
 
-        // URL del backend (Coincidir con api.js:8081)
-        const socketUrl = 'http://localhost:8081/ws';
+        // URL del backend dinámica (Coincidir con la IP del host)
+        const host = window.location.hostname;
+        const socketUrl = `http://${host}:8081/ws`;
 
         this.client = new Client({
             webSocketFactory: () => new SockJS(socketUrl),

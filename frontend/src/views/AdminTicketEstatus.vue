@@ -5,13 +5,31 @@
                 <h1 class="text-2xl">
                     > Administración - Ticket #{{ ticket.id }}<span class="cursor-blink">|</span>
                 </h1>
-                <div>
-                    <button @click="$router.push('/admin/tickets')" class="btn-matrix text-sm mr-2">
+                <div class="flex items-center space-x-2">
+                    <button @click="$router.push('/admin/tickets')" class="btn-matrix text-sm">
                         > Volver a Tickets
                     </button>
-                    <button @click="handleLogout" class="btn-matrix text-sm">
-                        > Cerrar Sesión
-                    </button>
+                    
+                    <div class="relative">
+                        <button
+                            @click="toggleUtilityMenu"
+                            class="btn-matrix text-sm"
+                        >
+                            > Opciones [{{ showUtilityMenu ? '-' : '+' }}]
+                        </button>
+                        
+                        <!-- Menú desplegable -->
+                        <transition name="menu">
+                            <div v-if="showUtilityMenu" class="absolute right-0 mt-2 w-48 bg-black border border-green-500 rounded shadow-[0_0_15px_rgba(0,255,65,0.3)] z-50 overflow-hidden">
+                                <button @click="generarReporte" class="w-full text-left px-4 py-2 text-green-400 hover:bg-green-500/20 transition-colors border-b border-green-900/50 text-xs">
+                                    > Generar Reporte PDF
+                                </button>
+                                <button @click="handleLogout" class="w-full text-left px-4 py-2 text-red-500 hover:bg-red-500/10 transition-colors text-xs">
+                                    > Cerrar sesión
+                                </button>
+                            </div>
+                        </transition>
+                    </div>
                 </div>
             </div>
         </header>
@@ -169,6 +187,7 @@
 import api from '@/services/api';
 import Swal from 'sweetalert2';
 import SoundService from '@/services/SoundService';
+import ReportService from '@/services/ReportService';
 
 export default {
     data() {
@@ -185,7 +204,8 @@ export default {
             },
             nuevoComentario: '',
             isSubmitting: false,
-            loading: false
+            loading: false,
+            showUtilityMenu: false
         }
     },
 
@@ -591,6 +611,66 @@ export default {
         handleLogout() {
             localStorage.clear();
             this.$router.push('/login');
+        },
+
+        toggleUtilityMenu() {
+            this.showUtilityMenu = !this.showUtilityMenu;
+        },
+
+        async generarReporte() {
+            this.showUtilityMenu = false;
+            Swal.fire({
+                title: '> RECOPILANDO LOGS',
+                text: 'Interceptando paquetes de datos...',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading(),
+                background: '#000',
+                color: '#00ff41',
+                customClass: { popup: 'border border-green-500 rounded-none' }
+            });
+
+            try {
+                const [ticketsRes, usersRes] = await Promise.all([
+                    api.get('/admin/tickets'),
+                    api.get('/admin/usuarios')
+                ]);
+
+                const allTickets = ticketsRes.data || [];
+                const users = usersRes.data || [];
+
+                const stats = {
+                    totalUsers: users.length,
+                    totalAdmins: users.filter(u => u.rol === 'ROLE_ADMIN').length,
+                    totalRegularUsers: users.filter(u => u.rol === 'ROLE_USER').length,
+                    activeUsers: users.filter(u => u.activo).length,
+                    inactiveUsers: users.filter(u => !u.activo).length,
+                    openTickets: allTickets.filter(t => t.estado === 'ABIERTO').length,
+                    inProgressTickets: allTickets.filter(t => t.estado === 'EN_PROGRESO').length,
+                    resolvedTickets: allTickets.filter(t => t.estado === 'RESUELTO').length,
+                    totalTickets: allTickets.length
+                };
+
+                await ReportService.generateSystemReport(stats, allTickets);
+
+                Swal.fire({
+                    title: '> DATA EXFILTRADA',
+                    text: 'El reporte de simulación se ha descargado correctamente.',
+                    icon: 'success',
+                    background: '#000',
+                    color: '#00ff41',
+                    customClass: { popup: 'border border-green-500 rounded-none shadow-[0_0_15px_rgba(0,255,65,0.3)]' }
+                });
+            } catch (error) {
+                console.error("Error en reporte:", error);
+                Swal.fire({
+                    title: '> FALLO DE INTERCEPCIÓN',
+                    text: 'No se pudo generar el reporte de estado.',
+                    icon: 'error',
+                    background: '#000',
+                    color: '#ff0000',
+                    customClass: { popup: 'border border-red-500 rounded-none' }
+                });
+            }
         }
     }
 }
@@ -624,5 +704,13 @@ export default {
 
 .history-entry:hover {
     background-color: rgba(16, 185, 129, 0.05);
+}
+/* Animaciones del Menú */
+.menu-enter-active, .menu-leave-active {
+  transition: all 0.3s ease;
+}
+.menu-enter-from, .menu-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
 }
 </style>

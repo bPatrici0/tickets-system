@@ -8,7 +8,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class UsuarioService {
 
     @Autowired
@@ -18,9 +21,9 @@ public class UsuarioService {
     private PasswordEncoder passwordEncoder;
 
     public List<Usuario> obtenerTodosLosUsuarios() {
-        System.out.println("UsuarioService.obtenerTodosLosUsuarios() llamado");
+        log.debug("UsuarioService.obtenerTodosLosUsuarios() llamado");
         List<Usuario> usuarios = usuarioRepository.findAll();
-        System.out.println("Usuarios en BD: " + usuarios.size());
+        log.info("Usuarios en BD: {}", usuarios.size());
         return usuarios;
     }
 

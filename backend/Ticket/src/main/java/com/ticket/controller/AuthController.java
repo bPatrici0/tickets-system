@@ -17,9 +17,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/auth")
+@Slf4j
 public class AuthController {
 
     @Autowired
@@ -36,7 +38,7 @@ public class AuthController {
 
     @PostMapping("/registro")
     public ResponseEntity<String> registrarUsuario(@RequestBody RegistroDTO registroDTO) {
-        System.out.println("Datos recibidos: " + registroDTO.getEmail() + ", " + registroDTO.getPassword());
+        log.info("Intento de registro para email: {}", registroDTO.getEmail());
 
         Usuario usuario = new Usuario();
         usuario.setEmail(registroDTO.getEmail());

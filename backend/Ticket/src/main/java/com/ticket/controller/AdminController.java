@@ -16,10 +16,12 @@ import com.ticket.dto.UsuarioUpdateDTO;
 import com.ticket.exception.NotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/admin")
 @PreAuthorize("hasRole('ADMIN')")
+@Slf4j
 public class AdminController {
 
     @Autowired
@@ -36,68 +38,65 @@ public class AdminController {
 
     @GetMapping("/usuarios")
     public ResponseEntity<List<Usuario>> obtenerTodosLosUsuarios() {
-        System.out.println("AdminController.obtenerTodosLosUsuarios() llamado");
+        log.debug("AdminController.obtenerTodosLosUsuarios() llamado");
         List<Usuario> usuarios = usuarioService.obtenerTodosLosUsuarios();
-        System.out.println("Usuarios encontrados: " + usuarios.size());
+        log.info("Usuarios encontrados: {}", usuarios.size());
         return ResponseEntity.ok(usuarios);
     }
 
     @GetMapping("/tickets")
     public ResponseEntity<List<Ticket>> obtenerTodosLosTickets() {
-        System.out.println("AdminController.obtnerTodosLosTickets() llamando");
+        log.debug("AdminController.obtenerTodosLosTickets() llamado");
         List<Ticket> tickets = ticketService.obtenerTodosLosTickets();
-        System.out.println("Tickets encontrados: " + tickets.size());
+        log.info("Tickets encontrados: {}", tickets.size());
         return ResponseEntity.ok(tickets);
     }
 
     @GetMapping("/tickets/{id}")
     public ResponseEntity<Ticket> obtenerTicketPorId(@PathVariable Long id) {
-        System.out.println("AdminController.obtenerTicketPorId() llamado -ID: " + id);
+        log.debug("AdminController.obtenerTicketPorId() llamado - ID: {}", id);
          try {
              Ticket ticket = ticketService.obtenerTicketPorId(id);
 
              if (ticket == null) {
-                 System.out.println("Ticket no encontrado - ID: " + id);
+                 log.warn("Ticket no encontrado - ID: {}", id);
                  return ResponseEntity.notFound().build();
              }
 
-             System.out.println("Ticket encontrado: " + ticket.getTitulo());
+             log.debug("Ticket encontrado: {}", ticket.getTitulo());
              return ResponseEntity.ok(ticket);
          } catch (NotFoundException e) {
-             System.out.println("Ticket no encontrado - ID: " + id);
+             log.warn("Ticket no encontrado - ID: {}", id);
              return ResponseEntity.notFound().build();
          } catch (Exception e) {
-             System.out.println("Error obteniendo ticket ID " + id + "; " + e.getMessage());
-             e.printStackTrace();
+             log.error("Error obteniendo ticket ID {}: {}", id, e.getMessage());
              return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
          }
     }
 
     @PutMapping("/usuarios/{id}/role")
     public ResponseEntity<Usuario> cambiarRolUsuario(@PathVariable Long id, @RequestBody Map<String, String> request) {
-        System.out.println("AdminController.cambiarRolUsuario() llamado - ID: " + id);
+        log.debug("AdminController.cambiarRolUsuario() llamado - ID: {}", id);
 
         String nuevoRol = request.get("role");
         if (nuevoRol == null) {
-            System.out.println("Rol no proporcionado");
+            log.warn("Rol no proporcionado para usuario ID: {}", id);
             return ResponseEntity.badRequest().build();
         }
 
-        System.out.println("Cambiando rol a: " + nuevoRol);
+        log.info("Cambiando rol de usuario {} a: {}", id, nuevoRol);
         return ResponseEntity.ok(usuarioService.cambiarRolUsuario(id, nuevoRol));
     }
 
     @GetMapping("/usuarios/{id}")
     public ResponseEntity<Usuario> obtenerUsuarioPorId(@PathVariable Long id) {
-        System.out.println("AdminController.obtenerUsuarioPorId() llamado - ID: " + id);
+        log.debug("AdminController.obtenerUsuarioPorId() llamado - ID: {}", id);
         return ResponseEntity.ok(usuarioService.obtenerUsuarioPorId(id));
     }
 
     @PostMapping("/usuarios")
     public ResponseEntity<Usuario> crearUsuario(@RequestBody RegistroDTO registroDTO) {
-        System.out.println("AdminController.crearUsuario() llamado");
-        System.out.println("Datos: " + registroDTO.getEmail() + ", " + registroDTO.getNombre() +
-                "rol: " +registroDTO.getRol());
+        log.info("AdminController.crearUsuario() llamado para email: {}", registroDTO.getEmail());
 
         Usuario usuario = new Usuario();
         usuario.setEmail(registroDTO.getEmail());
@@ -111,7 +110,7 @@ public class AdminController {
 
     @DeleteMapping("/usuarios/{id}")
     public ResponseEntity<?> eliminarUsuario(@PathVariable Long id) {
-        System.out.println("AdminController.eliminarUsuario() llamado - ID: " + id);
+        log.info("AdminController.eliminarUsuario() llamado - ID: {}", id);
 
         try {
             if (!usuarioRepository.existsById(id)) {
@@ -120,10 +119,10 @@ public class AdminController {
             }
 
             usuarioRepository.deleteById(id);
-            System.out.println("Usuario eliminado existosamente - ID: " + id);
+            log.info("Usuario eliminado existosamente - ID: {}", id);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
-            System.out.println("Error al eliminar usuario ID " + id + ": " + e.getMessage());
+            log.error("Error al eliminar usuario ID {}: {}", id, e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al eliminar usuario");
         }
@@ -131,7 +130,7 @@ public class AdminController {
 
     @PutMapping("/usuarios/{id}")
     public ResponseEntity<Usuario> actualizarUsuario(@PathVariable Long id, @RequestBody UsuarioUpdateDTO updateDTO) {
-        System.out.println("Actualizando usuario ID: " + id);
+        log.info("Actualizando usuario ID: {}", id);
 
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
@@ -154,35 +153,28 @@ public class AdminController {
 
     @PutMapping("/usuarios/{id}/status")
     public ResponseEntity<?> cambiarEstadoUsuario(@PathVariable Long id, @RequestBody Map<String, Boolean> request) {
-        System.out.println("Cambiando estado usuario ID: " + id);
-        System.out.println("Request body: " + request);
+        log.debug("Cambiando estado usuario ID: {}", id);
 
         Boolean activo = request.get("activo");
-        System.out.println("Valor de 'activo': " + activo);
-
         if (activo == null) {
-            System.out.println("Error: campo 'activo' no encontrado en request");
+            log.warn("Error: campo 'activo' no encontrado en request para usuario ID: {}", id);
             return ResponseEntity.badRequest().body("El campo 'activo' es requerido");
         }
 
         try {
             Usuario usuario = usuarioService.obtenerUsuarioPorId(id);
-            System.out.println("Usuario encontrado: " + usuario.getEmail());
-            System.out.println("Estado actual: " + usuario.getActivo());
-            System.out.println("Nuevo estado: " + activo);
+            log.info("Cambiando estado de usuario {} de {} a {}", usuario.getEmail(), usuario.getActivo(), activo);
 
             usuario.setActivo(activo);
             Usuario usuarioActualizado = usuarioRepository.save(usuario);
 
-            System.out.println("Usuario actualizado exitosamente");
             return ResponseEntity.ok(usuarioActualizado);
 
         } catch (NotFoundException e) {
-            System.out.println("Usuario no encontrado ID: " + id);
+            log.warn("Usuario no encontrado ID: {}", id);
             return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            System.out.println("Error al cambiar estado: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error al cambiar estado de usuario ID {}: {}", id, e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al cambiar estado");
         }

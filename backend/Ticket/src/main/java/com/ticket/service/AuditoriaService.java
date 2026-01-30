@@ -35,4 +35,7 @@ public class AuditoriaService {
         return auditoriaRepository.findByTicketIdOrderByFechaDesc(ticketId);
     }
 
+    public List<Auditoria> obtenerUltimosMovimientos() {
+        return auditoriaRepository.findTop20ByOrderByFechaDesc();
+    }
 }

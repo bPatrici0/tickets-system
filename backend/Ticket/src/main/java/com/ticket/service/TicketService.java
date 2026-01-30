@@ -47,6 +47,9 @@ public class TicketService {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private AuditoriaService auditoriaService;
+
     public Ticket crearTicket(TicketDTO ticketDTO) {
         if (ticketDTO.getTitulo() == null || ticketDTO.getTitulo().isEmpty()) {
             throw new BadRequestException("El titulo del ticket es requerido");
@@ -78,6 +81,10 @@ public class TicketService {
         ticket.setCreadoPor(usuario);
 
         Ticket savedTicket = ticketRepository.save(ticket);
+
+        auditoriaService.registrarAccion(savedTicket.getId(), email, "CREACION", null, "ABIERTO",
+                "Ticket creado con prioridad: "
+                        + savedTicket.getPrioridad());
 
         // Notificar a los administradores sobre el nuevo ticket
         notificationService
@@ -237,6 +244,9 @@ public class TicketService {
 
         ticketRepository.save(ticket);
 
+        auditoriaService.registrarAccion(ticketId, autor, "NUEVO_COMENTARIO", null, null,
+                "Se agregó comentario al ticket");
+
         // Notificar al creador del ticket o a los admins
         if (autor.equals(ticket.getCreadoPor().getEmail())) {
             // Si el usuario comenta, notificar a los admins
@@ -254,6 +264,9 @@ public class TicketService {
     public Ticket cambiarEstadoTicket(Long Id, String nuevoEstado) {
         Ticket ticket = ticketRepository.findById(Id)
                 .orElseThrow(() -> new NotFoundException("Ticket no encontrado"));
+
+        String estadoAnterior = ticket.getEstado().toString();
+
         List<String> estadosPermitidos = Arrays.asList("ABIERTO", "EN_PROGRESO", "RESUELTO");
         if (!estadosPermitidos.contains(nuevoEstado)) {
             throw new IllegalArgumentException("Estado no válido: " + nuevoEstado);
@@ -263,6 +276,15 @@ public class TicketService {
         ticket.setFechaActualizacion(new Date());
 
         Ticket updatedTicket = ticketRepository.save(ticket);
+
+        String usuarioAccion = SecurityContextHolder.getContext().getAuthentication().getName();
+        auditoriaService.registrarAccion(
+                Id,
+                usuarioAccion,
+                "CAMBIO_ESTADO",
+                estadoAnterior,
+                nuevoEstado,
+                "Cambio de estado del ticket");
 
         // Notificar al usuario sobre el cambio de estado
         notificationService.notifyUser(updatedTicket.getCreadoPor().getEmail(),

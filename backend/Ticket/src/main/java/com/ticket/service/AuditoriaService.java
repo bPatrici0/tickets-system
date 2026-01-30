@@ -14,7 +14,7 @@ import java.util.List;
 public class AuditoriaService {
 
     @Autowired
-    private AuditoriaRepository AuditoriaRepository;
+    private AuditoriaRepository auditoriaRepository;
 
     @Transactional
     public void registrarAccion(Long ticketId, String usuario, String accion, String valorAnterior, String valorNuevo,
@@ -27,6 +27,12 @@ public class AuditoriaService {
         registro.setValorNuevo(valorNuevo);
         registro.setDetalles(detalles);
         registro.setFecha(LocalDateTime.now());
-        AuditoriaRepository.save(registro);
+
+        auditoriaRepository.save(registro);
     }
+
+    public List<Auditoria> obtenerHistorialPorTicket(Long ticketId) {
+        return auditoriaRepository.findByTicketIdOrderByFechaDesc(ticketId);
+    }
+
 }

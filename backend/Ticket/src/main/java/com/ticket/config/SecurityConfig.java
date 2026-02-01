@@ -16,12 +16,14 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import java.util.Arrays;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @Slf4j
 public class SecurityConfig {
 
@@ -45,6 +47,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/tickets/*").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/tickets/*/comentarios").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/tickets/usuario/*").authenticated()
+
+                        // auditoria
+                        .requestMatchers("/api/auditoria/**").hasRole("ADMIN")
 
                         // crear tickets y comentarios
                         .requestMatchers(HttpMethod.POST, "/api/tickets").authenticated()
@@ -80,14 +85,13 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOriginPatterns(Arrays.asList(
-            "http://localhost:*", 
-            "http://127.0.0.1:*",
-            "http://192.168.*:*",
-            "http://172.*:*",
-            "http://10.*:*"
-        )); 
-                                                                                                    // variaciones de
-                                                                                                    // localhost
+                "http://localhost:*",
+                "http://127.0.0.1:*",
+                "http://192.168.*:*",
+                "http://172.*:*",
+                "http://10.*:*"));
+        // variaciones de
+        // localhost
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept"));
         config.setAllowCredentials(true); // Para futuros tokens/cookies

@@ -2,7 +2,7 @@ import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 
 class ReportService {
-    async generateSystemReport(stats, tickets) {
+    async generateSystemReport(stats, tickets, auditLogs = []) {
         try {
             const doc = new jsPDF();
             const timestamp = new Date().toLocaleString();
@@ -114,13 +114,36 @@ class ReportService {
                 headStyles: { fillColor: [50, 50, 50] }
             });
 
-            // 5. Alertas Críticas (Solo si hay)
+            // 5. Registro de Auditoría (Operaciones Recientes)
+            if (auditLogs && auditLogs.length > 0) {
+                doc.addPage();
+                doc.setTextColor(0, 0, 0);
+                doc.setFontSize(16);
+                doc.text("5. Registro de Auditoría (Operaciones Recientes)", 10, 20);
+
+                autoTable(doc, {
+                    startY: 25,
+                    head: [["Fecha", "Ticket", "Usuario", "Acción", "Detalles"]],
+                    body: auditLogs.slice(0, 20).map(log => [
+                        new Date(log.fecha).toLocaleString('es-MX'),
+                        `#${log.ticketId}`,
+                        log.usuario,
+                        log.accion,
+                        log.detalles || (log.valorAnterior ? `${log.valorAnterior} -> ${log.valorNuevo}` : '-')
+                    ]),
+                    theme: 'striped',
+                    headStyles: { fillColor: [0, 60, 0] },
+                    styles: { fontSize: 8 }
+                });
+            }
+
+            // 6. Alertas Críticas (Solo si hay)
             const criticalOnes = tickets ? tickets.filter(t => t.prioridad === 'CRITICA') : [];
             if (criticalOnes.length > 0) {
                 doc.addPage();
                 doc.setTextColor(200, 0, 0);
                 doc.setFontSize(18);
-                doc.text("ALERTA: TICKETS CRÍTICOS DETECTADOS", 10, 20);
+                doc.text("6. ALERTA: TICKETS CRÍTICOS DETECTADOS", 10, 20);
 
                 autoTable(doc, {
                     startY: 30,

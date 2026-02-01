@@ -177,6 +177,36 @@
         </button>
       </div>
     </div>
+
+    <!-- Sección de Auditoría (Línea de Tiempo) -->
+    <div class="terminal-box p-4 mt-6">
+      <h2 class="text-xl mb-4 text-green-400">> Historial de Operaciones (Auditoría)<span class="cursor-blink"></span></h2>
+      
+      <div v-if="loadingAudit" class="text-green-500 text-center py-4">> Consultando registros...</div>
+      
+      <div v-else-if="auditLogs.length === 0" class="text-gray-500 text-center py-4">> No hay registros de actividad reciente</div>
+      
+      <div v-else class="space-y-2 max-h-60 overflow-y-auto pr-2">
+        <div v-for="log in auditLogs" :key="log.id" class="text-xs border-l-2 border-green-900 pl-3 py-1 hover:bg-green-500/5 transition-colors">
+          <div class="flex justify-between text-green-500">
+            <span>[{{ formatDate(log.fecha) }}]</span>
+            <span class="text-green-300 font-bold">{{ log.accion }}</span>
+          </div>
+          <div class="text-gray-400 mt-1">
+            <span class="text-green-600">Usuario:</span> {{ log.usuario }} | 
+            <span class="text-green-600">Ticket:</span> #{{ log.ticketId }}
+          </div>
+          <div v-if="log.valorAnterior || log.valorNuevo" class="text-green-400/70 italic mt-0.5">
+            {{ log.valorAnterior || 'NULL' }} >> {{ log.valorNuevo }}
+          </div>
+          <div v-if="log.detalles" class="text-gray-500 mt-0.5">> {{ log.detalles }}</div>
+        </div>
+      </div>
+      
+      <button @click="fetchAuditLogs" class="btn-matrix mt-4 text-sm" :disabled="loadingAudit">
+        > Actualizar historial
+      </button>
+    </div>
   </div>
 </template>
 
@@ -198,11 +228,12 @@ export default {
     return {
       users: [],
       tickets: [],
-      loadingUsers: false,
       loadingTickets: false,
+      loadingAudit: false,
       updatingUser: null,
       filtroRol: 'TODOS',
-      showMenu: false
+      showMenu: false,
+      auditLogs: []
     }
   },
 
@@ -253,6 +284,7 @@ export default {
     console.log('Acceso permitido, cargando datos...');
     this.fetchUsers();
     this.fetchTickets();
+    this.fetchAuditLogs();
 
     // Suscribirse a actualizaciones en tiempo real con binding correcto
     this.liveUpdateHandler = this.handleLiveUpdate.bind(this);
@@ -363,6 +395,19 @@ export default {
         });
       } finally {
         this.loadingTickets = false;
+      }
+    },
+
+    async fetchAuditLogs() {
+      this.loadingAudit = true;
+      try {
+        const response = await api.get('/auditoria/recientes');
+        this.auditLogs = response.data || [];
+        console.log('Registros de auditoría cargados:', this.auditLogs.length);
+      } catch (error) {
+        console.error("Error fetching audit logs:", error);
+      } finally {
+        this.loadingAudit = false;
       }
     },
 
@@ -493,6 +538,7 @@ export default {
         // Recargar datos suavemente
         this.fetchUsers();
         this.fetchTickets();
+        this.fetchAuditLogs();
     },
 
     statusClass(estado) {
@@ -545,7 +591,7 @@ export default {
                 totalTickets: this.tickets.length
             };
             
-            await ReportService.generateSystemReport(stats, this.tickets);
+            await ReportService.generateSystemReport(stats, this.tickets, this.auditLogs);
             
             Swal.fire({
                 title: '> REPORTE GENERADO',

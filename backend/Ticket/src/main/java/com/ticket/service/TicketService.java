@@ -244,8 +244,10 @@ public class TicketService {
         }
         ticket.getComentarios().add(comentarioGuardado);
 
-        // Actualizar estado si esta ABIERTO
-        if (ticket.getEstado() == EstadoTicket.ABIERTO) {
+        // Actualizar estado si el autor es ADMIN y está ABIERTO
+        Usuario usuarioAutor = usuarioRepository.findByEmail(autor).orElse(null);
+        if (usuarioAutor != null && "ROLE_ADMIN".equals(usuarioAutor.getRol())
+                && ticket.getEstado() == EstadoTicket.ABIERTO) {
             ticket.setEstado(EstadoTicket.EN_PROGRESO);
             ticket.setFechaActualizacion(new Date());
         }

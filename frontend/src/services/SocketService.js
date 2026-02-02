@@ -66,9 +66,11 @@ class SocketService {
                 this.emit('TICKET_UPDATE', message.body);
             });
 
-            // 3. Suscribirse a actualizaciones generales de tickets
+            // 3. Suscribirse a actualizaciones generales de tickets (Broadcast Global)
             this.client.subscribe('/topic/tickets', (message) => {
-                console.log('Ticket Broadcast:', message.body);
+                console.log('>>> Ticket Broadcast recibido:', message.body);
+                // Emitimos el evento para que las listas y detalles se refresquen
+                this.emit('TICKET_UPDATE', message.body);
             });
         };
 

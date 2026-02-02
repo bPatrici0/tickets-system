@@ -188,6 +188,7 @@ import api from '@/services/api';
 import Swal from 'sweetalert2';
 import SoundService from '@/services/SoundService';
 import ReportService from '@/services/ReportService';
+import SocketService from '@/services/SocketService';
 
 export default {
     data() {
@@ -212,6 +213,19 @@ export default {
     created() {
         this.verificarPermisos();
         this.cargarTicketCompleto();
+
+        // Suscribirse a actualizaciones en tiempo real
+        this.liveUpdateHandler = (data) => {
+            console.log('>>> AdminTicketEstatus: Actualización detectada via Socket:', data);
+            this.cargarTicketCompleto();
+        };
+        SocketService.on('TICKET_UPDATE', this.liveUpdateHandler);
+    },
+
+    beforeUnmount() {
+        if (this.liveUpdateHandler) {
+            SocketService.off('TICKET_UPDATE', this.liveUpdateHandler);
+        }
     },
 
     methods: {
@@ -678,11 +692,34 @@ export default {
 
 <style scoped>
 .btn-matrix {
-    @apply bg-green-500/20 text-green-400 border border-green-500 px-4 py-2 rounded hover:bg-green-500/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+    background-color: rgba(0, 255, 65, 0.2);
+    color: #4ade80; /* text-green-400 */
+    border: 1px solid #22c55e; /* border-green-500 */
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.btn-matrix:hover:not(:disabled) {
+    background-color: rgba(34, 197, 94, 0.3); /* hover:bg-green-500/30 */
+}
+.btn-matrix:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .btn-status {
-    @apply px-4 py-2 rounded border text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+    border: 1px solid transparent;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
+.btn-status:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 .cursor-blink {
@@ -695,7 +732,9 @@ export default {
 }
 
 .terminal-box {
-    @apply border border-green-500 p-6 rounded-lg;
+    border: 1px solid #22c55e; /* border-green-500 */
+    padding: 1.5rem;
+    border-radius: 0.5rem;
 }
 
 .history-entry {

@@ -91,6 +91,9 @@ public class TicketService {
                 .notifyAdmins("NUEVO_TICKET [" + savedTicket.getPrioridad() + "]: " + savedTicket.getTitulo() + " (ID: "
                         + savedTicket.getId() + ")");
 
+        // Broadcast global para actualización de listas
+        notificationService.broadcastTicketUpdate("TICKET_CREATED:" + savedTicket.getId());
+
         return savedTicket;
 
     }
@@ -200,7 +203,12 @@ public class TicketService {
             }
         }
 
-        return ticketRepository.save(ticket);
+        Ticket updatedTicket = ticketRepository.save(ticket);
+
+        // Broadcast global para actualización de listas y detalles
+        notificationService.broadcastTicketUpdate("TICKET_UPDATED:" + id);
+
+        return updatedTicket;
     }
 
     public void eliminarTicket(Long id) {
@@ -257,6 +265,9 @@ public class TicketService {
                     "NUEVO_COMENTARIO en tu Ticket #" + ticket.getId());
         }
 
+        // Broadcast global para actualización de comentarios en tiempo real
+        notificationService.broadcastTicketUpdate("COMMENT_ADDED:" + ticketId);
+
         return convertComentarioToDTO(comentarioGuardado);
 
     }
@@ -289,6 +300,9 @@ public class TicketService {
         // Notificar al usuario sobre el cambio de estado
         notificationService.notifyUser(updatedTicket.getCreadoPor().getEmail(),
                 "ESTADO_ACTUALIZADO: Tu ticket #" + updatedTicket.getId() + " ahora está " + nuevoEstado);
+
+        // Broadcast global
+        notificationService.broadcastTicketUpdate("STATUS_CHANGED:" + Id);
 
         return updatedTicket;
 

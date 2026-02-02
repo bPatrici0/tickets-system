@@ -594,7 +594,17 @@ export default {
                 totalTickets: this.tickets.length
             };
             
-            await ReportService.generateSystemReport(stats, this.tickets, this.auditLogs);
+            
+            // Consultar métricas de rendimiento para el reporte
+            let performanceData = [];
+            try {
+                const perfResponse = await api.get('/auditoria/performance');
+                performanceData = perfResponse.data || [];
+            } catch (err) {
+                console.warn('No se pudieron obtener métricas para el reporte:', err);
+            }
+
+            await ReportService.generateSystemReport(stats, this.tickets, this.auditLogs, performanceData);
             
             Swal.fire({
                 title: '> REPORTE GENERADO',

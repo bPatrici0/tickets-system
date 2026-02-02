@@ -2,7 +2,7 @@ import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 
 class ReportService {
-    async generateSystemReport(stats, tickets, auditLogs = []) {
+    async generateSystemReport(stats, tickets, auditLogs = [], performanceData = []) {
         try {
             const doc = new jsPDF();
             const timestamp = new Date().toLocaleString();
@@ -114,12 +114,31 @@ class ReportService {
                 headStyles: { fillColor: [50, 50, 50] }
             });
 
-            // 5. Registro de Auditoría (Operaciones Recientes)
+            // 5. Análisis de Rendimiento Técnico (Ranking)
+            if (performanceData && performanceData.length > 0) {
+                doc.setFontSize(16);
+                doc.setTextColor(0, 0, 0);
+                doc.text("5. Análisis de Rendimiento Técnico", 10, doc.lastAutoTable.finalY + 15);
+
+                autoTable(doc, {
+                    startY: doc.lastAutoTable.finalY + 20,
+                    head: [["Posición", "Técnico (Email)", "Tickets Resueltos"]],
+                    body: performanceData.map((item, index) => [
+                        `#${index + 1}`,
+                        item.usuario,
+                        item.cantidadResoluciones
+                    ]),
+                    theme: 'grid',
+                    headStyles: { fillColor: [0, 100, 100] }
+                });
+            }
+
+            // 6. Registro de Auditoría (Operaciones Recientes)
             if (auditLogs && auditLogs.length > 0) {
                 doc.addPage();
                 doc.setTextColor(0, 0, 0);
                 doc.setFontSize(16);
-                doc.text("5. Registro de Auditoría (Operaciones Recientes)", 10, 20);
+                doc.text("6. Registro de Auditoría (Operaciones Recientes)", 10, 20);
 
                 autoTable(doc, {
                     startY: 25,
@@ -137,13 +156,13 @@ class ReportService {
                 });
             }
 
-            // 6. Alertas Críticas (Solo si hay)
+            // 7. Alertas Críticas (Solo si hay)
             const criticalOnes = tickets ? tickets.filter(t => t.prioridad === 'CRITICA') : [];
             if (criticalOnes.length > 0) {
                 doc.addPage();
                 doc.setTextColor(200, 0, 0);
                 doc.setFontSize(18);
-                doc.text("6. ALERTA: TICKETS CRÍTICOS DETECTADOS", 10, 20);
+                doc.text("7. ALERTA: TICKETS CRÍTICOS DETECTADOS", 10, 20);
 
                 autoTable(doc, {
                     startY: 30,

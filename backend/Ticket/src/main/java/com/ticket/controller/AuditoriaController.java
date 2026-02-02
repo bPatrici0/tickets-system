@@ -1,6 +1,7 @@
 package com.ticket.controller;
 
 import com.ticket.entity.Auditoria;
+import com.ticket.dto.PerformanceDTO;
 import com.ticket.service.AuditoriaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,5 +27,11 @@ public class AuditoriaController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Auditoria>> obtenerUltimosMovimientos() {
         return ResponseEntity.ok(auditoriaService.obtenerUltimosMovimientos());
+    }
+
+    @GetMapping("/performance")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<PerformanceDTO>> obtenerRendimientoTecnicos() {
+        return ResponseEntity.ok(auditoriaService.obtenerEstadisticasRendimiento());
     }
 }

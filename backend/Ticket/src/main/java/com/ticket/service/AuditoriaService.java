@@ -1,6 +1,7 @@
 package com.ticket.service;
 
 import com.ticket.entity.Auditoria;
+import com.ticket.dto.PerformanceDTO;
 import com.ticket.repository.AuditoriaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,5 +38,9 @@ public class AuditoriaService {
 
     public List<Auditoria> obtenerUltimosMovimientos() {
         return auditoriaRepository.findTop20ByOrderByFechaDesc();
+    }
+
+    public List<PerformanceDTO> obtenerEstadisticasRendimiento() {
+        return auditoriaRepository.countResolucionesPorUsuario();
     }
 }

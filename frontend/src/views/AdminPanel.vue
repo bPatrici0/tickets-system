@@ -17,6 +17,9 @@
               <button @click="generarReporte" class="w-full text-left px-4 py-2 text-green-400 hover:bg-green-500/20 transition-colors border-b border-green-900/50">
                 > Generar Reporte PDF
               </button>
+              <button @click="$router.push('/admin/metrics')" class="w-full text-left px-4 py-2 text-blue-400 hover:bg-blue-500/20 transition-colors border-b border-green-900/50">
+                > Métricas de Equipo
+              </button>
               <button @click="handleLogout" class="w-full text-left px-4 py-2 text-red-500 hover:bg-red-500/10 transition-colors">
                 > Cerrar sesión
               </button>
@@ -659,11 +662,24 @@ select:focus {
 }
 
 .terminal-box {
-  @apply border border-green-500 rounded-lg p-4;
+  border: 1px solid #00FF41;
+  border-radius: 0.5rem;
+  padding: 1rem;
 }
 
 .btn-matrix {
-  @apply bg-green-500/20 text-green-400 border border-green-500 px-3 py-1 hover:bg-green-500/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+  background-color: rgba(0, 255, 65, 0.2);
+  color: #00ff41;
+  border: 1px solid #00ff41;
+  padding: 0.25rem 0.75rem;
+  transition: all 0.3s ease;
+}
+.btn-matrix:hover:not(:disabled) {
+  background-color: rgba(0, 255, 65, 0.3);
+}
+.btn-matrix:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Animaciones del Menú */

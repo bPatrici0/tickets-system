@@ -7,10 +7,11 @@ import TicketView from '../views/TicketView.vue';
 import AdminPanelUser from '../views/AdminPanelUser.vue';
 import AdminTicketEstatus from '../views/AdminTicketEstatus.vue';
 import AdminTicketsView from '../views/AdminTicketsView.vue';
+import AdminMetrics from '../views/AdminMetrics.vue';
 
 const routes = [
     {
-        path:'/',
+        path: '/',
         redirect: '/login'
     },
     {
@@ -88,6 +89,16 @@ const routes = [
             requiresAuth: true,
             requiresAdmin: true
         }
+    },
+    {
+        path: '/admin/metrics',
+        name: 'AdminMetrics',
+        component: AdminMetrics,
+        meta: {
+            title: '> Admin - Métricas',
+            requiresAuth: true,
+            requiredAdmin: true
+        }
     }
 ];
 
@@ -96,11 +107,11 @@ const router = createRouter({
     routes
 });
 
-router.beforeEach ((to, from, next) => {
+router.beforeEach((to, from, next) => {
     const isAuthenticated = localStorage.getItem('userEmail');
     const userRole = localStorage.getItem('userRole');
 
-    if(to.meta.public) {
+    if (to.meta.public) {
         return next();
     }
 

@@ -40,8 +40,6 @@ public class AuditoriaService {
         return auditoriaRepository.findTop20ByOrderByFechaDesc();
     }
 
-    @GetMapping("/performance")
-    @PreAuthorize("hasRole('ADMIN')")
     public List<PerformanceDTO> obtenerEstadisticasRendimiento() {
         return auditoriaRepository.countResolucionesPorUsuario();
     }

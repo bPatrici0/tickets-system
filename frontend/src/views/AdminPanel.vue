@@ -88,8 +88,8 @@
         </div>
 
         <!-- Lista de usuarios -->
-        <div v-else class="space-y-3 max-h-96 overflow-y-auto">
-          <div v-for="user in filteredUsers" :key="user.id" class="p-3 border border-green-500 rounded">
+        <div v-else class="space-y-3 max-h-96 overflow-y-auto mb-4">
+          <div v-for="user in paginatedUsers" :key="user.id" class="p-3 border border-green-500 rounded">
             <div class="flex justify-between items-center mb-2">
                 <div>
                     <span class="text-green-300 font-mono">{{ user.email }}</span>
@@ -110,6 +110,26 @@
               > Actualizando...
             </div>
           </div>
+        </div>
+        <!-- Paginación de usuarios -->
+        <div v-if="filteredUsers.length > usuariosPorPagina" class="flex justify-between items-center mt-2 px-1">
+            <button 
+                @click="paginaUsuarios > 1 ? paginaUsuarios-- : null" 
+                class="btn-matrix text-[10px] px-2 py-1"
+                :disabled="paginaUsuarios === 1"
+            >
+                « ANTERIOR
+            </button>
+            <span class="text-[10px] text-green-500 font-mono">
+                PÁGINA {{ paginaUsuarios }} DE {{ totalPaginasUsuarios }}
+            </span>
+            <button 
+                @click="paginaUsuarios < totalPaginasUsuarios ? paginaUsuarios++ : null" 
+                class="btn-matrix text-[10px] px-2 py-1"
+                :disabled="paginaUsuarios === totalPaginasUsuarios"
+            >
+                SIGUIENTE »
+            </button>
         </div>
 
         <button @click="fetchUsers" class="btn-matrix mt-4 text-sm" :disabled="loadingUsers">
@@ -241,7 +261,15 @@ export default {
       filtroRol: 'TODOS',
       showMenu: false,
       auditLogs: [],
-      userEmail: ''
+      userEmail: '',
+      paginaUsuarios: 1,
+      usuariosPorPagina: 5
+    }
+  },
+
+  watch: {
+    filtroRol() {
+      this.paginaUsuarios = 1;
     }
   },
 
@@ -267,6 +295,15 @@ export default {
 
     administradoresCount() {
         return this.users.filter(user => user.rol === 'ROLE_ADMIN').length;
+    },
+
+    totalPaginasUsuarios() {
+        return Math.ceil(this.filteredUsers.length / this.usuariosPorPagina) || 1;
+    },
+
+    paginatedUsers() {
+        const inicio = (this.paginaUsuarios - 1) * this.usuariosPorPagina;
+        return this.filteredUsers.slice(inicio, inicio + this.usuariosPorPagina);
     },
 
     ticketsAbiertos() {

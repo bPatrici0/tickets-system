@@ -88,7 +88,7 @@
         </div>
 
         <!-- Lista de usuarios -->
-        <div v-else class="space-y-3 max-h-96 overflow-y-auto mb-4">
+        <div v-else class="space-y-3 h-[520px] overflow-y-auto mb-4 pr-1">
           <div v-for="user in paginatedUsers" :key="user.id" class="p-3 border border-green-500 rounded">
             <div class="flex justify-between items-center mb-2">
                 <div>
@@ -169,7 +169,7 @@
         </div>
 
         <!-- Lista de tickets -->
-        <div v-else class="space-y-3 max-h-[450px] overflow-y-auto mb-4">
+        <div v-else class="space-y-3 h-[520px] overflow-y-auto mb-4 pr-1">
           <div v-for="ticket in paginatedTickets" :key="ticket.id"
                class="p-3 border border-green-500 rounded hover:bg-green-900/10 cursor-pointer"
                :class="{ 'row-critica': ticket.prioridad === 'CRITICA' }"

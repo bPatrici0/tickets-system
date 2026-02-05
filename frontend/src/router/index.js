@@ -8,6 +8,7 @@ import AdminPanelUser from '../views/AdminPanelUser.vue';
 import AdminTicketEstatus from '../views/AdminTicketEstatus.vue';
 import AdminTicketsView from '../views/AdminTicketsView.vue';
 import AdminMetrics from '../views/AdminMetrics.vue';
+import AdminUserDetail from '../views/AdminUserDetail.vue';
 
 const routes = [
     {
@@ -98,6 +99,16 @@ const routes = [
             title: '> Admin - Métricas',
             requiresAuth: true,
             requiredAdmin: true
+        }
+    },
+    {
+        path: '/admin/usuarios/:id',
+        name: 'AdminUserDetail',
+        component: AdminUserDetail,
+        meta: {
+            title: '> Admin - Detalle Usuario',
+            requiresAuth: true,
+            requiresAdmin: true
         }
     }
 ];

@@ -89,13 +89,15 @@
 
         <!-- Lista de usuarios -->
         <div v-else class="space-y-3 h-[520px] overflow-y-auto mb-4 pr-1">
-          <div v-for="user in paginatedUsers" :key="user.id" class="p-3 border border-green-500 rounded">
+          <div v-for="user in paginatedUsers" :key="user.id" 
+               class="p-3 border border-green-500 rounded hover:bg-green-500/5 cursor-pointer transition-all"
+               @click="verUsuario(user.id)">
             <div class="flex justify-between items-center mb-2">
                 <div>
                     <span class="text-green-300 font-mono">{{ user.email }}</span>
                     <span class="text-xs text-green-500">ID: {{ user.id }}</span>
                 </div>
-                <label class="switch">
+                <label class="switch" @click.stop>
                     <input type="checkbox" :checked="user.rol === 'ROLE_ADMIN'" @change="toggleRole(user)" :disabled="updatingUser === user.id">
                     <span class="slider round"></span>
                 </label>
@@ -555,6 +557,10 @@ export default {
     
     verTicket(ticketId) {
       this.$router.push(`/admin/tickets/${ticketId}`);
+    },
+
+    verUsuario(userId) {
+      this.$router.push(`/admin/usuarios/${userId}`);
     },
 
     verificarPermisos(userRole) {

@@ -169,8 +169,8 @@
         </div>
 
         <!-- Lista de tickets -->
-        <div v-else class="space-y-3 max-h-96 overflow-y-auto">
-          <div v-for="ticket in tickets" :key="ticket.id"
+        <div v-else class="space-y-3 max-h-[450px] overflow-y-auto mb-4">
+          <div v-for="ticket in paginatedTickets" :key="ticket.id"
                class="p-3 border border-green-500 rounded hover:bg-green-900/10 cursor-pointer"
                :class="{ 'row-critica': ticket.prioridad === 'CRITICA' }"
                @click="verTicket(ticket.id)">
@@ -193,6 +193,27 @@
               <div>Creado: {{ formatDate(ticket.fechaCreacion) }}</div>
             </div>
           </div>
+        </div>
+
+        <!-- Paginación de tickets -->
+        <div v-if="tickets.length > ticketsPorPagina" class="flex justify-between items-center mt-2 px-1">
+            <button 
+                @click="paginaTickets > 1 ? paginaTickets-- : null" 
+                class="btn-matrix text-[10px] px-2 py-1"
+                :disabled="paginaTickets === 1"
+            >
+                « ANTERIOR
+            </button>
+            <span class="text-[10px] text-green-500 font-mono">
+                PÁGINA {{ paginaTickets }} DE {{ totalPaginasTickets }}
+            </span>
+            <button 
+                @click="paginaTickets < totalPaginasTickets ? paginaTickets++ : null" 
+                class="btn-matrix text-[10px] px-2 py-1"
+                :disabled="paginaTickets === totalPaginasTickets"
+            >
+                SIGUIENTE »
+            </button>
         </div>
 
         <button
@@ -263,7 +284,9 @@ export default {
       auditLogs: [],
       userEmail: '',
       paginaUsuarios: 1,
-      usuariosPorPagina: 5
+      usuariosPorPagina: 5,
+      paginaTickets: 1,
+      ticketsPorPagina: 5
     }
   },
 
@@ -304,6 +327,15 @@ export default {
     paginatedUsers() {
         const inicio = (this.paginaUsuarios - 1) * this.usuariosPorPagina;
         return this.filteredUsers.slice(inicio, inicio + this.usuariosPorPagina);
+    },
+
+    totalPaginasTickets() {
+        return Math.ceil(this.tickets.length / this.ticketsPorPagina) || 1;
+    },
+
+    paginatedTickets() {
+        const inicio = (this.paginaTickets - 1) * this.ticketsPorPagina;
+        return this.tickets.slice(inicio, inicio + this.ticketsPorPagina);
     },
 
     ticketsAbiertos() {

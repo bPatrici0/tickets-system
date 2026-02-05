@@ -2,7 +2,11 @@
   <div class="min-h-screen bg-black p-4">
     <header class="terminal-box mb-6">
       <div class="flex justify-between items-center">
-        <h1 class="text-2xl">> Panel Admin<span class="cursor-blink">|</span></h1>
+        <h1 class="text-2xl">
+          > Panel Admin 
+          <span class="text-sm text-green-500/60 font-mono ml-2">[{{ userEmail }}]</span>
+          <span class="cursor-blink">|</span>
+        </h1>
         <div class="relative">
           <button
             @click="toggleMenu"
@@ -236,7 +240,8 @@ export default {
       updatingUser: null,
       filtroRol: 'TODOS',
       showMenu: false,
-      auditLogs: []
+      auditLogs: [],
+      userEmail: ''
     }
   },
 
@@ -277,6 +282,7 @@ export default {
 
   created() {
     const userRole = localStorage.getItem('userRole');
+    this.userEmail = localStorage.getItem('userEmail') || 'Admin';
     console.log('Rol del usuario:', userRole);
 
     if (userRole !== 'ROLE_ADMIN') {

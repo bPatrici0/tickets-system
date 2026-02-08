@@ -55,23 +55,23 @@ public class AdminController {
     @GetMapping("/tickets/{id}")
     public ResponseEntity<Ticket> obtenerTicketPorId(@PathVariable Long id) {
         log.debug("AdminController.obtenerTicketPorId() llamado - ID: {}", id);
-         try {
-             Ticket ticket = ticketService.obtenerTicketPorId(id);
+        try {
+            Ticket ticket = ticketService.obtenerTicketPorId(id);
 
-             if (ticket == null) {
-                 log.warn("Ticket no encontrado - ID: {}", id);
-                 return ResponseEntity.notFound().build();
-             }
+            if (ticket == null) {
+                log.warn("Ticket no encontrado - ID: {}", id);
+                return ResponseEntity.notFound().build();
+            }
 
-             log.debug("Ticket encontrado: {}", ticket.getTitulo());
-             return ResponseEntity.ok(ticket);
-         } catch (NotFoundException e) {
-             log.warn("Ticket no encontrado - ID: {}", id);
-             return ResponseEntity.notFound().build();
-         } catch (Exception e) {
-             log.error("Error obteniendo ticket ID {}: {}", id, e.getMessage());
-             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-         }
+            log.debug("Ticket encontrado: {}", ticket.getTitulo());
+            return ResponseEntity.ok(ticket);
+        } catch (NotFoundException e) {
+            log.warn("Ticket no encontrado - ID: {}", id);
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            log.error("Error obteniendo ticket ID {}: {}", id, e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PutMapping("/usuarios/{id}/role")
@@ -111,6 +111,12 @@ public class AdminController {
     @DeleteMapping("/usuarios/{id}")
     public ResponseEntity<?> eliminarUsuario(@PathVariable Long id) {
         log.info("AdminController.eliminarUsuario() llamado - ID: {}", id);
+
+        if (id == 1) {
+            log.warn("Intento de eliminar super usuario - Acceso Denegado");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Error: El Super Usuario no pued ser eliminado del sistema!!!...");
+        }
 
         try {
             if (!usuarioRepository.existsById(id)) {
@@ -194,8 +200,7 @@ public class AdminController {
             return ResponseEntity.ok(Map.of(
                     "mensaje", "Contraseña reiniciada correctamente",
                     "usuario", usuarioActualizado.getEmail(),
-                    "passwordResetRequired", usuarioActualizado.getPasswordResetRequired()
-            ));
+                    "passwordResetRequired", usuarioActualizado.getPasswordResetRequired()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error al reiniciar contraseña: " + e.getMessage());
         }

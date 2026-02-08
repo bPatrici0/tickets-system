@@ -161,6 +161,12 @@ public class AdminController {
     public ResponseEntity<?> cambiarEstadoUsuario(@PathVariable Long id, @RequestBody Map<String, Boolean> request) {
         log.debug("Cambiando estado usuario ID: {}", id);
 
+        if (id == 1) {
+            log.warn("Intento de desactivar  al Super Usuario - Acesso Denegado!!!...");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Error: El Super Usuario no puede ser desactivado!!!...");
+        }
+
         Boolean activo = request.get("activo");
         if (activo == null) {
             log.warn("Error: campo 'activo' no encontrado en request para usuario ID: {}", id);

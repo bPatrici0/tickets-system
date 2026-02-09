@@ -4,6 +4,7 @@ import com.ticket.entity.Usuario;
 import com.ticket.entity.Ticket;
 import com.ticket.service.UsuarioService;
 import com.ticket.service.TicketService;
+import com.ticket.service.DatabaseExportService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,6 +36,9 @@ public class AdminController {
 
     @Autowired
     private TicketService ticketService;
+
+    @Autowired
+    private DatabaseExportService databaseExportService;
 
     @GetMapping("/usuarios")
     public ResponseEntity<List<Usuario>> obtenerTodosLosUsuarios() {
@@ -209,6 +213,24 @@ public class AdminController {
                     "passwordResetRequired", usuarioActualizado.getPasswordResetRequired()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error al reiniciar contraseña: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/db/export")
+    public ResponseEntity<String> exportarBaseDeDatos() {
+        log.info("AdminController: Solicitada exportación de BBDD");
+
+        try {
+            String sqlDump = databaseExportService.exportDatabase();
+            return ResponseEntity.ok()
+                    .header("Content-Disposition", "attachment; filename=backup_db_" +
+                            System.currentTimeMillis() + ".sql")
+                    .header("Content-Type", "application/sql")
+                    .body(sqlDump);
+        } catch (Exception e) {
+            log.error("Error al exportar BBDD: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("-- ERROR AL GENERAR BACKUP: " + e.getMessage());
         }
     }
 }

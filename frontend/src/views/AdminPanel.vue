@@ -98,7 +98,7 @@
                     <span class="text-xs text-green-500">ID: {{ user.id }}</span>
                 </div>
                 <label class="switch" @click.stop>
-                    <input type="checkbox" :checked="user.rol === 'ROLE_ADMIN'" @change="toggleRole(user)" :disabled="updatingUser === user.id">
+                    <input type="checkbox" :checked="user.rol === 'ROLE_ADMIN'" @change="toggleRole(user)" :disabled="updatingUser === user.id || user.id === 1">
                     <span class="slider round"></span>
                 </label>
             </div>

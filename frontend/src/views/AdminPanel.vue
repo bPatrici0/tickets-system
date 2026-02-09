@@ -70,14 +70,25 @@
             > Usuarios <span class="text-green-400">({{ filteredUsers.length }})/({{ users.length }})</span><span class="cursor-blink"></span>
         </h2>
 
-        <!--filtro por rol-->
-        <div class="flex items-center space-x-2">
-            <label class="text-green-400 text-sm">Filtrar: </label>
-            <select v-model="filtroRol" class="bg-black border border-green-500 text-green-400 px-2 py-1 rounded text-sm">
-                <option value="TODOS">Todos</option>
-                <option value="ROLE_ADMIN">Administradores</option>
-                <option value="ROLE_USER">Usuarios</option>
-            </select>
+        <!-- Filtros -->
+        <div class="flex flex-col space-y-3 mb-4">
+            <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-green-500 font-mono text-xs">> BUSCAR:</span>
+                <input 
+                    v-model="busquedaUsuario" 
+                    type="text" 
+                    placeholder="NOMBRE O IDENTIFICADOR..."
+                    class="w-full bg-black border border-green-500 text-green-400 pl-24 pr-3 py-2 rounded text-xs outline-none focus:ring-1 focus:ring-green-400"
+                >
+            </div>
+            <div class="flex items-center space-x-2">
+                <label class="text-green-400 text-sm font-mono">> CATEGORÍA: </label>
+                <select v-model="filtroRol" class="bg-black border border-green-500 text-green-400 px-2 py-1 rounded text-sm outline-none">
+                    <option value="TODOS">Todos</option>
+                    <option value="ROLE_ADMIN">Administrador</option>
+                    <option value="ROLE_USER">Usuario</option>
+                </select>
+            </div>
         </div>
 
         <!-- estado de carga -->
@@ -291,22 +302,39 @@ export default {
       paginaUsuarios: 1,
       usuariosPorPagina: 5,
       paginaTickets: 1,
-      ticketsPorPagina: 5
+      ticketsPorPagina: 5,
+      busquedaUsuario: ''
     }
   },
 
   watch: {
     filtroRol() {
       this.paginaUsuarios = 1;
+    },
+    busquedaUsuario() {
+      this.paginaUsuarios = 1;
     }
   },
 
   computed: {
     filteredUsers() {
-        if (this.filtroRol === 'TODOS') {
-            return this.users;
+        let result = this.users;
+
+        // Filtro por rol
+        if (this.filtroRol !== 'TODOS') {
+            result = result.filter(user => user.rol === this.filtroRol);
         }
-        return this.users.filter(user => user.rol === this.filtroRol);
+
+        // Filtro por búsqueda
+        if (this.busquedaUsuario.trim()) {
+            const query = this.busquedaUsuario.toLowerCase();
+            result = result.filter(user => 
+                (user.nombre && user.nombre.toLowerCase().includes(query)) || 
+                (user.email && user.email.toLowerCase().includes(query))
+            );
+        }
+
+        return result;
     },
 
     filtroMensaje() {

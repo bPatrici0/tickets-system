@@ -48,21 +48,20 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-green-500 text-xs mb-1 uppercase tracking-widest">Rango en el Sistema</label>
-              <select 
-                v-model="editForm.rol" 
+              <select v-model="editForm.rol"
+                :disabled="userData.id === 1" 
                 class="w-full bg-black border border-green-500 text-green-400 px-3 py-2 rounded outline-none"
-              >
+                :class="{ 'opacity-50 cursor-not-allowed': userData.id === 1 }">
                 <option value="ROLE_USER">Usuario Regular</option>
                 <option value="ROLE_ADMIN">Administrador</option>
               </select>
             </div>
             <div>
               <label class="block text-green-500 text-xs mb-1 uppercase tracking-widest">Estado de Conexión</label>
-              <select 
-                v-model="editForm.activo" 
+              <select v-model="editForm.activo"
+                :disabled="userData.id === 1"
                 class="w-full bg-black border border-green-500 text-green-400 px-3 py-2 rounded outline-none"
-                :class="editForm.activo ? 'text-green-400' : 'text-red-500'"
-              >
+                :class="[editForm.activo ? 'text-green-400' : 'text-red-500', { 'opacity-50 cursor-not-allowed': userData.id === 1 }]">
                 <option :value="true">Activo / Operativo</option>
                 <option :value="false">Inactivo / Bloqueado</option>
               </select>
@@ -94,8 +93,9 @@
       </div>
 
       <div class="mt-6 flex justify-between px-2">
-        <button @click="confirmDelete" class="text-red-500 text-xs hover:underline uppercase tracking-tighter">
-          [!] Eliminar usuario permanentemente 
+        <button v-if="userData.id !== 1" @click="confirmDelete"
+          class="text-red-500 text-xs hover:underline uppercase tracking-tighter">
+            [!] Eliminar usuario permanentemente 
         </button>
         <div class="text-green-900 text-[10px] font-mono">
           SYS_LOG: READ_ACCESS_GRANTED | USER_ID: {{ userData.id }}

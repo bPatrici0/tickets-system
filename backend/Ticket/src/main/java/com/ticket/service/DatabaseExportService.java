@@ -25,7 +25,7 @@ public class DatabaseExportService {
         try {
             String cleanUrl = datasourceUrl.replace("jdbc:postgresql://", "");
             String host = cleanUrl.split(":")[0];
-            String postPart = cleanUrl.split(":")[0];
+            String postPart = cleanUrl.split(":")[1];
             String port = postPart.split("/")[0];
             String dbName = postPart.split("/")[1];
 
@@ -33,7 +33,7 @@ public class DatabaseExportService {
                     "pg_dump",
                     "-h", host,
                     "-p", port,
-                    "-u", dbUser,
+                    "-U", dbUser,
                     "-d", dbName);
 
             pb.environment().put("PGPASSWORD", dbPassword);

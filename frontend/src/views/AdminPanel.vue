@@ -171,8 +171,21 @@
       <!-- Sección Tickets -->
       <div class="terminal-box p-4">
         <h2 class="text-xl mb-4 cursor-pointer hover:text-green-300" @click="$router.push('/admin/tickets')">
-            > Tickets <span class="text-green-400">({{ tickets.length }})</span><span class="cursor-blink"></span>
+            > Tickets <span class="text-green-400">({{ filteredTickets.length }})/({{ tickets.length }})</span><span class="cursor-blink"></span>
         </h2>
+
+        <!-- Filtro Búsqueda Tickets -->
+        <div class="mb-4">
+            <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-green-500 font-mono text-xs">> BUSCAR_ENC:</span>
+                <input 
+                    v-model="busquedaTicket" 
+                    type="text" 
+                    placeholder="ID, TÍTULO O EMAIL..."
+                    class="w-full bg-black border border-green-500 text-green-400 pl-32 pr-3 py-2 rounded text-xs outline-none focus:ring-1 focus:ring-green-400"
+                >
+            </div>
+        </div>
 
         <!-- estado de carga -->
         <div v-if="loadingTickets" class="text-green-500 text-center py-4">
@@ -212,7 +225,7 @@
         </div>
 
         <!-- Paginación de tickets -->
-        <div v-if="tickets.length > ticketsPorPagina" class="flex justify-between items-center mt-2 px-1">
+        <div v-if="filteredTickets.length > ticketsPorPagina" class="flex justify-between items-center mt-2 px-1">
             <button 
                 @click="paginaTickets > 1 ? paginaTickets-- : null" 
                 class="btn-matrix text-[10px] px-2 py-1"
@@ -303,7 +316,8 @@ export default {
       usuariosPorPagina: 5,
       paginaTickets: 1,
       ticketsPorPagina: 5,
-      busquedaUsuario: ''
+      busquedaUsuario: '',
+      busquedaTicket: ''
     }
   },
 
@@ -313,6 +327,9 @@ export default {
     },
     busquedaUsuario() {
       this.paginaUsuarios = 1;
+    },
+    busquedaTicket() {
+      this.paginaTickets = 1;
     }
   },
 
@@ -362,23 +379,33 @@ export default {
         return this.filteredUsers.slice(inicio, inicio + this.usuariosPorPagina);
     },
 
+    filteredTickets() {
+        if (!this.busquedaTicket.trim()) return this.tickets;
+        const query = this.busquedaTicket.toLowerCase();
+        return this.tickets.filter(t => 
+            t.id.toString().includes(query) ||
+            (t.titulo && t.titulo.toLowerCase().includes(query)) ||
+            (t.creadoPor?.email && t.creadoPor.email.toLowerCase().includes(query))
+        );
+    },
+
     totalPaginasTickets() {
-        return Math.ceil(this.tickets.length / this.ticketsPorPagina) || 1;
+        return Math.ceil(this.filteredTickets.length / this.ticketsPorPagina) || 1;
     },
 
     paginatedTickets() {
         const inicio = (this.paginaTickets - 1) * this.ticketsPorPagina;
-        return this.tickets.slice(inicio, inicio + this.ticketsPorPagina);
+        return this.filteredTickets.slice(inicio, inicio + this.ticketsPorPagina);
     },
 
     ticketsAbiertos() {
-      return this.tickets.filter(t => t.estado === 'ABIERTO').length;
+      return this.filteredTickets.filter(t => t.estado === 'ABIERTO').length;
     },
     ticketsEnProgreso() {
-      return this.tickets.filter(t => t.estado === 'EN_PROGRESO').length;
+      return this.filteredTickets.filter(t => t.estado === 'EN_PROGRESO').length;
     },
     ticketsResueltos() {
-      return this.tickets.filter(t => t.estado === 'RESUELTO').length;
+      return this.filteredTickets.filter(t => t.estado === 'RESUELTO').length;
     }
   },
 

@@ -24,6 +24,9 @@
               <button @click="$router.push('/admin/metrics')" class="w-full text-left px-4 py-2 text-blue-400 hover:bg-blue-500/20 transition-colors border-b border-green-900/50">
                 > Métricas de Equipo
               </button>
+              <button @click="exportarBBDD" class="w-full text-left px-4 py-2 text-green-400 hover:bg-green-500/20 transition-colors border-b border-green-900/50">
+                > Exportar Copia BBDD (.sql)
+              </button>
               <button @click="handleLogout" class="w-full text-left px-4 py-2 text-red-500 hover:bg-red-500/10 transition-colors">
                 > Cerrar sesión
               </button>
@@ -553,6 +556,52 @@ export default {
       } finally {
         this.updatingUser = null;
       }
+    },
+
+    async exportarBBDD() {
+      this.showOptions = false;
+
+      Swal.fire({
+        title: '> INICIANDO BACKUP',
+        text: 'Extrayendo datos del núcleo de la base de datos...',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading(), 
+        background: '#000',
+        color: '#00ff41',
+        customClass: { popup: 'border border-blue-500 rounded-none' }
+      });
+
+      try {
+        const response = await api.get('/admin/db/export', {
+          responseType: 'blob' 
+        });
+
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `backup_db_${new Date().getTime()}.sql`);
+        document.body.appendChild(link);
+        link.click();
+
+        Swal.fire({
+          title: '> Éxito',
+          text: 'Base de datos exportada y descargada correctamente!!!...',
+          icon: 'success',
+          background: '#000',
+          color: '#00ff41',
+          customClass: {popup: 'border border-green-500 rounded-none' }
+        });
+      } catch (error) {
+        console.error("Error en exportación:", error);
+        Swal.fire({
+          title: '> FALLO CRÍTICO',
+          text: 'No se pudo completar la exportacion de la base de datos.',
+          icon: 'error',
+          background: '#000',
+          color: '#ff0000',
+          customClass: { popup: 'border border-red-500 rounded-none' }
+        });
+      } 
     },
     
     verTicket(ticketId) {

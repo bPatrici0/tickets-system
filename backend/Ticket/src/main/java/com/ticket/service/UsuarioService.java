@@ -28,6 +28,12 @@ public class UsuarioService {
     }
 
     public Usuario cambiarRolUsuario(Long id, String nuevoRol) {
+        if (id == 1) {
+            log.warn("Intento de cambiar rol al Super Usuario denegado en UsuarioService");
+            throw new RuntimeException(
+                    "Operacion no permitida: El Super Usuario siempre debe conservar el rol de Administrador!!!...");
+        }
+
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
 
@@ -48,11 +54,11 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
 
-        //Establecer una constraseña temporal
+        // Establecer una constraseña temporal
         String passwordTemporal = "12345";
         usuario.setPassword(passwordEncoder.encode(passwordTemporal));
 
-        //marcar que debe cambiar la contraseña en el proximo login
+        // marcar que debe cambiar la contraseña en el proximo login
         usuario.setPasswordResetRequired(true);
 
         return usuarioRepository.save(usuario);
@@ -63,18 +69,18 @@ public class UsuarioService {
                 .orElseThrow(() -> new NotFoundException("Uusario no encontrado"));
 
         usuario.setPassword(passwordEncoder.encode(nuevaPassword));
-        usuario.setPasswordResetRequired(false); //ya no requiere cambio
+        usuario.setPasswordResetRequired(false); // ya no requiere cambio
 
         return usuarioRepository.save(usuario);
     }
 
-    //cambiar contraseña por email para uso despues del login
+    // cambiar contraseña por email para uso despues del login
     public Usuario cambiarPasswordPorEmail(String email, String nuevaPassword) {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
 
         usuario.setPassword(passwordEncoder.encode(nuevaPassword));
-        usuario.setPasswordResetRequired(false); //ya no requiere cambio
+        usuario.setPasswordResetRequired(false); // ya no requiere cambio
 
         return usuarioRepository.save(usuario);
     }

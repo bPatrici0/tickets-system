@@ -27,6 +27,9 @@
               <button @click="exportarBBDD" class="w-full text-left px-4 py-2 text-green-400 hover:bg-green-500/20 transition-colors border-b border-green-900/50">
                 > Exportar Copia BBDD (.sql)
               </button>
+              <button @click="importarBBDD" class="w-full text-left px-4 py-2 text-yellow-400 hover:bg-yellow-500/20 transition-colors border-b border-green-900/50">
+                > Importar/Restaurar BBDD (.sql)
+              </button>
               <button @click="handleLogout" class="w-full text-left px-4 py-2 text-red-500 hover:bg-red-500/10 transition-colors">
                 > Cerrar sesión
               </button>
@@ -657,6 +660,114 @@ export default {
           customClass: { popup: 'border border-red-500 rounded-none' }
         });
       } 
+    },
+
+    async importarBBDD() {
+      this.showMenu = false;
+
+      // Primera confirmación
+      const confirm1 = await Swal.fire({
+        title: '> ADVERTENCIA',
+        html: '<p style="color:#ff0;">Esta operación <b>REEMPLAZARÁ</b> todos los datos actuales de la base de datos con los del archivo seleccionado.</p><p style="color:#ff0; margin-top:8px;">Se recomienda <b>exportar una copia de seguridad</b> antes de continuar.</p>',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '> CONTINUAR',
+        cancelButtonText: '> CANCELAR',
+        background: '#000',
+        color: '#ffaa00',
+        confirmButtonColor: '#ff8800',
+        cancelButtonColor: '#333',
+        customClass: { popup: 'border border-yellow-500 rounded-none' }
+      });
+
+      if (!confirm1.isConfirmed) return;
+
+      // Selector de archivo
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = '.sql';
+
+      fileInput.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Validar extensión
+        if (!file.name.toLowerCase().endsWith('.sql')) {
+          Swal.fire({
+            title: '> ERROR',
+            text: 'Solo se aceptan archivos con extensión .sql',
+            icon: 'error',
+            background: '#000',
+            color: '#ff0000',
+            customClass: { popup: 'border border-red-500 rounded-none' }
+          });
+          return;
+        }
+
+        // Segunda confirmación con nombre del archivo
+        const confirm2 = await Swal.fire({
+          title: '> CONFIRMAR RESTAURACIÓN',
+          html: `<p style="color:#ff0;">Archivo seleccionado:</p><p style="color:#00ff41; font-family:monospace;"><b>${file.name}</b> (${(file.size / 1024).toFixed(1)} KB)</p><p style="color:#ff0000; margin-top:12px;"><b>¿Estás SEGURO de que deseas restaurar esta base de datos?</b></p>`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: '> SÍ, RESTAURAR',
+          cancelButtonText: '> CANCELAR',
+          background: '#000',
+          color: '#ff4444',
+          confirmButtonColor: '#cc0000',
+          cancelButtonColor: '#333',
+          customClass: { popup: 'border border-red-500 rounded-none' }
+        });
+
+        if (!confirm2.isConfirmed) return;
+
+        // Mostrar loading
+        Swal.fire({
+          title: '> RESTAURANDO BBDD',
+          text: 'Inyectando datos al núcleo del sistema... No cierre esta ventana.',
+          allowOutsideClick: false,
+          didOpen: () => Swal.showLoading(),
+          background: '#000',
+          color: '#ffaa00',
+          customClass: { popup: 'border border-yellow-500 rounded-none' }
+        });
+
+        try {
+          const formData = new FormData();
+          formData.append('file', file);
+
+          await api.post('/admin/db/import', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+          });
+
+          Swal.fire({
+            title: '> ÉXITO',
+            text: 'Base de datos restaurada correctamente. Los datos han sido actualizados.',
+            icon: 'success',
+            background: '#000',
+            color: '#00ff41',
+            customClass: { popup: 'border border-green-500 rounded-none' }
+          });
+
+          // Recargar datos del panel
+          this.fetchUsers();
+          this.fetchTickets();
+          this.fetchAuditLogs();
+
+        } catch (error) {
+          console.error('Error en importación:', error);
+          Swal.fire({
+            title: '> FALLO CRÍTICO',
+            text: 'No se pudo restaurar la base de datos: ' + (error.response?.data || error.message),
+            icon: 'error',
+            background: '#000',
+            color: '#ff0000',
+            customClass: { popup: 'border border-red-500 rounded-none' }
+          });
+        }
+      };
+
+      fileInput.click();
     },
     
     verTicket(ticketId) {

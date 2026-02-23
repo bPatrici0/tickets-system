@@ -233,4 +233,33 @@ public class AdminController {
                     .body("-- ERROR AL GENERAR BACKUP: " + e.getMessage());
         }
     }
+
+    @PostMapping("/db/import")
+    public ResponseEntity<String> importarBaseDeDatos(@RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
+        log.info("AdminController: Solicitada importación de BBDD - Archivo: {}", file.getOriginalFilename());
+
+        try {
+            // Validar que sea un archivo .sql
+            String fileName = file.getOriginalFilename();
+            if (fileName == null || !fileName.toLowerCase().endsWith(".sql")) {
+                return ResponseEntity.badRequest()
+                        .body("Error: Solo se aceptan archivos con extensión .sql");
+            }
+
+            // Validar que no esté vacío
+            if (file.isEmpty()) {
+                return ResponseEntity.badRequest()
+                        .body("Error: El archivo está vacío.");
+            }
+
+            String sqlContent = new String(file.getBytes(), java.nio.charset.StandardCharsets.UTF_8);
+            String resultado = databaseExportService.importDatabase(sqlContent);
+
+            return ResponseEntity.ok(resultado);
+        } catch (Exception e) {
+            log.error("Error al importar BBDD: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al restaurar la base de datos: " + e.getMessage());
+        }
+    }
 }

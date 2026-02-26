@@ -189,6 +189,7 @@ erDiagram
 | `DELETE` | `/usuarios/{id}` | Eliminar un usuario (cascade en tickets) |
 | `GET` | `/db/export` | Exportar la base de datos en formato SQL |
 | `POST` | `/db/import` | Importar/restaurar la base de datos desde archivo SQL (multipart) |
+| `POST` | `/db/purge` | Purgar todo el contenido del sistema (requiere credenciales de admin@devops.com) |
 
 #### 📋 AuditoriaController — `/api/auditoria` *(solo ROLE_ADMIN)*
 
@@ -354,6 +355,14 @@ El primer usuario del sistema (ID 1) está protegido contra:
 - Validación de extensión `.sql` tanto en frontend como en backend.
 - Doble confirmación de seguridad antes de ejecutar la restauración (operación destructiva).
 - Recarga automática de datos del panel después de importar.
+
+### ☠️ Purga Total del Sistema
+- Eliminación completa de **todos los tickets, comentarios e historial de auditoría**.
+- Los usuarios del sistema **NO** son eliminados.
+- **Restringido exclusivamente** a `admin@devops.com`.
+- El botón aparece **deshabilitado** (`[BLOQUEADO]`) para cualquier otro administrador.
+- Requiere **doble confirmación** + **verificación de contraseña** antes de ejecutar.
+- La contraseña se valida contra BCrypt en el backend.
 
 ### 🔔 Notificaciones en Tiempo Real
 - Alertas SweetAlert2 con estética Matrix.

@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import com.ticket.repository.UsuarioRepository;
+import com.ticket.repository.TicketRepository;
+import com.ticket.repository.ComentarioRepository;
+import com.ticket.repository.AuditoriaRepository;
 import com.ticket.dto.RegistroDTO;
 import com.ticket.dto.UsuarioUpdateDTO;
 import com.ticket.exception.NotFoundException;
@@ -39,6 +42,15 @@ public class AdminController {
 
     @Autowired
     private DatabaseExportService databaseExportService;
+
+    @Autowired
+    private ComentarioRepository comentarioRepository;
+
+    @Autowired
+    private AuditoriaRepository auditoriaRepository;
+
+    @Autowired
+    private TicketRepository ticketRepository;
 
     @GetMapping("/usuarios")
     public ResponseEntity<List<Usuario>> obtenerTodosLosUsuarios() {
@@ -235,7 +247,8 @@ public class AdminController {
     }
 
     @PostMapping("/db/import")
-    public ResponseEntity<String> importarBaseDeDatos(@RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
+    public ResponseEntity<String> importarBaseDeDatos(
+            @RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
         log.info("AdminController: Solicitada importación de BBDD - Archivo: {}", file.getOriginalFilename());
 
         try {
@@ -260,6 +273,60 @@ public class AdminController {
             log.error("Error al importar BBDD: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Error al restaurar la base de datos: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/db/purge")
+    public ResponseEntity<String> purgarSistema(@RequestBody Map<String, String> credentials) {
+        String email = credentials.get("email");
+        String password = credentials.get("password");
+
+        log.warn("⚠️  SOLICITUD DE PURGA DEL SISTEMA por: {}", email);
+
+        // Solo admin@devops.com puede ejecutar esta operación
+        if (!"admin@devops.com".equals(email)) {
+            log.warn("Intento de purga rechazado: usuario no autorizado ({})", email);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Error: Solo admin@devops.com puede ejecutar esta operación.");
+        }
+
+        // Verificar contraseña
+        Usuario admin = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("Usuario admin@devops.com no encontrado."));
+
+        if (!passwordEncoder.matches(password, admin.getPassword())) {
+            log.warn("Intento de purga rechazado: contraseña incorrecta para {}", email);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Error: Contraseña incorrecta.");
+        }
+
+        try {
+            log.warn("🔴 EJECUTANDO PURGA TOTAL DEL SISTEMA...");
+
+            // Orden: comentarios → tickets → auditoría (respetar FKs)
+            long comentarios = comentarioRepository.count();
+            comentarioRepository.deleteAll();
+            log.info("Eliminados {} comentarios.", comentarios);
+
+            long tickets = ticketRepository.count();
+            ticketRepository.deleteAll();
+            log.info("Eliminados {} tickets.", tickets);
+
+            long auditorias = auditoriaRepository.count();
+            auditoriaRepository.deleteAll();
+            log.info("Eliminados {} registros de auditoría.", auditorias);
+
+            String resumen = String.format(
+                    "Purga completada: %d comentarios, %d tickets, %d registros de auditoría eliminados.",
+                    comentarios, tickets, auditorias);
+
+            log.warn("✅ PURGA COMPLETADA: {}", resumen);
+            return ResponseEntity.ok(resumen);
+
+        } catch (Exception e) {
+            log.error("Error crítico durante la purga: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error durante la purga del sistema: " + e.getMessage());
         }
     }
 }

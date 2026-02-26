@@ -30,6 +30,15 @@
               <button @click="importarBBDD" class="w-full text-left px-4 py-2 text-yellow-400 hover:bg-yellow-500/20 transition-colors border-b border-green-900/50">
                 > Importar/Restaurar BBDD (.sql)
               </button>
+              <button 
+                @click="purgarSistema" 
+                :disabled="userEmail !== 'admin@devops.com'"
+                :class="userEmail === 'admin@devops.com' 
+                  ? 'w-full text-left px-4 py-2 text-red-500 hover:bg-red-500/20 transition-colors border-b border-green-900/50' 
+                  : 'w-full text-left px-4 py-2 text-gray-600 cursor-not-allowed border-b border-green-900/50'"
+              >
+                > Purgar Sistema {{ userEmail !== 'admin@devops.com' ? '[BLOQUEADO]' : '[☠]' }}
+              </button>
               <button @click="handleLogout" class="w-full text-left px-4 py-2 text-red-500 hover:bg-red-500/10 transition-colors">
                 > Cerrar sesión
               </button>
@@ -768,6 +777,98 @@ export default {
       };
 
       fileInput.click();
+    },
+
+    async purgarSistema() {
+      this.showMenu = false;
+
+      // Primera confirmación
+      const confirm1 = await Swal.fire({
+        title: '> ☠️ PURGA TOTAL DEL SISTEMA',
+        html: '<p style="color:#ff0000;">Esta operación <b>ELIMINARÁ PERMANENTEMENTE</b> todos los datos del sistema:</p><ul style="color:#ff4444; text-align:left; margin-top:10px;"><li>✘ Todos los tickets</li><li>✘ Todos los comentarios</li><li>✘ Todo el historial de auditoría</li></ul><p style="color:#ff0; margin-top:12px;">Los usuarios del sistema <b>NO</b> serán eliminados.</p>',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '> ENTIENDO, CONTINUAR',
+        cancelButtonText: '> CANCELAR',
+        background: '#000',
+        color: '#ff0000',
+        confirmButtonColor: '#cc0000',
+        cancelButtonColor: '#333',
+        customClass: { popup: 'border border-red-500 rounded-none' }
+      });
+
+      if (!confirm1.isConfirmed) return;
+
+      // Segunda confirmación + solicitar contraseña
+      const confirm2 = await Swal.fire({
+        title: '> VERIFICACIÓN DE IDENTIDAD',
+        html: '<p style="color:#ff4444;">Para confirmar la purga, introduce tu contraseña de <b>admin@devops.com</b>:</p>',
+        input: 'password',
+        inputPlaceholder: 'Contraseña de admin@devops.com',
+        inputAttributes: {
+          autocomplete: 'off'
+        },
+        showCancelButton: true,
+        confirmButtonText: '> EJECUTAR PURGA',
+        cancelButtonText: '> ABORTAR',
+        background: '#000',
+        color: '#ff0000',
+        confirmButtonColor: '#cc0000',
+        cancelButtonColor: '#333',
+        customClass: { 
+          popup: 'border border-red-500 rounded-none',
+          input: 'bg-black text-green-400 border-red-500 font-mono'
+        },
+        inputValidator: (value) => {
+          if (!value) return '¡Debes ingresar la contraseña!';
+        }
+      });
+
+      if (!confirm2.isConfirmed) return;
+
+      // Loading
+      Swal.fire({
+        title: '> ☠️ PURGANDO SISTEMA...',
+        text: 'Eliminando todos los datos del núcleo... No cierre esta ventana.',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading(),
+        background: '#000',
+        color: '#ff0000',
+        customClass: { popup: 'border border-red-500 rounded-none' }
+      });
+
+      try {
+        const response = await api.post('/admin/db/purge', {
+          email: this.userEmail,
+          password: confirm2.value
+        });
+
+        Swal.fire({
+          title: '> PURGA COMPLETADA',
+          text: response.data,
+          icon: 'success',
+          background: '#000',
+          color: '#00ff41',
+          customClass: { popup: 'border border-green-500 rounded-none' }
+        });
+
+        // Recargar datos del panel
+        this.fetchUsers();
+        this.fetchTickets();
+        this.fetchAuditLogs();
+
+      } catch (error) {
+        console.error('Error en purga:', error);
+        const errorMsg = error.response?.data || error.message;
+        Swal.fire({
+          title: '> ERROR',
+          text: errorMsg,
+          icon: 'error',
+          background: '#000',
+          color: '#ff0000',
+          customClass: { popup: 'border border-red-500 rounded-none' }
+        });
+      }
     },
     
     verTicket(ticketId) {

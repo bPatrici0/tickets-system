@@ -1,5 +1,6 @@
 package com.ticket.service;
 
+import com.ticket.dto.ComentarioDTO;
 import com.ticket.dto.TicketDTO;
 import com.ticket.entity.Ticket;
 import com.ticket.entity.Usuario;
@@ -84,5 +85,43 @@ public class TicketServiceTest {
         verify(ticketRepository, times(1)).save(any(Ticket.class));
 
         verify(auditoriaService).registrarAccion(any(), any(), eq("CREACION"), any(), any(), any());
+    }
+
+    @Test
+    void agregarComentario_AdminCambiaEstadoAInProgress() {
+        Long ticketId = 1L;
+        String emailAdmin = "admin@devops.com";
+
+        Ticket ticket = new Ticket();
+        ticket.setId(ticketId);
+        ticket.setEstado(EstadoTicket.ABIERTO);
+
+        Usuario creador = new Usuario();
+        creador.setEmail("usuario@test.com");
+        ticket.setCreadoPor(creador);
+
+        Usuario admin = new Usuario();
+        admin.setEmail(emailAdmin);
+        admin.setRol("ROLE_ADMIN");
+
+        ComentarioDTO nuevoComentario = new ComentarioDTO();
+        nuevoComentario.setContenido("Ya lo estoy revisando");
+
+        when(ticketRepository.findById(ticketId)).thenReturn(Optional.of(ticket));
+
+        when(usuarioRepository.findByEmail(emailAdmin)).thenReturn(Optional.of(admin));
+
+        when(comentarioRepository.save(any())).thenAnswer(i -> i.getArguments()[0]);
+
+        ticketService.agregarComentario(ticketId, nuevoComentario, emailAdmin);
+
+        assertEquals(EstadoTicket.EN_PROGRESO, ticket.getEstado());
+
+        verify(ticketRepository).save(ticket);
+
+        verify(notificationService).notifyUser(eq("usuario@test.com"), anyString());
+
+        verify(auditoriaService).registrarAccion(eq(ticketId),
+                eq(emailAdmin), eq("NUEVO_COMENTARIO"), any(), any(), any());
     }
 }

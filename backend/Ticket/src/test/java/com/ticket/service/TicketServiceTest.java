@@ -124,4 +124,17 @@ public class TicketServiceTest {
         verify(auditoriaService).registrarAccion(eq(ticketId),
                 eq(emailAdmin), eq("NUEVO_COMENTARIO"), any(), any(), any());
     }
+
+    @Test
+    void crearTicket_ErrorTituloVacio() {
+
+        TicketDTO ticketDTO = new TicketDTO();
+        ticketDTO.setTitulo("");
+
+        assertThrows(BadRequestException.class, () -> {
+            ticketService.crearTicket(ticketDTO);
+        });
+
+        verify(ticketRepository, never()).save(any(Ticket.class));
+    }
 }
